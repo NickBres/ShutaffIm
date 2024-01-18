@@ -3,6 +3,16 @@
 ## Description
 The Roommate Finder App is designed to streamline the process for university students seeking compatible roommates. Operating primarily as an advertisement board, the Android application allows users to post and search for roommate advertisements. This platform is tailored to support the ease of finding and offering shared accommodations among students.
 
+### Note
+This app is a collaborative university project aimed at providing practical experience with software development in a team environment. We are committed to applying industry-standard practices in our development process to deliver a valuable tool for students.
+
+## Team
+
+* [Nikita Breslavsky](https://github.com/NickBres)
+* [Shoval Zohar](https://github.com/ShovalZ97)
+* [Yair Turgeman](https://github.com/yair489)
+* [Moshe Nahshon](https://github.com/moshenh01)
+
 ## Features
 - **User Registration/Login**: Secure account creation and sign-in.
 - **Profile Customization**: Users can create profiles detailing their living preferences and accommodation details.
@@ -17,5 +27,3 @@ The Roommate Finder App is designed to streamline the process for university stu
 ## Collaboration Model
 Our project embraces a collaborative approach, with work divided into sub-tasks and tracked on Freeform. We adopt agile methodologies, iterating over our application based on feedback and continuous learning. Peer code reviews are part of our routine to ensure code quality.
 
-## Note
-This app is a collaborative university project aimed at providing practical experience with software development in a team environment. We are committed to applying industry-standard practices in our development process to deliver a valuable tool for students.
