@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -70,18 +68,21 @@ fun LoginView(){
         Spacer(modifier = Modifier.height(32.dp))
 
         Card(
-            elevation = CardDefaults.cardElevation(8.dp),
+            elevation = CardDefaults.cardElevation(4.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
             OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 32.dp, end = 32.dp, top = 8.dp),
                 value = email,
                 onValueChange = { email = it },
                 label = { Text(text = "Email") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
                     cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -90,30 +91,33 @@ fun LoginView(){
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 32.dp, end = 32.dp),
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(text = "Password") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
                     cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = PasswordVisualTransformation()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {/* TODO  */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(64.dp),
+                    .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
                 enabled = email.isNotBlank() && password.isNotBlank()
             ) {
                 Text(text = "Login")
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(64.dp))
         Text(text = "Don't have an account?")
         TextButton(onClick = { /*TODO*/ }) {
             Text(
@@ -138,10 +142,10 @@ fun LoginScreen(){
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "",
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primaryContainer),
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .graphicsLayer { alpha = 0.3f }
+                .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -64.dp)
         )
         LoginView()
