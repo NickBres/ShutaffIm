@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -70,64 +71,68 @@ fun LoginView() {
         )
         Spacer(modifier = Modifier.height(128.dp))
 
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(text = "Email") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                cursorColor = MaterialTheme.colorScheme.primary
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            leadingIcon = {
-                Image(
-                    imageVector = Icons.Default.Email,
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                )
-            },
-            singleLine = true
-        )
+        ElevatedCard {
 
-        Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(text = "Password") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                cursorColor = MaterialTheme.colorScheme.primary
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation(),
-            leadingIcon = {
-                Image(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                )
-            },
-            singleLine = true
-        )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(text = "Email") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                    cursorColor = MaterialTheme.colorScheme.primary
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                leadingIcon = {
+                    Image(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    )
+                },
+                singleLine = true
+            )
 
-        Spacer(modifier = Modifier.height(32.dp))
-        Button(
-            onClick = {/* TODO  */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
-            enabled = email.isNotBlank() && password.isNotBlank()
-        ) {
-            Text(text = "Login")
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp),
+                value = password,
+                onValueChange = { password = it },
+                label = { Text(text = "Password") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                    cursorColor = MaterialTheme.colorScheme.primary
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
+                leadingIcon = {
+                    Image(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    )
+                },
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+            Button(
+                onClick = {/* TODO  */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
+                enabled = email.isNotBlank() && password.isNotBlank()
+            ) {
+                Text(text = "Login")
+            }
         }
 
 
