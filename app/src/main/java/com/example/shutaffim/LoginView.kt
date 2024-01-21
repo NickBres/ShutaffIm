@@ -11,15 +11,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginView(){
+fun LoginView() {
     var email by remember {
         mutableStateOf("")
     }
@@ -59,6 +59,8 @@ fun LoginView(){
         verticalArrangement = Arrangement.Center
 
     ) {
+
+        Spacer(modifier = Modifier.height(256.dp))
         Text(
             text = "ShutaffI'm",
             style = TextStyle(
@@ -67,53 +69,75 @@ fun LoginView(){
                 fontWeight = FontWeight.Bold
             )
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(128.dp))
 
-        Card(
-            elevation = CardDefaults.cardElevation(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
+        ElevatedCard {
+
+
             OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
                 value = email,
                 onValueChange = { email = it },
                 label = { Text(text = "Email") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
                     cursorColor = MaterialTheme.colorScheme.primary
                 ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                leadingIcon = {
+                    Image(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    )
+                },
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp),
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(text = "Password") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
                     cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = PasswordVisualTransformation(),
+                leadingIcon = {
+                    Image(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    )
+                },
+                singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {/* TODO  */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(64.dp),
+                    .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
                 enabled = email.isNotBlank() && password.isNotBlank()
             ) {
                 Text(text = "Login")
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+
+
+
+        Spacer(modifier = Modifier.height(64.dp))
         Text(text = "Don't have an account?")
         TextButton(onClick = { /*TODO*/ }) {
             Text(
@@ -130,19 +154,19 @@ fun LoginView(){
 }
 
 @Composable
-fun LoginScreen(){
+fun LoginScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
-    ){
+    ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "",
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primaryContainer),
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .graphicsLayer { alpha = 0.3f }
-                .offset(x = -128.dp, y = -64.dp)
+                .graphicsLayer { alpha = 0.5f }
+                .offset(x = -128.dp, y = -128.dp)
         )
         LoginView()
     }
@@ -150,8 +174,9 @@ fun LoginScreen(){
 
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun LoginViewPreview(){
+fun LoginViewPreview() {
     LoginScreen()
 }
