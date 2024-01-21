@@ -62,7 +62,6 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
-import com.example.shutaffim.PopUpView
 
 
 @OptIn(ExperimentalFoundationApi::class)

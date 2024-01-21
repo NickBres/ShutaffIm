@@ -47,43 +47,45 @@ fun MyPostsScreenView() {
         mutableStateOf(false)
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(title = { Text(text = "My Posts") }, navigationIcon = {
-            IconButton(onClick = { /* TODO Handle back button click here */ }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(title = { Text(text = "My Posts") }, navigationIcon = {
+                IconButton(onClick = { /* TODO Handle back button click here */ }) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.primary,
+                navigationIconContentColor = MaterialTheme.colorScheme.primary
+            )
+            )
+        }, floatingActionButton = {
+            FloatingActionButton(
+                onClick = { new_post = !new_post },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
             }
-        }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = MaterialTheme.colorScheme.primary
-        )
-        )
-    }, floatingActionButton = {
-        FloatingActionButton(
-            onClick = { new_post = !new_post },
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
-        }
-    }, content = {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-                .padding(start = 4.dp, end = 4.dp),
-        ) {
-            items(dummyList) { post ->
-                PostItem(post)
+        }, content = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+                    .padding(start = 4.dp, end = 4.dp),
+            ) {
+                items(dummyList) { post ->
+                    PostItem(post)
+                }
             }
-        }
 
-        if (new_post) {
-            ModalBottomSheet(onDismissRequest = { new_post = false }, content = {
+            if (new_post) {
+                ModalBottomSheet(onDismissRequest = { new_post = false }, content = {
 
-            })
-        }
-    })
+                })
+            }
+        })
 }
 
 
