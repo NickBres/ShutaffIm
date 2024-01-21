@@ -1,6 +1,5 @@
 package com.example.shutaffim
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +30,7 @@ import androidx.compose.ui.unit.sp
 fun PopUpView() {
 
     var interestedMsg by remember {
-        mutableStateOf("Enter Message")
+        mutableStateOf("")
     }
     Column(
 
@@ -48,6 +47,7 @@ fun PopUpView() {
             OutlinedTextField(
                 value = interestedMsg,
                 onValueChange = { interestedMsg = it },
+                label = { Text(text = "Enter message") },
                 modifier = Modifier
                     .padding(4.dp)
                     .size(400.dp, 300.dp),

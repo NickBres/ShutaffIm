@@ -28,10 +28,11 @@ import androidx.compose.ui.unit.sp
 
 // for test only
 data class Post(
-    val image: Int,
+    val images: List<Int>,
     val price: Int,
     val location: String,
-    val date: String
+    val date: String,
+    val about: String = ""
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +62,7 @@ fun PostItem(post: Post) {
                 .height(size)
         ) {
             Image(
-                painter = painterResource(id = post.image),
+                painter = painterResource(id = post.images[2]),
                 contentDescription = "",
                 modifier = Modifier
                     .height(size)

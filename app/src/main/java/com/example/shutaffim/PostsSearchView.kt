@@ -33,18 +33,19 @@ import com.example.shutaffim.R
 fun PostsSearchView() {
 
     val stam = 9000
+    val pic = listOf(R.drawable.test_image)
 
     val dummyList = listOf<Post>(
-        Post(R.drawable.test_image, 5000, "Tel-Aviv, Dizengoff, 42", "18.01.2023"),
-        Post(R.drawable.test_image, 7500, "Jerusalem, Yafo, 30", "20.02.2023"),
-        Post(R.drawable.test_image, 6200, "Haifa, Herzl, 15", "05.03.2023"),
-        Post(R.drawable.test_image, 4300, "Eilat, Shalom, 8", "12.04.2023"),
-        Post(R.drawable.test_image, 8000, "Tel-Aviv, Ben Yehuda, 21", "25.05.2023"),
-        Post(R.drawable.test_image, 5400, "Ashdod, HaAtzmaut, 33", "10.06.2023"),
-        Post(R.drawable.test_image, 4700, "Be'er Sheva, HaNevi'im, 7", "15.07.2023"),
-        Post(R.drawable.test_image, 6900, "Netanya, Herzl, 45", "22.08.2023"),
-        Post(R.drawable.test_image, 5100, "Rishon LeZion, Rothschild, 18", "30.09.2023"),
-        Post(R.drawable.test_image, 5600, "Haifa, Allenby, 9", "11.10.2023")
+        Post(pic, 5000, "Tel-Aviv, Dizengoff, 42", "18.01.2023"),
+        Post(pic, 7500, "Jerusalem, Yafo, 30", "20.02.2023"),
+        Post(pic, 6200, "Haifa, Herzl, 15", "05.03.2023"),
+        Post(pic, 4300, "Eilat, Shalom, 8", "12.04.2023"),
+        Post(pic, 8000, "Tel-Aviv, Ben Yehuda, 21", "25.05.2023"),
+        Post(pic, 5400, "Ashdod, HaAtzmaut, 33", "10.06.2023"),
+        Post(pic, 4700, "Be'er Sheva, HaNevi'im, 7", "15.07.2023"),
+        Post(pic, 6900, "Netanya, Herzl, 45", "22.08.2023"),
+        Post(pic, 5100, "Rishon LeZion, Rothschild, 18", "30.09.2023"),
+        Post(pic, 5600, "Haifa, Allenby, 9", "11.10.2023")
     )
     var showSearch by remember {
         mutableStateOf(false)
