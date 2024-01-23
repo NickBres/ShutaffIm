@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ElevatedCard
@@ -31,16 +32,37 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TypeScreenView() {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { androidx.compose.material3.Text(text = "Login") },
+                navigationIcon = {
+                    IconButton(onClick = { /* TODO Handle back button click here */ }) {
+                        androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        },
+        content = {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(it),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Spacer(modifier = Modifier.height(100.dp))
+
 
         ElevatedCard {
 
@@ -69,7 +91,7 @@ fun TypeScreenView() {
 
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(90.dp))
 
         ExtendedFloatingActionButton(
             onClick = { /* TODO: Navigate to login screen */ },
@@ -120,8 +142,21 @@ fun TypeScreenView() {
                 .height(100.dp)
                 .size(280.dp)
         )
+
+        Spacer(modifier = Modifier.height(70.dp))
+
+        TextButton(onClick = { /*TODO*/ }) {
+            Text(
+                text = "Edit Profile",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+
     }
-}
+})}
 
 @Composable
 fun TypeScreenScreen() {
