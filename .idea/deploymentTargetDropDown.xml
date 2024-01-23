@@ -2,6 +2,21 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="EditPostScreenViewpreview">
+        <State />
+      </entry>
+      <entry key="EditSecreenViewPreview">
+        <State />
+      </entry>
+      <entry key="LoginViewPreview">
+        <State />
+      </entry>
+      <entry key="MyInterstedScreenViewPreview">
+        <State />
+      </entry>
+      <entry key="PreviewTwoOutlinedTextFieldsInRow">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>
