@@ -1,5 +1,4 @@
 import android.annotation.SuppressLint
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.Image
@@ -17,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,18 +63,52 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.shutaffim.PostItem
+import com.google.type.Money
+
+import android.content.ContentResolver
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+
+import androidx.compose.material3.Surface
+
+import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import java.io.InputStream
+import java.util.Locale
+import kotlin.math.roundToInt
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditSecreenView() {
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
-
 
     var city by remember {
         mutableStateOf("")
@@ -90,12 +125,10 @@ fun EditSecreenView() {
     var price by remember {
         mutableStateOf("")
     }
-    var priceStart by remember {
-        mutableStateOf(0f)
+    var about_apartment by remember {
+        mutableStateOf("")
     }
-    var priceEnd by remember {
-        mutableStateOf(10000f)
-    }
+
 
 
     Scaffold(
@@ -162,7 +195,7 @@ fun EditSecreenView() {
                             .fillMaxWidth()
                             .padding(start = 16.dp, end = 16.dp),
                         value = street,
-                        onValueChange = { password = street },
+                        onValueChange = { street = it },
                         label = { Text(text = "street") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -185,7 +218,7 @@ fun EditSecreenView() {
                             .fillMaxWidth()
                             .padding(start = 16.dp, end = 16.dp),
                         value = nuber_house,
-                        onValueChange = { password = nuber_house },
+                        onValueChange = { nuber_house = it },
                         label = { Text(text = "nuber's house") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -208,7 +241,7 @@ fun EditSecreenView() {
                             .fillMaxWidth()
                             .padding(start = 16.dp, end = 16.dp),
                         value = num_partner,
-                        onValueChange = { password = num_partner },
+                        onValueChange = { num_partner = it },
                         label = { Text(text = "number of partner") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -228,23 +261,62 @@ fun EditSecreenView() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     //price
-                    Text(text = "Price",
+                    OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 32.dp)
-                    )
-                    RangeSlider(
-                        value = priceStart..priceEnd,
-                        onValueChange = { range ->
-                            priceStart = range.start
-                            priceEnd = range.endInclusive
+                            .padding(start = 16.dp, end = 16.dp),
+                        value = price,
+                        onValueChange = { price = it.filter { it.isDigit() } }, // Only allow numeric input
+                        label = { Text(text = "price") },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        ),
+                        leadingIcon = {
+                            Image(
+                                imageVector  = Icons.Default.Add,
+                                contentDescription = "",
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                            )
                         },
-                        valueRange = 0f..10000f,
-                        steps = 10000,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    //Information about the apartment
+                    OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 32.dp, end = 32.dp)
+                            .padding(start = 16.dp, end = 16.dp),
+                        value =  about_apartment,
+                        onValueChange = { about_apartment = it },
+                        label = { Text(text = "Information about the apartment") },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        ),
+                        leadingIcon = {
+                            Image(
+                                imageVector = Icons.Default.Create,
+                                contentDescription = "",
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                            )
+                        },
+
+                        singleLine = false,  // Allow multiple lines
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,  // Allow any text input
+                        imeAction = ImeAction.Done,  // Change to another action if needed
+
+                        ),
+                        maxLines = 3
                     )
+
+
 
                 }
 
@@ -268,6 +340,8 @@ fun EditSecreenView() {
         }//content
     )//Scaffold
 }
+
+
 
 
 
