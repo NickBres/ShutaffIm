@@ -1,4 +1,4 @@
-package com.example.shutaffim
+package com.example.shutaffim.Views
 
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -61,6 +61,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
+import com.example.shutaffim.PopUpView
+import com.example.shutaffim.R
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -73,110 +75,82 @@ fun CustomSlider(
     dotsActiveColor: Color = Color.DarkGray,
     dotsInActiveColor: Color = Color.LightGray,
     dotsSize: Dp = 10.dp,
-    pagerPaddingValues: PaddingValues = PaddingValues(horizontal = 2.dp),
+    pagerPaddingValues: PaddingValues = PaddingValues(horizontal = 0.dp),
     imageCornerRadius: Dp = 4.dp,
     imageHeight: Dp = 200.dp,
 ) {
-
     val pagerState = rememberPagerState(pageCount = { sliderList.size })
     val scope = rememberCoroutineScope()
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(2.dp),
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            contentPadding = pagerPaddingValues,
+            modifier = modifier.weight(1f)
+        ) { page ->
+            val pageOffset =
+                (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
 
-        ) {
+            val scaleFactor =
+                0.75f + (1f - 0.75f) * (1f - pageOffset.absoluteValue)
 
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-
-
-                HorizontalPager(
-
-                    state = pagerState,
-                    contentPadding = pagerPaddingValues,
-                    modifier = modifier.weight(1f)
-                ) { page ->
-                    val pageOffset =
-                        (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-
-                    val scaleFactor =
-                        0.75f + (1f - 0.75f) * (1f - pageOffset.absoluteValue)
-
-
-                    Box(modifier = modifier
-                        .graphicsLayer {
-                            scaleX = scaleFactor
-                            scaleY = scaleFactor
-                        }
-                        .alpha(
-                            scaleFactor.coerceIn(0f, 1f)
-                        )
-                        .padding(0.dp)
-                        .clip(RoundedCornerShape(imageCornerRadius))) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .scale(
-                                    Scale.FILL
-                                )
-                                .crossfade(true)
-                                .data(sliderList[page])
-                                .build(),
-                            contentDescription = "Image",
-                            contentScale = ContentScale.Crop,
-                            placeholder = painterResource(id = R.drawable.pngwing_com),
-                            error = painterResource(id = R.drawable.pngwing_com),
-                            modifier = modifier
-                                .height(imageHeight)
-                                .alpha(if (pagerState.currentPage == page) 1f else 0.5f)
-                        )
-                    }
+            Box(modifier = modifier
+                .graphicsLayer {
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
                 }
-
+                .alpha(
+                    scaleFactor.coerceIn(0f, 1f)
+                )
+                .padding(0.dp)
+                .clip(RoundedCornerShape(imageCornerRadius))) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .scale(
+                            Scale.FILL
+                        )
+                        .crossfade(true)
+                        .data(sliderList[page])
+                        .build(),
+                    contentDescription = "Image",
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.pngwing_com),
+                    error = painterResource(id = R.drawable.pngwing_com),
+                    modifier = modifier
+                        .height(imageHeight)
+                        .alpha(if (pagerState.currentPage == page) 1f else 0.5f)
+                )
             }
-
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                sliderList.forEachIndexed { index, _ ->
-                    Box(
-                        modifier = modifier
-                            .padding(4.dp)
-                            .size(dotsSize)
-                            .clip(CircleShape)
-                            .background(
-                                color = if (index == pagerState.currentPage) dotsActiveColor else dotsInActiveColor
-                            )
-                            .clickable {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            }
-                    )
-                }
-            }
-
-
         }
     }
-
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        sliderList.forEachIndexed { index, _ ->
+        Box(
+            modifier = modifier
+                .padding(4.dp)
+                .size(dotsSize)
+                .clip(CircleShape)
+                .background(
+                    color = if (index == pagerState.currentPage) dotsActiveColor else dotsInActiveColor
+                )
+                .clickable {
+                    scope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                }
+            )
+        }
+    }
 }
 
 
@@ -219,297 +193,239 @@ fun PostScreen(navController: NavController) {
         mutableStateOf(false)
     }
 
-    Column(
+    Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+            .fillMaxSize(),
 
-        Row(
+        topBar = {
+            TopAppBar(
+                title = { Text("Top app bar") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                ),
+            )
+        }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                .padding(8.dp)
+                .padding(innerPadding)
+
+
         ) {
 
-
-            Scaffold(
+            CustomSlider(sliderList = sliderList)//in rows
+            Row(
                 modifier = Modifier
-                    .fillMaxSize(),
-                topBar = {
-                    TopAppBar(
-                        title = { Text("Top app bar") },
-                        navigationIcon = {
-                            IconButton(onClick = { navController.navigateUp() }) {
-                                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            titleContentColor = MaterialTheme.colorScheme.primary,
-                            navigationIconContentColor = MaterialTheme.colorScheme.primary
-                        ),
+                    .fillMaxWidth()
+                    .padding(start = 0.dp, top = 0.dp, end = 8.dp, bottom = 0.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$price₪",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
                     )
-                }
-            ) { innerPadding ->
-                Column(
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(start = 0.dp, top = 0.dp, end = 8.dp, bottom = 0.dp)
+            ) {
+                Icon(
+                    Icons.Default.LocationOn,
+                    contentDescription = "Location",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = location,
                     modifier = Modifier
-                        .padding(innerPadding),
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    style = TextStyle(fontWeight = FontWeight.Bold)
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 0.dp, top = 8.dp, end = 8.dp, bottom = 0.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Details",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 0.dp, top = 0.dp, end = 8.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "⚫",
+                    modifier = Modifier.alpha(0.3f),
+                    style = TextStyle(
+                        fontSize = 8.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "$bedroomNumber Badroom",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "⚫",
+                    modifier = Modifier.alpha(0.3f),
+                    style = TextStyle(
+                        fontSize = 8.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
 
-                    ) {
-                    //Row 1
-                    CustomSlider(sliderList = sliderList)
-                    //row 2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(0.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Bottom
+                    text = " $floorNumber floor",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                        //opacity = 0.5f
+                    )
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "⚫",
+                    modifier = Modifier.alpha(0.3f),
+                    style = TextStyle(
+                        fontSize = 8.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                    )
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
 
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        )
-                        {
+                    text = hasFurniture(),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                        //opacity = 0.5f
+                    )
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "⚫",
+                    modifier = Modifier.alpha(0.3f),
+                    style = TextStyle(
+                        fontSize = 8.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                    )
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
 
+                    text = hasInternet(),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                        //opacity = 0.5f
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(32.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 0.dp, top = 0.dp, end = 8.dp, bottom = 4.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "About the Apartment",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            Card(
+                modifier = Modifier
+                    .size(height = 150.dp, width = 400.dp),
+                elevation = CardDefaults.cardElevation(2.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                BasicTextField(
+                    value = freeText,
+                    onValueChange = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    textStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(54.dp))
+            Button(
+                onClick = { interestedClick = !interestedClick },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Text(
+                    text = "i'm interested",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                    )
+                )
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 2.dp, top = 0.dp, end = 8.dp, bottom = 0.dp),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    text = "$price₪",
-                                    style = TextStyle(
-                                        fontSize = 20.sp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                            }
-                            Row(
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Default.LocationOn,
-                                    contentDescription = "Location",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-
-                                Text(
-                                    text = location,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(4.dp),
-                                    style = TextStyle(fontWeight = FontWeight.Bold)
-                                )
-                            }
-
-
-
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Details",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "⚫",
-                                    modifier = Modifier.alpha(0.3f),
-                                    style = TextStyle(
-                                        fontSize = 8.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "$bedroomNumber Badroom",
-                                    style = TextStyle(
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Text(
-                                    text = "⚫",
-                                    modifier = Modifier.alpha(0.3f),
-                                    style = TextStyle(
-                                        fontSize = 8.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-
-                                    text = " $floorNumber floor",
-                                    style = TextStyle(
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold
-                                        //opacity = 0.5f
-
-
-                                    )
-
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Text(
-                                    text = "⚫",
-                                    modifier = Modifier.alpha(0.3f),
-                                    style = TextStyle(
-                                        fontSize = 8.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold,
-
-
-                                        )
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-
-                                    text = hasFurniture(),
-                                    style = TextStyle(
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold
-                                        //opacity = 0.5f
-
-
-                                    )
-
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Text(
-                                    text = "⚫",
-                                    modifier = Modifier.alpha(0.3f),
-                                    style = TextStyle(
-                                        fontSize = 8.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold,
-
-
-                                        )
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-
-                                    text = hasInternet(),
-                                    style = TextStyle(
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold
-                                        //opacity = 0.5f
-
-
-                                    )
-
-                                )
-
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 4.dp),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    text = "About the Apartment",
-                                    style = TextStyle(
-                                        fontSize = 20.sp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                )
-                            }
-                            Card(
-                                modifier = Modifier
-                                    .size(height = 150.dp, width = 400.dp),
-                                elevation = CardDefaults.cardElevation(2.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surface
-                                )
-                            ) {
-                                BasicTextField(
-                                    value = freeText,
-                                    onValueChange = { },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    textStyle = TextStyle(
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold,
-
-                                        )
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(54.dp))
-                            Button(
-                                onClick = { interestedClick = !interestedClick },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                            ) {
-                                Text(
-                                    text = "i'm interested",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold,
-                                    )
-                                )
-
-                                if (interestedClick) {
-                                    ModalBottomSheet(onDismissRequest = { interestedClick = false },
-                                        content = {
-                                            PopUpView()
-                                        }
-                                    )
-                                }
-
-                            }
+                if (interestedClick) {
+                    ModalBottomSheet(onDismissRequest = { interestedClick = false },
+                        content = {
+                            PopUpView()
                         }
-                    }
+                    )
                 }
             }
         }
-
     }
 }
 
