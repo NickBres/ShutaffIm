@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -73,7 +74,13 @@ fun LoginView(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(128.dp))
 
-        ElevatedCard {
+        ElevatedCard(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+
+            ),
+        ) {
 
 
             OutlinedTextField(
@@ -168,7 +175,7 @@ fun LoginScreen(navController: NavController) {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "",
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primaryContainer),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .graphicsLayer { alpha = 0.5f }
