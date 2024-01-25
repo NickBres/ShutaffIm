@@ -26,6 +26,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Checkbox
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 
 data class Person(
     val images: List<Int>,
@@ -104,6 +107,16 @@ fun InterstedItem(person: Person) {
                             .fillMaxWidth()
                             .padding(8.dp),
                         style = TextStyle(fontWeight = FontWeight.Bold)
+                    )
+                    val checkedState = remember { mutableStateOf(true) }
+                    Checkbox(
+                        checked = checkedState.value,
+                        onCheckedChange = { checkedState.value = it },
+                        modifier = Modifier
+                            .padding(8.dp),
+
+
+
                     )
                 }
             }
