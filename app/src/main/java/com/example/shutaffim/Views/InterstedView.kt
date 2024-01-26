@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.navigation.NavController
 
 data class Person(
     val images: List<Int>,
@@ -39,7 +40,7 @@ data class Person(
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InterstedItem(person: Person) {
+fun InterstedItem(person: Person, navController: NavController, screen: Screen) {
     val size = 70.dp
 
     ElevatedCard(
@@ -55,7 +56,12 @@ fun InterstedItem(person: Person) {
             contentColor = MaterialTheme.colorScheme.onSurface
 
         ),
-        onClick = { /* TODO Enter to the item screen*/ }
+        onClick = { /* TODO Enter to the item screen*/
+            when(screen.route){
+                Screen.PostScreen.route -> navController.navigate(Screen.PostScreen.route)
+                Screen.EditPostScreen.route -> navController.navigate(Screen.EditPostScreen.route)
+            }
+        }
 
     ) {
         Row(
