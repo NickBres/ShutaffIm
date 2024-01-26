@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -104,8 +105,7 @@ fun InterstedItem(person: Person) {
                     Text(
                         text = person.phone,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(start = 8.dp , end =128.dp),
                         style = TextStyle(fontWeight = FontWeight.Bold)
                     )
                     val checkedState = remember { mutableStateOf(true) }
@@ -113,7 +113,7 @@ fun InterstedItem(person: Person) {
                         checked = checkedState.value,
                         onCheckedChange = { checkedState.value = it },
                         modifier = Modifier
-                            .padding(8.dp),
+                            .fillMaxSize()
 
 
 
