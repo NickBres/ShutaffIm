@@ -69,6 +69,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -78,6 +79,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 
 import androidx.compose.material3.Surface
@@ -100,8 +104,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.shutaffim.Screen
 import java.io.InputStream
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -120,6 +126,12 @@ fun EditSecreenView(navController: NavController) {
     var nuber_house by remember {
         mutableStateOf("")
     }
+    var current_partner by remember {
+        mutableStateOf("")
+    }
+    var max_partner by remember {
+        mutableStateOf("")
+    }
     var num_partner by remember {
         mutableStateOf("")
     }
@@ -129,23 +141,89 @@ fun EditSecreenView(navController: NavController) {
     var about_apartment by remember {
         mutableStateOf("")
     }
+    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+// Handle the result of the image picker
+    val activityResultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        // Update the imageUris when an image is selected
+        imageUris = imageUris + listOfNotNull(uri)
+    }
+
 
 
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text(text = "Edit Post") }, navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text(
+                        "Edit Post",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                },
+//                actions = {
+//                    IconButton(onClick = {
+//                        navController.navigate(Screen.InterestedScreen.route)
+//                    }) {
+//
+//                        Icon(
+//                            imageVector = Icons.Filled.AccountBox,
+//                            contentDescription = "Localized description"
+//                        )
+//                    }
+//
+//                }
+                actions = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp) // Adjust spacing as needed
+                    ) {
+                        Text(
+                            text = "Interested",
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        IconButton(onClick = {
+                            navController.navigate(Screen.InterestedScreen.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.AccountBox,
+                                contentDescription = "Localized description"
+                            )
+                        }
+
+                    }
                 }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                titleContentColor = MaterialTheme.colorScheme.primary,
-                navigationIconContentColor = MaterialTheme.colorScheme.primary
+                ,
             )
-            )
-        }, floatingActionButton = {
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* do something */ },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+//                Icon(Icons.Default.Add, contentDescription = "Add")
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Localized description",
+                    tint = Color.Red
+                )
+            }
 
         }, content = {
 
@@ -165,6 +243,36 @@ fun EditSecreenView(navController: NavController) {
 
                 ElevatedCard {
 
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Display up to 5 ImageButtons for triggering image upload
+                        for (i in 0 until minOf(imageUris.size, 5)) {
+                            Image(
+                                painter = rememberImagePainter(data = imageUris[i]),
+                                contentDescription = null,
+                                modifier = Modifier.size(50.dp) // Adjust size as needed
+                            )
+                        }
+
+                        if (imageUris.size < 5) {
+                            // Display the IconButton for triggering image upload
+                            IconButton(onClick = {
+                                // Trigger the file input when IconButton is clicked
+                                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                                activityResultLauncher.launch(intent.toString())
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Upload Image"
+                                )
+                            }
+                        }
+                    }
                     //city
                     OutlinedTextField(
                         modifier = Modifier
@@ -190,76 +298,147 @@ fun EditSecreenView(navController: NavController) {
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
-                    /* street*/
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp),
-                        value = street,
-                        onValueChange = { street = it },
-                        label = { Text(text = "street") },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.primary
-                        ),
-                        leadingIcon = {
-                            Image(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "",
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                            )
-                        },
-                        singleLine = true
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    /* nuber_house*/
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp),
-                        value = nuber_house,
-                        onValueChange = { nuber_house = it },
-                        label = { Text(text = "nuber's house") },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.primary
-                        ),
-                        leadingIcon = {
-                            Image(
-                                imageVector = Icons.Filled.Info,
-                                contentDescription = "",
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                            )
-                        },
-                        singleLine = true
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    //num_partner
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp),
-                        value = num_partner,
-                        onValueChange = { num_partner = it },
-                        label = { Text(text = "number of partner") },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.primary
-                        ),
-                        leadingIcon = {
-                            Image(
-                                imageVector = Icons.Sharp.Face,
-                                contentDescription = "",
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                            )
-                        },
-                        singleLine = true
-                    )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ){
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            /* street*/
+                            OutlinedTextField(
+                                value = street,
+                                onValueChange = { street = it },
+                                label = {
+//                                    Text(text = "Address")
+                                    Text(
+                                        text = "Address ",
+                                        style = TextStyle(fontSize = 15.sp) // Set the desired font size
+                                    )
+                                        },
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                                leadingIcon = {
+                                    Image(
+                                        imageVector = Icons.Default.Home,
+                                        contentDescription = "",
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                                    )
+                                },
+                                singleLine = true
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            /* nuber_house*/
+                            OutlinedTextField(
+                                value = nuber_house,
+                                onValueChange = { nuber_house = it },
+                                label = {
+                                    Text(
+                                        text = "nuber ",
+                                        style = TextStyle(fontSize = 15.sp) // Set the desired font size
+                                    )
+//                                    Text(text = "nuber's house")
+                                        },
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                                leadingIcon = {
+                                    Image(
+                                        imageVector = Icons.Filled.Info,
+                                        contentDescription = "",
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                                    )
+                                },
+                                singleLine = true
+                            )
+                        }
+                    }//row Adrees && number
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ){
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            //num_partner
+                            OutlinedTextField(
+                                value = current_partner,
+                                onValueChange = { current_partner = it },
+                                label = {
+//                                    Text(text = "partner")
+                                    Text(
+                                        text = "current partner",
+                                        style = TextStyle(fontSize = 14.sp) // Set the desired font size
+                                    )
+                                        },
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                                leadingIcon = {
+                                    Image(
+                                        imageVector = Icons.Sharp.Face,
+                                        contentDescription = "",
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                                    )
+                                },
+                                singleLine = true
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            OutlinedTextField(
+                                value = max_partner,
+                                onValueChange = { max_partner = it },
+                                label = {
+//                                    Text(text = "partner")
+                                    Text(
+                                        text = "max partner",
+                                        style = TextStyle(fontSize = 14.sp) // Set the desired font size
+                                    )
+                                },
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                                leadingIcon = {
+                                    Image(
+                                        imageVector = Icons.Sharp.Face,
+                                        contentDescription = "",
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                                    )
+                                },
+                                singleLine = true
+                            )
+                        }
+                    }//row partner
+
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     //price
                     OutlinedTextField(
@@ -280,13 +459,15 @@ fun EditSecreenView(navController: NavController) {
                                 contentDescription = "",
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                             )
+
                         },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number
                         )
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Spacer(modifier = Modifier.height(8.dp))
                     //Information about the apartment
                     OutlinedTextField(
                         modifier = Modifier

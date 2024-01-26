@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Checkbox
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.navigation.NavController
 
 data class Person(
     val images: List<Int>,
@@ -35,7 +40,7 @@ data class Person(
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InterstedItem(person: Person) {
+fun InterstedItem(person: Person, navController: NavController, screen: Screen) {
     val size = 70.dp
 
     ElevatedCard(
@@ -51,7 +56,12 @@ fun InterstedItem(person: Person) {
             contentColor = MaterialTheme.colorScheme.onSurface
 
         ),
-        onClick = { /* TODO Enter to the item screen*/ }
+        onClick = { /* TODO Enter to the item screen*/
+            when(screen.route){
+                Screen.PostScreen.route -> navController.navigate(Screen.PostScreen.route)
+                Screen.EditPostScreen.route -> navController.navigate(Screen.EditPostScreen.route)
+            }
+        }
 
     ) {
         Row(
@@ -101,9 +111,18 @@ fun InterstedItem(person: Person) {
                     Text(
                         text = person.phone,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(start = 8.dp , end =128.dp),
                         style = TextStyle(fontWeight = FontWeight.Bold)
+                    )
+                    val checkedState = remember { mutableStateOf(true) }
+                    Checkbox(
+                        checked = checkedState.value,
+                        onCheckedChange = { checkedState.value = it },
+                        modifier = Modifier
+                            .fillMaxSize()
+
+
+
                     )
                 }
             }
