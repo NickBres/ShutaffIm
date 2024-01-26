@@ -69,6 +69,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -140,6 +141,15 @@ fun EditSecreenView(navController: NavController) {
     var about_apartment by remember {
         mutableStateOf("")
     }
+    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+// Handle the result of the image picker
+    val activityResultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        // Update the imageUris when an image is selected
+        imageUris = imageUris + listOfNotNull(uri)
+    }
+
 
 
 
@@ -233,6 +243,36 @@ fun EditSecreenView(navController: NavController) {
 
                 ElevatedCard {
 
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Display up to 5 ImageButtons for triggering image upload
+                        for (i in 0 until minOf(imageUris.size, 5)) {
+                            Image(
+                                painter = rememberImagePainter(data = imageUris[i]),
+                                contentDescription = null,
+                                modifier = Modifier.size(50.dp) // Adjust size as needed
+                            )
+                        }
+
+                        if (imageUris.size < 5) {
+                            // Display the IconButton for triggering image upload
+                            IconButton(onClick = {
+                                // Trigger the file input when IconButton is clicked
+                                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                                activityResultLauncher.launch(intent.toString())
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Upload Image"
+                                )
+                            }
+                        }
+                    }
                     //city
                     OutlinedTextField(
                         modifier = Modifier
@@ -414,11 +454,11 @@ fun EditSecreenView(navController: NavController) {
                             cursorColor = MaterialTheme.colorScheme.primary
                         ),
                         leadingIcon = {
-//                            Image(
-//                                imageVector  = Icons.Default.Add,
-//                                contentDescription = "",
-//                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-//                            )
+                            Image(
+                                imageVector  = Icons.Default.Add,
+                                contentDescription = "",
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                            )
 
                         },
                         singleLine = true,
