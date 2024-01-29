@@ -82,6 +82,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.sharp.Share
 import androidx.compose.material3.*
 
 import androidx.compose.material3.Surface
@@ -108,6 +110,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.shutaffim.Screen
+import okhttp3.Address
 import java.io.InputStream
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -132,7 +135,7 @@ fun EditSecreenView(navController: NavController) {
     var max_partner by remember {
         mutableStateOf("")
     }
-    var num_partner by remember {
+    var hashtag by remember {
         mutableStateOf("")
     }
     var price by remember {
@@ -149,6 +152,7 @@ fun EditSecreenView(navController: NavController) {
         // Update the imageUris when an image is selected
         imageUris = imageUris + listOfNotNull(uri)
     }
+
 
 
 
@@ -243,36 +247,7 @@ fun EditSecreenView(navController: NavController) {
 
                 ElevatedCard {
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Display up to 5 ImageButtons for triggering image upload
-                        for (i in 0 until minOf(imageUris.size, 5)) {
-                            Image(
-                                painter = rememberImagePainter(data = imageUris[i]),
-                                contentDescription = null,
-                                modifier = Modifier.size(50.dp) // Adjust size as needed
-                            )
-                        }
 
-                        if (imageUris.size < 5) {
-                            // Display the IconButton for triggering image upload
-                            IconButton(onClick = {
-                                // Trigger the file input when IconButton is clicked
-                                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                                activityResultLauncher.launch(intent.toString())
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Upload Image"
-                                )
-                            }
-                        }
-                    }
                     //city
                     OutlinedTextField(
                         modifier = Modifier
@@ -343,7 +318,7 @@ fun EditSecreenView(navController: NavController) {
                             /* nuber_house*/
                             OutlinedTextField(
                                 value = nuber_house,
-                                onValueChange = { nuber_house = it },
+                                onValueChange = { nuber_house = it.filter { it.isDigit() } },
                                 label = {
                                     Text(
                                         text = "nuber ",
@@ -363,7 +338,10 @@ fun EditSecreenView(navController: NavController) {
                                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                                     )
                                 },
-                                singleLine = true
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
+                                )
                             )
                         }
                     }//row Adrees && number
@@ -383,7 +361,7 @@ fun EditSecreenView(navController: NavController) {
                             //num_partner
                             OutlinedTextField(
                                 value = current_partner,
-                                onValueChange = { current_partner = it },
+                                onValueChange = { current_partner = it.filter { it.isDigit() } },
                                 label = {
 //                                    Text(text = "partner")
                                     Text(
@@ -403,7 +381,10 @@ fun EditSecreenView(navController: NavController) {
                                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                                     )
                                 },
-                                singleLine = true
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
+                                )
                             )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
@@ -413,7 +394,7 @@ fun EditSecreenView(navController: NavController) {
                         ){
                             OutlinedTextField(
                                 value = max_partner,
-                                onValueChange = { max_partner = it },
+                                onValueChange = { max_partner = it.filter { it.isDigit() } },
                                 label = {
 //                                    Text(text = "partner")
                                     Text(
@@ -433,7 +414,11 @@ fun EditSecreenView(navController: NavController) {
                                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                                     )
                                 },
-                                singleLine = true
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
+                                )
+
                             )
                         }
                     }//row partner
@@ -465,6 +450,31 @@ fun EditSecreenView(navController: NavController) {
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number
                         )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    //hashtag
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                        value = hashtag,
+                        onValueChange = { hashtag = it },
+                        label = { Text(text = "hashtag... Example: #boys") },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        leadingIcon = {
+                            Image(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "",
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                            )
+                        },
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -498,23 +508,67 @@ fun EditSecreenView(navController: NavController) {
                         maxLines = 3
                     )
 
+                    Spacer(modifier = Modifier.height(8.dp))
 
 
-                }
+                }//ElevatedCard filed
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ElevatedCard {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Display up to 5 ImageButtons for triggering image upload
+                        for (i in 0 until minOf(imageUris.size, 5)) {
+                            Image(
+                                painter = rememberImagePainter(data = imageUris[i]),
+                                contentDescription = null,
+                                modifier = Modifier.size(50.dp) // Adjust size as needed
+                            )
+                        }
+
+                        if (imageUris.size < 5) {
+                            // Display the IconButton for triggering image upload
+                            IconButton(onClick = {
+                                // Trigger the file input when IconButton is clicked
+                                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                                activityResultLauncher.launch(intent.toString())
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Sharp.Share,
+                                    contentDescription = "Upload Image"
+                                )
+                            }
+                            Text(
+                                text = "Upload Image",
+                                modifier = Modifier.fillMaxWidth() // Align text to the center
+                            )
+                        }
+                    }
+                }//ElevatedCard img
 
 
 
                 Spacer(modifier = Modifier.height(64.dp))
-
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(
-                        text = "Save",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
+                Button(
+                    onClick = {
+                        navController.navigate(Screen.TypeScreen.route)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
+                    enabled = city.isNotBlank() && street.isNotBlank()
+                            && current_partner.isBlank() && max_partner.isNotBlank()
+                            && price.isNotBlank() && about_apartment.isNotBlank()
+                ) {
+                    Text(text = "Save")
                 }
+
+
             }
 
 
