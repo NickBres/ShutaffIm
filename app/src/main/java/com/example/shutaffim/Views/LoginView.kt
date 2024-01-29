@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -131,6 +132,7 @@ fun LoginView(navController: NavController) {
             )
 
         }
+        Spacer(modifier = Modifier.height(16.dp))
 
 
 
@@ -142,14 +144,20 @@ fun LoginView(navController: NavController) {
         ) {
             RadioButton(
                 selected = rememberMe,
-                onClick = { rememberMe = !rememberMe }
+                onClick = { rememberMe = !rememberMe },
+                modifier = Modifier.size(8.dp)
             )
+            Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = "Remember me"
+                text = "Remember me",
+                style = TextStyle(
+                    fontSize = 12.sp
+                )
             )
             Spacer(modifier = Modifier.width(8.dp))
         }
+        Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
                 navController.navigate(Screen.TypeScreen.route)
