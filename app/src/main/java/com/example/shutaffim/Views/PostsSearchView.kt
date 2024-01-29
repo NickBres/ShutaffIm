@@ -1,5 +1,6 @@
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -53,6 +55,9 @@ fun PostsSearchView(navController: NavController) {
     var showSearch by remember {
         mutableStateOf(false)
     }
+    var assignedPostsOnly by remember {
+        mutableStateOf(true)
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -61,7 +66,29 @@ fun PostsSearchView(navController: NavController) {
                 title = { Text(text = "Posts") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { assignedPostsOnly = !assignedPostsOnly }) {
+                        if (assignedPostsOnly) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.task_icon),
+                                contentDescription = "Assigned Posts",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.desc_icon),
+                                contentDescription = "Assigned Posts",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -105,7 +132,6 @@ fun PostsSearchView(navController: NavController) {
         }
     )
 }
-
 
 
 @Preview(showBackground = true)

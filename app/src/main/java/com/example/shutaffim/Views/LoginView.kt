@@ -4,12 +4,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -20,6 +22,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -31,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -52,14 +54,14 @@ fun LoginView(navController: NavController) {
     var password by remember {
         mutableStateOf("")
     }
+    var rememberMe by remember { mutableStateOf(true) }
 
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
 
@@ -68,7 +70,7 @@ fun LoginView(navController: NavController) {
             text = "ShutaffI'm",
             style = TextStyle(
                 fontSize = 40.sp,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.surface,
                 fontWeight = FontWeight.Bold
             )
         )
@@ -82,11 +84,10 @@ fun LoginView(navController: NavController) {
             ),
         ) {
 
-
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                    .padding(start = 8.dp, end = 8.dp),
                 value = email,
                 onValueChange = { email = it },
                 label = { Text(text = "Email") },
@@ -105,13 +106,10 @@ fun LoginView(navController: NavController) {
                 },
                 singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(text = "Password") },
@@ -132,23 +130,42 @@ fun LoginView(navController: NavController) {
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
-            Button(
-                onClick = {
-                          navController.navigate(Screen.TypeScreen.route)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
-                enabled = email.isNotBlank() && password.isNotBlank()
-            ) {
-                Text(text = "Login")
-            }
         }
 
 
 
-        Spacer(modifier = Modifier.height(64.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            RadioButton(
+                selected = rememberMe,
+                onClick = { rememberMe = !rememberMe }
+            )
+
+            Text(
+                text = "Remember me"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Button(
+            onClick = {
+                navController.navigate(Screen.TypeScreen.route)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 64.dp, end = 64.dp),
+            enabled = email.isNotBlank() && password.isNotBlank()
+        ) {
+            Text(text = "Login")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+
+        Spacer(modifier = Modifier.height(32.dp))
         Text(text = "Don't have an account?")
         TextButton(onClick = {
             navController.navigate(Screen.RegisterScreen.route)
@@ -173,13 +190,20 @@ fun LoginScreen(navController: NavController) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.logo),
+            painter = painterResource(id = R.drawable.background),
             contentDescription = "",
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             modifier = Modifier
+                .align(Alignment.TopCenter)
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surface),
+            modifier = Modifier
                 .align(Alignment.TopEnd)
-                .graphicsLayer { alpha = 0.5f }
-                .offset(x = -128.dp, y = -128.dp)
+                .offset(x = -150.dp, y = -150.dp)
         )
         LoginView(navController = navController)
     }
