@@ -1,4 +1,4 @@
-package com.example.shutaffim.Views
+package com.example.shutaffim.Screen
 
 
 import androidx.compose.foundation.ExperimentalFoundationApi
