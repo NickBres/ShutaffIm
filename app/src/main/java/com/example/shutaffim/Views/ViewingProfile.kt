@@ -60,11 +60,7 @@ fun ProfileViewScreenView(navController: NavController) {
     var phone_number by remember {
         mutableStateOf("0123546")
     }
-    val sliderList = remember {
 
-            "https://www.gstatic.com/webp/gallery/1.webp"
-
-    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -106,9 +102,10 @@ fun ProfileViewScreenView(navController: NavController) {
                     ) {
                         Spacer(modifier = Modifier.padding(50.dp))
                         Image(
-                            painter = painterResource
+                            painter =
+                            painterResource
                                 (id = R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash),
-                            contentDescription = "City Image",
+                            contentDescription = "profile Image",
                             modifier = Modifier
                                 .size(150.dp)
                                 .clip(CircleShape)
@@ -119,6 +116,19 @@ fun ProfileViewScreenView(navController: NavController) {
                                     scaleY = 1f
                                 )
                         )
+//                        Image(
+//                            painter = imagePainter,
+//                            contentDescription = "profile Image",
+//                            modifier = Modifier
+//                                .size(150.dp)
+//                                .clip(CircleShape)
+//                                .background(MaterialTheme.colorScheme.background)
+//                                .padding(8.dp)
+//                                .graphicsLayer(
+//                                    scaleX = 1f,
+//                                    scaleY = 1f
+//                                )
+//                        )
                     }//rowScope
 
                     Spacer(modifier = Modifier.height(8.dp))
