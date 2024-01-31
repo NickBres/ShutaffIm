@@ -39,5 +39,9 @@ fun AppNavigator() {
         composable(Screen.InterestedScreen.route) {
             MyInterstedScreenView(navController)
         }
+        composable(Screen.ProfileViewScreen.route) {
+            ProfileViewScreenView(navController)
+        }
+//        PopMessageInterestedView
     }
 }

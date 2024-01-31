@@ -173,7 +173,7 @@ fun EditSecreenView(navController: NavController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Localized description"
@@ -511,7 +511,7 @@ fun EditSecreenView(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
 
 
-                }//ElevatedCard filed
+                }//ElevatedCard
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ElevatedCard {
@@ -562,7 +562,7 @@ fun EditSecreenView(navController: NavController) {
                         .fillMaxWidth()
                         .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
                     enabled = city.isNotBlank() && street.isNotBlank()
-                            && current_partner.isBlank() && max_partner.isNotBlank()
+                            && current_partner.isNotBlank() && max_partner.isNotBlank()
                             && price.isNotBlank() && about_apartment.isNotBlank()
                 ) {
                     Text(text = "Save")

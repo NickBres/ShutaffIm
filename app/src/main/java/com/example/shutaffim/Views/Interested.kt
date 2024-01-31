@@ -72,7 +72,7 @@ fun MyInterstedScreenView(navController: NavController) {
                     .padding(start = 4.dp, end = 4.dp),
             ) {
                 items(dummyListperson) { person ->
-                    InterstedItem(person ,navController ,Screen.EditPostScreen)
+                    InterstedItem(person ,navController ,Screen.TypeScreen)
                 }
             }
 

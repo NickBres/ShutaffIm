@@ -4,14 +4,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +31,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.platform.LocalContext
+import com.google.ai.client.generativeai.type.content
 
 data class Person(
     val images: List<Int>,
@@ -41,6 +53,9 @@ data class Person(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InterstedItem(person: Person, navController: NavController, screen: Screen) {
+    var interestedClick by remember {
+        mutableStateOf(false)
+    }
     val size = 70.dp
 
     ElevatedCard(
@@ -57,10 +72,16 @@ fun InterstedItem(person: Person, navController: NavController, screen: Screen) 
 
         ),
         onClick = { /* TODO Enter to the item screen*/
-            when(screen.route){
-                Screen.PostScreen.route -> navController.navigate(Screen.PostScreen.route)
-                Screen.EditPostScreen.route -> navController.navigate(Screen.EditPostScreen.route)
-            }
+
+            navController.navigate(Screen.ProfileViewScreen.route)
+
+
+//     PopMessageInterestedView
+//             when(screen.route){
+//                Screen.PostScreen.route -> navController.navigate(Screen.PostScreen.route)
+//                Screen.EditPostScreen.route -> navController.navigate(Screen.EditPostScreen.route)
+//            }
+
         }
 
     ) {
@@ -84,6 +105,8 @@ fun InterstedItem(person: Person, navController: NavController, screen: Screen) 
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+
+
                     Text(
                         text = person.name,
                         style = TextStyle(
@@ -114,7 +137,7 @@ fun InterstedItem(person: Person, navController: NavController, screen: Screen) 
                             .padding(start = 8.dp , end =128.dp),
                         style = TextStyle(fontWeight = FontWeight.Bold)
                     )
-                    val checkedState = remember { mutableStateOf(true) }
+                    val checkedState = remember { mutableStateOf(false) }
                     Checkbox(
                         checked = checkedState.value,
                         onCheckedChange = { checkedState.value = it },
