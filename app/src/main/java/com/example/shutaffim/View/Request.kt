@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PopUpView() {
+fun Request() {
 
     var interestedMsg by remember {
         mutableStateOf("")
@@ -93,5 +93,5 @@ fun PopUpView() {
 @Preview(showBackground = true)
 @Composable
 fun PopUpViewPreview() {
-    PopUpView()
+    Request()
 }

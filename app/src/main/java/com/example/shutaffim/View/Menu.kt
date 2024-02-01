@@ -43,7 +43,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TypeScreenView(navController: NavController) {
+fun Menu(navController: NavController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -51,7 +51,7 @@ fun TypeScreenView(navController: NavController) {
                 title = { androidx.compose.material3.Text(text = "Login") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -158,11 +158,11 @@ fun TypeScreenView(navController: NavController) {
 
         Spacer(modifier = Modifier.height(70.dp))
 
-        TextButton(onClick = { /*TODO*/
-            navController.navigate(Screen.EditProfileScreen.route)
+        TextButton(onClick = {
+            navController.navigate(Screen.ProfileScreen.route)
         }) {
             Text(
-                text = "Edit Profile",
+                text = "Profile",
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -174,7 +174,7 @@ fun TypeScreenView(navController: NavController) {
 })}
 
 @Composable
-fun TypeScreen(navController: NavController) {
+fun MenuScreen(navController: NavController) {
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -189,12 +189,12 @@ fun TypeScreen(navController: NavController) {
                 .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -128.dp)
         )
-        TypeScreenView(navController)
+        Menu(navController)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TypeScreenViewPreview() {
-    TypeScreen(navController = NavController(LocalContext.current))
+    MenuScreen(navController = NavController(LocalContext.current))
 }

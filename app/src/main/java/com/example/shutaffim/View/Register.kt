@@ -43,7 +43,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterView(navController: NavController) {
+fun Register(navController: NavController) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -233,7 +233,7 @@ fun RegisterScreen(navController: NavController) {
                 .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -128.dp)
         )
-        RegisterView(navController)
+        Register(navController)
     }
 }
 

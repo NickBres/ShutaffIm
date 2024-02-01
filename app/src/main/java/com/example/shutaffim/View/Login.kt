@@ -48,7 +48,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginView(navController: NavController) {
+fun Login(navController: NavController) {
     var email by remember {
         mutableStateOf("")
     }
@@ -213,7 +213,7 @@ fun LoginScreen(navController: NavController) {
                 .align(Alignment.TopEnd)
                 .offset(x = -150.dp, y = -150.dp)
         )
-        LoginView(navController = navController)
+        Login(navController = navController)
     }
 
 

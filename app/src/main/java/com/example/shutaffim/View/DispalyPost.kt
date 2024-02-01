@@ -1,4 +1,4 @@
-package com.example.shutaffim.Data.Screen
+package com.example.shutaffim.Model.Screen
 
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -63,10 +63,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.example.shutaffim.MyInterstedScreenView
-import com.example.shutaffim.PopUpView
+import com.example.shutaffim.Intersted
 import com.example.shutaffim.R
-import com.example.shutaffim.ui.theme.onPrimary
+import com.example.shutaffim.Request
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -160,7 +159,7 @@ fun CustomSlider(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreen(navController: NavController) {
+fun DisplayPost(navController: NavController) {
     val sliderList = remember {
         mutableListOf(
             "https://www.gstatic.com/webp/gallery/1.webp",
@@ -436,7 +435,7 @@ fun PostScreen(navController: NavController) {
                     if (interestedClick) {
                         ModalBottomSheet(onDismissRequest = { interestedClick = false },
                             content = {
-                                MyInterstedScreenView(navController = navController)
+                                Intersted(navController = navController)
                             }
                         )
                     }
@@ -482,7 +481,7 @@ fun PostScreen(navController: NavController) {
                         if (interestedClick) {
                             ModalBottomSheet(onDismissRequest = { interestedClick = false },
                                 content = {
-                                    PopUpView()
+                                    Request()
                                 }
                             )
                         }
@@ -497,7 +496,7 @@ fun PostScreen(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PostScreenPreview() {
-    PostScreen(navController = NavController(LocalContext.current))
+    DisplayPost(navController = NavController(LocalContext.current))
 
 }
 

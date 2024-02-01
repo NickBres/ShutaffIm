@@ -29,7 +29,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyInterstedScreenView(navController: NavController) {
+fun Intersted(navController: NavController) {
 
     val postImg = listOf(
         R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash,
@@ -38,8 +38,8 @@ fun MyInterstedScreenView(navController: NavController) {
     )
 
     val dummyListperson = listOf(
-        Person(postImg , "alis" , "050" , "18.01.2023"),
-        Person(postImg , "bob" , "051" , "18.02.2023"),
+        Person(postImg, "alis", "050", "18.01.2023"),
+        Person(postImg, "bob", "051", "18.02.2023"),
         Person(postImg , "yair" , "050" ,"18.03.2023")
         )
     var new_post by remember {
@@ -85,5 +85,5 @@ fun MyInterstedScreenView(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun MyInterstedScreenViewPreview() {
-    MyInterstedScreenView(navController = NavController(LocalContext.current))
+    Intersted(navController = NavController(LocalContext.current))
 }

@@ -1,3 +1,5 @@
+@file:JvmName("ProfileKt")
+
 package com.example.shutaffim
 
 import androidx.compose.foundation.Image
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -37,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,11 +45,9 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreenView(navController: NavController) {
+fun EditProfile(navController: NavController) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
 
 
@@ -122,45 +120,8 @@ fun ProfileScreenView(navController: NavController) {
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(2.dp))
 
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text(text = "Email : ") },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.primary
-                        ),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Email,
-                        )
-                    )
 
-                    Spacer(modifier = Modifier.height(2.dp))
-
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
-                        label = { Text(text = "Phone Number : ") },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.primary
-                        ),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Phone,
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(2.dp))
 
                     OutlinedTextField(
                         modifier = Modifier
@@ -218,7 +179,7 @@ fun ProfileScreenView(navController: NavController) {
     )}
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun EditProfileScreen(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -232,12 +193,12 @@ fun ProfileScreen(navController: NavController) {
                 .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -128.dp)
         )
-        ProfileScreenView(navController)
+        EditProfile(navController)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenViewPreview() {
-    ProfileScreen(navController = NavController(LocalContext.current))
+    EditProfileScreen(navController = NavController(LocalContext.current))
 }

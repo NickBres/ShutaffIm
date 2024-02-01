@@ -1,6 +1,5 @@
-package com.example.shutaffim.Screens
+package com.example.shutaffim.View
 
-import android.provider.ContactsContract.CommonDataKinds.Email
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,10 +45,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.R
+import com.example.shutaffim.Screen
 import com.example.shutaffim.ui.theme.surface
 
 
@@ -92,7 +93,7 @@ fun showPic(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun Profile(navController: NavController) {
     val pic = remember {
 
         "https://www.gstatic.com/webp/gallery/5.webp"
@@ -134,12 +135,12 @@ fun ProfileScreen() {
             TopAppBar(
                 title = { Text("My Profile") },
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = {EditClick = !EditClick}) {
+                    IconButton(onClick = { navController.navigate(Screen.EditProfileScreen.route) }) {
                         Icon(Icons.Filled.Edit, contentDescription = "Edit")
                         if (EditClick) {
                             ModalBottomSheet(onDismissRequest = { EditClick = false },
@@ -325,7 +326,7 @@ fun ProfileScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PostScreenPreview() {
-   ProfileScreen()
+    Profile(navController = NavController(LocalContext.current))
 
 }
 

@@ -1,12 +1,14 @@
 package com.example.shutaffim
 
-import EditSecreenView
-import PostsSearchView
+
+import EditPost
+import PostsSearch
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.shutaffim.Data.Screen.PostScreen
+import com.example.shutaffim.Model.Screen.DisplayPost
+import com.example.shutaffim.View.Profile
 
 @Composable
 fun AppNavigator() {
@@ -19,25 +21,28 @@ fun AppNavigator() {
             RegisterScreen(navController)
         }
         composable(Screen.TypeScreen.route) {
-            TypeScreen(navController)
+            MenuScreen(navController)
         }
         composable(Screen.EditProfileScreen.route) {
-            ProfileScreen(navController)
+            EditProfileScreen(navController)
         }
         composable(Screen.PostsSearchScreen.route) {
-            PostsSearchView(navController)
+            PostsSearch(navController)
         }
         composable(Screen.PostScreen.route) {
-            PostScreen(navController)
+            DisplayPost(navController)
         }
         composable(Screen.MyPostsScreen.route) {
-            MyPostsScreenView(navController)
+            MyPosts(navController)
         }
         composable(Screen.EditPostScreen.route) {
-            EditSecreenView(navController)
+            EditPost(navController)
         }
         composable(Screen.InterestedScreen.route) {
-            MyInterstedScreenView(navController)
+            Intersted(navController)
+        }
+        composable(Screen.ProfileScreen.route) {
+            Profile(navController)
         }
     }
 }

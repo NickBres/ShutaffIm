@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FilterAndSearchView() {
+fun FilterAndSearch() {
     var city by remember {
         mutableStateOf("")
     }
@@ -140,6 +140,6 @@ fun FilterAndSearchView() {
 
 @Preview(showBackground = true)
 @Composable
-fun fasPreview() {
-    FilterAndSearchView()
+fun fastPreview() {
+    FilterAndSearch()
 }

@@ -27,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.shutaffim.FilterAndSearchView
+import com.example.shutaffim.FilterAndSearch
 import com.example.shutaffim.Post
 import com.example.shutaffim.PostItem
 import com.example.shutaffim.R
@@ -35,7 +35,7 @@ import com.example.shutaffim.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostsSearchView(navController: NavController) {
+fun PostsSearch(navController: NavController) {
 
     val stam = 9000
     val pic = listOf(R.drawable.test_image)
@@ -125,7 +125,7 @@ fun PostsSearchView(navController: NavController) {
                 ModalBottomSheet(
                     onDismissRequest = { showSearch = false },
                     content = {
-                        FilterAndSearchView()
+                        FilterAndSearch()
                     }
                 )
             }
@@ -137,6 +137,6 @@ fun PostsSearchView(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PostsSearchViewPreview() {
-    PostsSearchView(navController = NavController(LocalContext.current))
+    PostsSearch(navController = NavController(LocalContext.current))
 }
 

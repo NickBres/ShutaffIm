@@ -7,22 +7,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +25,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPostsScreenView(navController: NavController) {
+fun MyPosts(navController: NavController) {
 
     val postImg = listOf(
         R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash,
@@ -45,9 +39,6 @@ fun MyPostsScreenView(navController: NavController) {
         Post(postImg, 6200, "Haifa, Herzl, 15", "05.03.2023", "moooooooomooooooom"),
 
         )
-    var new_post by remember {
-        mutableStateOf(false)
-    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -64,7 +55,7 @@ fun MyPostsScreenView(navController: NavController) {
             )
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = { new_post = !new_post },
+                onClick = { navController.navigate(Screen.EditPostScreen.route) },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -82,11 +73,6 @@ fun MyPostsScreenView(navController: NavController) {
                 }
             }
 
-            if (new_post) {
-                ModalBottomSheet(onDismissRequest = { new_post = false }, content = {
-
-                })
-            }
         })
 }
 
@@ -94,5 +80,5 @@ fun MyPostsScreenView(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PostsSearchViewPreview() {
-    MyPostsScreenView(navController = NavController(LocalContext.current))
+    MyPosts(navController = NavController(LocalContext.current))
 }

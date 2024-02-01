@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
@@ -47,7 +47,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -64,7 +63,7 @@ import com.example.shutaffim.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditSecreenView(navController: NavController) {
+fun EditPost(navController: NavController) {
 
     var city by remember {
         mutableStateOf("")
@@ -110,6 +109,7 @@ fun EditSecreenView(navController: NavController) {
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary
                 ),
                 title = {
                     Text(
@@ -119,10 +119,10 @@ fun EditSecreenView(navController: NavController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "back"
                         )
                     }
                 },
@@ -139,26 +139,18 @@ fun EditSecreenView(navController: NavController) {
 //
 //                }
                 actions = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp) // Adjust spacing as needed
-                    ) {
-                        Text(
-                            text = "Interested",
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        IconButton(onClick = {
-                            navController.navigate(Screen.InterestedScreen.route)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.AccountBox,
-                                contentDescription = "Localized description"
-                            )
-                        }
 
+                    IconButton(onClick = {
+                        navController.navigate(Screen.InterestedScreen.route)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "delete post"
+                        )
                     }
-                }
-                ,
+
+
+                },
             )
         },
         floatingActionButton = {
@@ -169,9 +161,8 @@ fun EditSecreenView(navController: NavController) {
             ) {
 //                Icon(Icons.Default.Add, contentDescription = "Add")
                 Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Localized description",
-                    tint = Color.Red
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = "Localized description"
                 )
             }
 
@@ -534,5 +525,5 @@ fun EditSecreenView(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun EditSecreenViewPreview() {
-    EditSecreenView(navController = NavController(LocalContext.current))
+    EditPost(navController = NavController(LocalContext.current))
 }
