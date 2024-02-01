@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "290258357707",
-    "project_id": "shutaffim-f94b6",
-    "storage_bucket": "shutaffim-f94b6.appspot.com"
+    "project_number": "389938759639",
+    "project_id": "shutaffim-a7699",
+    "storage_bucket": "shutaffim-a7699.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:290258357707:android:0c1201ee48da64563d3a4e",
+        "mobilesdk_app_id": "1:389938759639:android:0433cdf5f05c788e1f2d92",
         "android_client_info": {
           "package_name": "com.example.shutaffim"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD3FA3BUJ-2sjOD7VqPFjyzjQybga1pMiY"
+          "current_key": "AIzaSyALlfmdiBDMXFxCdWtrF88Mv-uZXVzp150"
         }
       ],
       "services": {
