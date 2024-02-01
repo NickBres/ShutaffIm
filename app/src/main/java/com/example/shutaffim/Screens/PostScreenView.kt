@@ -23,8 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,8 +63,10 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
+import com.example.shutaffim.MyInterstedScreenView
 import com.example.shutaffim.PopUpView
 import com.example.shutaffim.R
+import com.example.shutaffim.ui.theme.onPrimary
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -192,6 +196,8 @@ fun PostScreen(navController: NavController) {
     var interestedClick by remember {
         mutableStateOf(false)
     }
+    val publisher = true
+    val alreadyInterested = false
 
     Scaffold(
         modifier = Modifier
@@ -199,12 +205,21 @@ fun PostScreen(navController: NavController) {
 
         topBar = {
             TopAppBar(
-                title = { Text("Top app bar") },
+                title = { Text("Post") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+
+                actions = {
+                    if (publisher) {
+                        IconButton(onClick = { /* doSomething() */ }) {
+                            Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                        }
+                    }
+                },
+
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.primary,
@@ -402,27 +417,76 @@ fun PostScreen(navController: NavController) {
                 )
             }
             Spacer(modifier = Modifier.height(54.dp))
-            Button(
-                onClick = { interestedClick = !interestedClick },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-            ) {
-                Text(
-                    text = "i'm interested",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
+            if(publisher) {
+                Button(
+                    onClick = { interestedClick = !interestedClick },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                ) {
+                    Text(
+                        text = "List of interested",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold,
+                        )
                     )
-                )
 
-                if (interestedClick) {
-                    ModalBottomSheet(onDismissRequest = { interestedClick = false },
-                        content = {
-                            PopUpView()
+                    if (interestedClick) {
+                        ModalBottomSheet(onDismissRequest = { interestedClick = false },
+                            content = {
+                                MyInterstedScreenView(navController = navController)
+                            }
+                        )
+                    }
+                }
+            }
+            else {
+                if (alreadyInterested) {
+                    Button(
+                        onClick = { interestedClick = !interestedClick },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text(
+                            text = "Already interested",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        )
+                    }
+                } else {
+                    Button(
+                        onClick = { interestedClick = !interestedClick },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    ) {
+                        Text(
+                            text = "i'm interested",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        )
+
+                        if (interestedClick) {
+                            ModalBottomSheet(onDismissRequest = { interestedClick = false },
+                                content = {
+                                    PopUpView()
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
