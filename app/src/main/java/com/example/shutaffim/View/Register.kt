@@ -2,6 +2,7 @@ package com.example.shutaffim
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -42,13 +46,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.Model.Result
+import com.example.shutaffim.Model.UserType
+import com.example.shutaffim.ViewModel.AuthViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Register(navController: NavController,
-             authViewModel: AuthViewModel ,
-            ) {
+fun Register(
+    navController: NavController,
+    authViewModel: AuthViewModel,
+) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -197,19 +204,46 @@ fun Register(navController: NavController,
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            var expanded by remember { mutableStateOf(false) }
+            var selectedOption by remember { mutableStateOf(UserType.Consumer.type) }
+
+            val options = listOf(UserType.Consumer.type, UserType.Publisher.type)
+
+            Box(modifier = Modifier.wrapContentSize()) {
+                Text(selectedOption, modifier = Modifier.clickable { expanded = true })
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    options.forEach { label ->
+                        DropdownMenuItem(
+                            text = { Text(label) },
+                            onClick = {
+                                selectedOption = label
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
             Button(
                 onClick = { /* TODO: Handle registration logic */
-                    authViewModel.signUp(email, password, fName, lName, about)
+                    authViewModel.signUp(
+                        email = email,
+                        password = password,
+                        firstName = fName,
+                        lastName = lName,
+                        about = about,
+                        type = selectedOption
+                    )
 
-                        /* TODO: fix the issue */
-                        when(uresult){
-                            is Result.Success -> {
-                                navController.navigateUp()
-                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-                            }
+                    /* TODO: fix the issue */
+                    when (uresult) {
+                        is Result.Success -> {
+                            navController.navigateUp()
+                            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                        }
 
-                            is Result.Error -> {
-                                // Handle error
+                        is Result.Error -> {
+                            // Handle error
                                 Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
                             }
                             else -> {

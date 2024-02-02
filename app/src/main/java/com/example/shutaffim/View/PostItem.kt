@@ -27,11 +27,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.Post
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostItem(post: Post, navController: NavController, screen: Screen) {
     val size = 100.dp
+
+    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val date = Date(post.date.toLong())
+    val dateString = sdf.format(date)
 
     ElevatedCard(
         modifier = Modifier
@@ -82,7 +89,7 @@ fun PostItem(post: Post, navController: NavController, screen: Screen) {
                         )
                     )
                     Text(
-                        text = post.date
+                        text = sdf.format(Date(post.date.toLong()))
                     )
 
 

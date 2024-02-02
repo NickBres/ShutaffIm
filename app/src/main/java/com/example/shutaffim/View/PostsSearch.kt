@@ -49,6 +49,7 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
     }
 
     val posts by postsVM.posts.observeAsState(emptyList())
+    postsVM.loadPosts()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

@@ -26,7 +26,34 @@ class PostsRepository(
 
     suspend fun getPosts(): Result<List<Post>> = try {
         val querySnapshot = firestore.collection("posts").get().await()
-        val posts = querySnapshot.documents.mapNotNull { it.toObject(Post::class.java) }
+        // Print out the documents before converting them to Post objects
+        val posts = querySnapshot.documents.mapNotNull { document ->
+            try {
+                println("Document data: ${document.data}")
+                // Manually create a Post object from the document
+                Post(
+                    id = document.id, // Assuming 'id' is always present and is the document ID
+                    date = document.getString("date") ?: "",
+                    city = document.getString("city") ?: "",
+                    street = document.getString("street") ?: "",
+                    house_num = document.getLong("house_num")?.toInt() ?: 0,
+                    curr_roommates = document.getLong("curr_roommates")?.toInt() ?: 0,
+                    max_roommates = document.getLong("max_roommates")?.toInt() ?: 0,
+                    price = document.getLong("price")?.toInt() ?: 0,
+                    tags = document.get("tags") as List<String>? ?: listOf(),
+                    about = document.getString("about") ?: "",
+                    pic1 = document.getString("pic1") ?: "",
+                    pic2 = document.getString("pic2") ?: "",
+                    pic3 = document.getString("pic3") ?: "",
+                    pic4 = document.getString("pic4") ?: ""
+                ).also { post ->
+                    println("Mapped to Post: $post")
+                }
+            } catch (e: Exception) {
+                println("Exception while manually mapping document to Post: $e")
+                null
+            }
+        }
         Result.Success(posts)
     } catch (e: Exception) {
         Result.Error(e)

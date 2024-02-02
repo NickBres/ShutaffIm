@@ -27,11 +27,13 @@ class PostsVM : ViewModel() {
         }
 
 
-    private val postsRepo: PostsRepository = PostsRepository(Injection.instance())
+    private val postsRepo: PostsRepository
 
 
     init {
-        loadPosts()
+        postsRepo = PostsRepository(
+            firestore = Injection.instance()
+        )
     }
 
     fun loadPosts() {
@@ -43,6 +45,7 @@ class PostsVM : ViewModel() {
                 }
             }
         }
+        println("Posts: ${_posts.value}")
     }
 
     fun loadPost(postId: String) {

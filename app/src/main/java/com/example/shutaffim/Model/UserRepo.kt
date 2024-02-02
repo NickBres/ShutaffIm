@@ -1,7 +1,6 @@
 package com.example.shutaffim.Model
 
 import android.util.Log
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -91,9 +90,16 @@ class UserRepo(private val auth: FirebaseAuth,
         val uid = auth.currentUser?.email
         if (uid != null) {
             val userDocument = firestore.collection("users").document(uid).get().await()
-            val user = userDocument.toObject(User::class.java)
-            if (user != null) {
-                Log.d("user2","$uid")
+            if (userDocument.exists()) {
+                val user = User(
+                    email = userDocument.getString("email") ?: "",
+                    fName = userDocument.getString("firstName") ?: "",
+                    lName = userDocument.getString("lastName") ?: "",
+                    about = userDocument.getString("about") ?: "",
+                    picture = userDocument.getString("picture") ?: "",
+                    type = userDocument.getString("type") ?: ""
+                )
+                Log.d("user2", "$uid")
                 Result.Success(user)
             } else {
                 Result.Error(Exception("User data not found"))
@@ -104,4 +110,5 @@ class UserRepo(private val auth: FirebaseAuth,
     } catch (e: Exception) {
         Result.Error(e)
     }
+
 }
