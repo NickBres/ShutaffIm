@@ -24,9 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.shutaffim.Model.Filter
+import com.example.shutaffim.ViewModel.PostsVM
 
 @Composable
-fun FilterAndSearch() {
+fun FilterAndSearch(
+    postsVM: PostsVM = viewModel()
+) {
     var city by remember {
         mutableStateOf("")
     }
@@ -39,6 +44,7 @@ fun FilterAndSearch() {
     var priceEnd by remember {
         mutableStateOf(10000f)
     }
+
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,7 +54,16 @@ fun FilterAndSearch() {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = city,
-            onValueChange = { city = it },
+            onValueChange = {
+                city = it
+                val newFilter = Filter(
+                    city = city,
+                    street = street,
+                    minPrice = priceStart.toInt(),
+                    maxPrice = priceEnd.toInt()
+                )
+                postsVM.filter.value = newFilter
+            },
             label = { Text(text = "City") },
             leadingIcon = {
                 Icon(imageVector = Icons.Default.LocationOn, contentDescription = "City")
@@ -58,7 +73,16 @@ fun FilterAndSearch() {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = street,
-                onValueChange = { street = it },
+                onValueChange = {
+                    street = it
+                    val newFilter = Filter(
+                        city = city,
+                        street = street,
+                        minPrice = priceStart.toInt(),
+                        maxPrice = priceEnd.toInt()
+                    )
+                    postsVM.filter.value = newFilter
+                },
                 label = { Text(text = "Street") },
                 leadingIcon = {
                     Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Address")
@@ -71,6 +95,13 @@ fun FilterAndSearch() {
             onValueChange = { range ->
                 priceStart = range.start
                 priceEnd = range.endInclusive
+                val newFilter = Filter(
+                    city = city,
+                    street = street,
+                    minPrice = priceStart.toInt(),
+                    maxPrice = priceEnd.toInt()
+                )
+                postsVM.filter.value = newFilter
             },
             valueRange = 0f..10000f,
             steps = 10000,
@@ -100,6 +131,13 @@ fun FilterAndSearch() {
                         } else if (it.isEmpty()) {
                             priceStart = 0f
                         }
+                        val newFilter = Filter(
+                            city = city,
+                            street = street,
+                            minPrice = priceStart.toInt(),
+                            maxPrice = priceEnd.toInt()
+                        )
+                        postsVM.filter.value = newFilter
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
@@ -123,6 +161,13 @@ fun FilterAndSearch() {
                         } else if (it.isEmpty()) {
                             priceEnd = 0f
                         }
+                        val newFilter = Filter(
+                            city = city,
+                            street = street,
+                            minPrice = priceStart.toInt(),
+                            maxPrice = priceEnd.toInt()
+                        )
+                        postsVM.filter.value = newFilter
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )

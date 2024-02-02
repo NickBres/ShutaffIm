@@ -9,9 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shutaffim.Model.Screen.DisplayPost
 import com.example.shutaffim.View.Profile
+import com.example.shutaffim.ViewModel.PostsVM
 
 @Composable
-fun AppNavigator() {
+fun AppNavigator(postsVM: PostsVM) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.LoginScreen.route) {
         composable(Screen.LoginScreen.route) {
@@ -27,13 +28,13 @@ fun AppNavigator() {
             EditProfileScreen(navController)
         }
         composable(Screen.PostsSearchScreen.route) {
-            PostsSearch(navController)
+            PostsSearch(navController, postsVM)
         }
         composable(Screen.PostScreen.route) {
             DisplayPost(navController)
         }
         composable(Screen.MyPostsScreen.route) {
-            MyPosts(navController)
+            MyPosts(navController, postsVM)
         }
         composable(Screen.EditPostScreen.route) {
             EditPost(navController)

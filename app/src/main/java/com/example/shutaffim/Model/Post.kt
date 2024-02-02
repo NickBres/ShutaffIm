@@ -2,8 +2,9 @@ package com.example.shutaffim.Model
 
 data class Post(
     val id: String = "",
+    var date: String = "",
     val city: String,
-    val address: String,
+    val street: String,
     val house_num: Int,
     val curr_roommates: Int,
     val max_roommates: Int,

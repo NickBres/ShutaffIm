@@ -26,19 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
-// for test only
-data class Post(
-    val images: List<Int>,
-    val price: Int,
-    val location: String,
-    val date: String,
-    val about: String = ""
-)
+import com.example.shutaffim.Model.Post
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostItem(post: Post,navController: NavController,screen: Screen) {
+fun PostItem(post: Post, navController: NavController, screen: Screen) {
     val size = 100.dp
 
     ElevatedCard(
@@ -68,7 +60,7 @@ fun PostItem(post: Post,navController: NavController,screen: Screen) {
                 .height(size)
         ) {
             Image(
-                painter = painterResource(id = post.images[0]),
+                painter = painterResource(id = R.drawable.test_image), // TODO: change to post.image
                 contentDescription = "",
                 modifier = Modifier
                     .height(size)
@@ -107,7 +99,7 @@ fun PostItem(post: Post,navController: NavController,screen: Screen) {
                     )
 
                     Text(
-                        text = post.location,
+                        text = "${post.city}, ${post.street}, ${post.house_num}",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),

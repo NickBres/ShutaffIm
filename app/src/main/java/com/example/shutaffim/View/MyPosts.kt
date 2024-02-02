@@ -17,28 +17,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.shutaffim.ViewModel.PostsVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPosts(navController: NavController) {
+fun MyPosts(navController: NavController, postsVM: PostsVM) {
 
-    val postImg = listOf(
-        R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash,
-        R.drawable._reka_us_24,
-        R.drawable.joao_marcelo_martins_hfoprrwjvgg_unsplash,
-    )
-
-    val dummyList = listOf(
-        Post(postImg, 5000, "Tel-Aviv, Dizengoff, 42", "18.01.2023", "moooooooomooooooom"),
-        Post(postImg, 7500, "Jerusalem, Yafo, 30", "20.02.2023", "moooooooomooooooom"),
-        Post(postImg, 6200, "Haifa, Herzl, 15", "05.03.2023", "moooooooomooooooom"),
-
-        )
+    val posts by postsVM.posts.observeAsState(emptyList())
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -68,8 +60,8 @@ fun MyPosts(navController: NavController) {
                     .padding(it)
                     .padding(start = 4.dp, end = 4.dp),
             ) {
-                items(dummyList) { post ->
-                    PostItem(post,navController,Screen.EditPostScreen)
+                items(posts) { post ->
+                    PostItem(post, navController, Screen.EditPostScreen)
                 }
             }
 
@@ -80,5 +72,5 @@ fun MyPosts(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PostsSearchViewPreview() {
-    MyPosts(navController = NavController(LocalContext.current))
+    MyPosts(navController = NavController(LocalContext.current), postsVM = PostsVM())
 }

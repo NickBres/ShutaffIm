@@ -16,22 +16,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.sharp.Face
 import androidx.compose.material.icons.sharp.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,14 +52,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Screen
+import com.example.shutaffim.ViewModel.PostsVM
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditPost(navController: NavController) {
+fun EditPost(
+    navController: NavController,
+    postsVM: PostsVM = viewModel()
+) {
 
     var city by remember {
         mutableStateOf("")
@@ -71,7 +73,7 @@ fun EditPost(navController: NavController) {
     var street by remember {
         mutableStateOf("")
     }
-    var nuber_house by remember {
+    var house_num by remember {
         mutableStateOf("")
     }
     var current_partner by remember {
@@ -80,7 +82,7 @@ fun EditPost(navController: NavController) {
     var max_partner by remember {
         mutableStateOf("")
     }
-    var hashtag by remember {
+    var tags by remember {
         mutableStateOf("")
     }
     var price by remember {
@@ -126,18 +128,6 @@ fun EditPost(navController: NavController) {
                         )
                     }
                 },
-//                actions = {
-//                    IconButton(onClick = {
-//                        navController.navigate(Screen.InterestedScreen.route)
-//                    }) {
-//
-//                        Icon(
-//                            imageVector = Icons.Filled.AccountBox,
-//                            contentDescription = "Localized description"
-//                        )
-//                    }
-//
-//                }
                 actions = {
 
                     IconButton(onClick = {
@@ -153,24 +143,7 @@ fun EditPost(navController: NavController) {
                 },
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { /* do something */ },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-//                Icon(Icons.Default.Add, contentDescription = "Add")
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = "Localized description"
-                )
-            }
-
-        }, content = {
-
-
-
-
+        content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -183,7 +156,6 @@ fun EditPost(navController: NavController) {
 
 
                 ElevatedCard {
-
 
                     //city
                     OutlinedTextField(
@@ -226,9 +198,8 @@ fun EditPost(navController: NavController) {
                                 value = street,
                                 onValueChange = { street = it },
                                 label = {
-//                                    Text(text = "Address")
                                     Text(
-                                        text = "Address ",
+                                        text = "street",
                                         style = TextStyle(fontSize = 15.sp) // Set the desired font size
                                     )
                                         },
@@ -239,7 +210,7 @@ fun EditPost(navController: NavController) {
                                 ),
                                 leadingIcon = {
                                     Image(
-                                        imageVector = Icons.Default.Home,
+                                        imageVector = Icons.Default.LocationOn,
                                         contentDescription = "",
                                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                                     )
@@ -254,15 +225,14 @@ fun EditPost(navController: NavController) {
                         ){
                             /* nuber_house*/
                             OutlinedTextField(
-                                value = nuber_house,
-                                onValueChange = { nuber_house = it.filter { it.isDigit() } },
+                                value = house_num,
+                                onValueChange = { house_num = it.filter { it.isDigit() } },
                                 label = {
                                     Text(
-                                        text = "nuber ",
+                                        text = "house number",
                                         style = TextStyle(fontSize = 15.sp) // Set the desired font size
                                     )
-//                                    Text(text = "nuber's house")
-                                        },
+                                },
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                                     unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
@@ -270,7 +240,7 @@ fun EditPost(navController: NavController) {
                                 ),
                                 leadingIcon = {
                                     Image(
-                                        imageVector = Icons.Filled.Info,
+                                        imageVector = Icons.Filled.LocationOn,
                                         contentDescription = "",
                                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                                     )
@@ -300,9 +270,8 @@ fun EditPost(navController: NavController) {
                                 value = current_partner,
                                 onValueChange = { current_partner = it.filter { it.isDigit() } },
                                 label = {
-//                                    Text(text = "partner")
                                     Text(
-                                        text = "current partner",
+                                        text = "current roomates",
                                         style = TextStyle(fontSize = 14.sp) // Set the desired font size
                                     )
                                         },
@@ -333,9 +302,8 @@ fun EditPost(navController: NavController) {
                                 value = max_partner,
                                 onValueChange = { max_partner = it.filter { it.isDigit() } },
                                 label = {
-//                                    Text(text = "partner")
                                     Text(
-                                        text = "max partner",
+                                        text = "max roommates",
                                         style = TextStyle(fontSize = 14.sp) // Set the desired font size
                                     )
                                 },
@@ -377,7 +345,7 @@ fun EditPost(navController: NavController) {
                         ),
                         leadingIcon = {
                             Image(
-                                imageVector  = Icons.Default.Add,
+                                imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = "",
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                             )
@@ -395,9 +363,9 @@ fun EditPost(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-                        value = hashtag,
-                        onValueChange = { hashtag = it },
-                        label = { Text(text = "hashtag... Example: #boys") },
+                        value = tags,
+                        onValueChange = { tags = it },
+                        label = { Text(text = "tag1,tag2...") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
@@ -411,7 +379,7 @@ fun EditPost(navController: NavController) {
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                             )
                         },
-                        singleLine = true
+                        singleLine = false
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -419,10 +387,11 @@ fun EditPost(navController: NavController) {
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp),
-                        value =  about_apartment,
+                            .padding(start = 16.dp, end = 16.dp)
+                            .height(128.dp),
+                        value = about_apartment,
                         onValueChange = { about_apartment = it },
-                        label = { Text(text = "Information about the apartment") },
+                        label = { Text(text = "about") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
@@ -493,13 +462,24 @@ fun EditPost(navController: NavController) {
                 Spacer(modifier = Modifier.height(64.dp))
                 Button(
                     onClick = {
+                        val newPost = Post(
+                            city = city,
+                            street = street,
+                            house_num = house_num.toInt(),
+                            curr_roommates = current_partner.toInt(),
+                            max_roommates = max_partner.toInt(),
+                            price = price.toInt(),
+                            tags = postsVM.tagsToList(tags),
+                            about = about_apartment
+                        )
+                        postsVM.createNewPost(newPost)
                         navController.navigate(Screen.TypeScreen.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
                     enabled = city.isNotBlank() && street.isNotBlank()
-                            && current_partner.isBlank() && max_partner.isNotBlank()
+                            && current_partner.isNotBlank() && max_partner.isNotBlank()
                             && price.isNotBlank() && about_apartment.isNotBlank()
                 ) {
                     Text(text = "Save")
