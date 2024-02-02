@@ -1,5 +1,6 @@
 package com.example.shutaffim
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,10 +42,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
+import com.example.shutaffim.ViewModel.AuthViewModel
+import com.example.shutaffim.Model.Result
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Register(navController: NavController) {
+fun Register(navController: NavController,
+             authViewModel: AuthViewModel ,
+            ) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -51,6 +56,10 @@ fun Register(navController: NavController) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     var phoneNumber by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    val uresult by authViewModel.authResult.observeAsState()
 
     Column(
         modifier = Modifier
@@ -164,7 +173,7 @@ fun Register(navController: NavController) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(8.dp),
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(text = "Password") },
@@ -190,12 +199,32 @@ fun Register(navController: NavController) {
 
             Button(
                 onClick = { /* TODO: Handle registration logic */
-                          navController.navigate(Screen.LoginScreen.route)
+                    authViewModel.signUp(email, password, fName, lName, about)
+
+                        /* TODO: fix the issue */
+                        when(uresult){
+                            is Result.Success -> {
+                                navController.navigateUp()
+                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                            }
+
+                            is Result.Error -> {
+                                // Handle error
+                                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+                            }
+                            else -> {
+                                // Handle loading
+                                navController.navigateUp()
+                            }
+
+                        }
+
+
                           },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                enabled = fName.isNotBlank() &&lName.isNotBlank() && email.isNotBlank() && password.isNotBlank()&& phoneNumber.isNotBlank() && about.isNotBlank()
+                enabled = fName.isNotBlank() &&lName.isNotBlank() && email.isNotBlank() && password.isNotBlank()
             ) {
                 Text(text = "Register")
             }
@@ -219,7 +248,7 @@ fun Register(navController: NavController) {
 }
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -233,12 +262,13 @@ fun RegisterScreen(navController: NavController) {
                 .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -128.dp)
         )
-        Register(navController)
+        Register(navController, authViewModel = authViewModel)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun RegisterViewPreview() {
-    RegisterScreen(navController = NavController(LocalContext.current))
+    RegisterScreen(navController = NavController(LocalContext.current),
+        authViewModel = AuthViewModel())
 }

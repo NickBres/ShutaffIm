@@ -45,10 +45,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.shutaffim.ViewModel.AuthViewModel
+import androidx.compose.runtime.livedata.observeAsState
+import com.example.shutaffim.Model.Result
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Login(navController: NavController) {
+fun Login(navController: NavController,
+          authViewModel : AuthViewModel,
+          ) {
+
+
     var email by remember {
         mutableStateOf("")
     }
@@ -57,7 +65,7 @@ fun Login(navController: NavController) {
     }
     var rememberMe by remember { mutableStateOf(true) }
 
-
+    val result by authViewModel.authResult.observeAsState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -134,9 +142,6 @@ fun Login(navController: NavController) {
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-
-
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -160,7 +165,18 @@ fun Login(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                navController.navigate(Screen.TypeScreen.route)
+                authViewModel.login(email, password)
+                when(result) {
+                    is Result.Success-> {
+
+                        navController.navigate(Screen.TypeScreen.route)
+                    }
+                    is Result.Error -> {
+                    }
+
+                    else -> {}
+                }
+
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,7 +208,7 @@ fun Login(navController: NavController) {
 }
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController,authViewModel: AuthViewModel) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -213,7 +229,7 @@ fun LoginScreen(navController: NavController) {
                 .align(Alignment.TopEnd)
                 .offset(x = -150.dp, y = -150.dp)
         )
-        Login(navController = navController)
+        Login(navController = navController , authViewModel = authViewModel)
     }
 
 
@@ -223,5 +239,6 @@ fun LoginScreen(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun LoginViewPreview() {
-    LoginScreen(navController = NavController(LocalContext.current))
+    LoginScreen(navController = NavController(LocalContext.current),
+        authViewModel = AuthViewModel())
 }
