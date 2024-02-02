@@ -7,6 +7,6 @@ data class User(
     val fName : String,
     val lName : String,
     val about : String = "",
-    val picture : URL? = null,
+    val picture : String = "",
     val type : String ,
 )
