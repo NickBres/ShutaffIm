@@ -1,15 +1,18 @@
 package com.example.shutaffim.Model
 
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 
-class UserRepo(private val auth: FirebaseAuth, private val firestore: FirebaseFirestore)
+class UserRepo(private val auth: FirebaseAuth,
+               private val firestore: FirebaseFirestore)
 {
-    suspend fun signUp(user: User, password: String):Result<Boolean> {
-        return try {
+    suspend fun signUp(user: User, password: String)
+        :Result<Boolean> =
+        try {
             auth.createUserWithEmailAndPassword(user.email, password).await()
             //save user to firestore
             firestore.collection("users").document(user.email).set(user).await()
@@ -17,40 +20,40 @@ class UserRepo(private val auth: FirebaseAuth, private val firestore: FirebaseFi
         } catch (e: Exception) {
             Result.Error(e)
         }
-    }
 
-    suspend fun login(email: String, password: String): Result<Boolean> {
-        return try {
+    suspend fun login(email: String, password: String): Result<Boolean> =
+         try {
             auth.signInWithEmailAndPassword(email, password).await()
             Result.Success(true)
         } catch (e: Exception) {
             Result.Error(e)
         }
-    }
-    suspend fun update(user: User): Result<Boolean> {
-        return try {
+
+    suspend fun update(user: User): Result<Boolean> =
+         try {
             firestore.collection("users").document(user.email).set(user).await()
             Result.Success(true)
         } catch (e: Exception) {
             Result.Error(e)
         }
-    }
-    suspend fun delete(user: User): Result<Boolean> {
-        return try {
+
+    suspend fun delete(user: User): Result<Boolean> =
+         try {
             firestore.collection("users").document(user.email).delete().await()
             Result.Success(true)
         } catch (e: Exception) {
+
             Result.Error(e)
         }
-    }
-    suspend fun logout(): Result<Boolean> {
-        return try {
+
+    suspend fun logout(): Result<Boolean> =
+        try {
             auth.signOut()
             Result.Success(true)
         } catch (e: Exception) {
             Result.Error(e)
         }
-    }
+
 
     suspend fun getUser(email: String): Result<User> = try {
         val userDocument = firestore.collection("users").document(email).get().await()
