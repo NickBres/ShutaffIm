@@ -39,7 +39,6 @@ import com.example.shutaffim.ViewModel.PostsVM
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
-    val pic = listOf(R.drawable.test_image)
 
     var showSearch by remember {
         mutableStateOf(false)
@@ -49,7 +48,6 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
     }
 
     val posts by postsVM.posts.observeAsState(emptyList())
-    postsVM.loadPosts()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

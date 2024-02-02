@@ -9,6 +9,7 @@ import com.example.shutaffim.Model.InterestedInPost
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
 import com.example.shutaffim.Model.Result
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PostsVM : ViewModel() {
@@ -34,6 +35,7 @@ class PostsVM : ViewModel() {
         postsRepo = PostsRepository(
             firestore = Injection.instance()
         )
+        loadPosts()
     }
 
     fun loadPosts() {
@@ -69,25 +71,43 @@ class PostsVM : ViewModel() {
     }
 
     fun applyFilter() {
-        loadPosts()
-        filterPosts(_filter.value!!)
+        viewModelScope.launch {
+            loadPosts()
+            delay(500)
+            if (_filter.value == null) _filter.value = Filter()
+            filterPosts(_filter.value!!)
+            _filter.value = Filter()
+        }
+
     }
 
-    fun filterPosts(
-        filter: Filter
-    ) {
-        val listTags = tagsToList(filter.tags)
+    fun filterPosts(filter: Filter) {
+        // Convert filter tags string to list and trim each tag
+        val listTags =
+            tagsToList(filter.tags).filter { it.isNotEmpty() } // Ensure empty strings are not considered as valid tags
+
         viewModelScope.launch {
-            val updatedPosts = _posts.value?.filter {
-                it.id.contains(filter.id, ignoreCase = true) &&
-                        it.city.contains(filter.city, ignoreCase = true) &&
-                        it.street.contains(filter.street, ignoreCase = true) &&
-                        it.price in filter.minPrice..filter.maxPrice &&
-                        (listTags.isEmpty() || it.tags.any { tag -> listTags.contains(tag) })
+            val updatedPosts = _posts.value?.filter { post ->
+                val matchesId =
+                    filter.id.isBlank() || post.id.contains(filter.id, ignoreCase = true)
+                val matchesCity =
+                    filter.city.isBlank() || post.city.contains(filter.city, ignoreCase = true)
+                val matchesStreet = filter.street.isBlank() || post.street.contains(
+                    filter.street,
+                    ignoreCase = true
+                )
+                val matchesPrice = (filter.minPrice <= post.price && post.price <= filter.maxPrice)
+
+                val matchesTags =
+                    listTags.isEmpty() || post.tags.any { it.toLowerCase() in listTags }
+
+                matchesId && matchesCity && matchesStreet && matchesPrice && matchesTags
             }
-            _posts.value = updatedPosts!!
+
+            _posts.value = updatedPosts ?: listOf()
         }
     }
+
 
     fun tagsToList(tags: String): List<String> {
         return tags.split(",").map { it.trim() }

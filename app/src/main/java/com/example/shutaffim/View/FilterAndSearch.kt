@@ -44,6 +44,9 @@ fun FilterAndSearch(
     var priceEnd by remember {
         mutableStateOf(10000f)
     }
+    var tags by remember {
+        mutableStateOf("")
+    }
 
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -60,7 +63,8 @@ fun FilterAndSearch(
                     city = city,
                     street = street,
                     minPrice = priceStart.toInt(),
-                    maxPrice = priceEnd.toInt()
+                    maxPrice = priceEnd.toInt(),
+                    tags = tags
                 )
                 postsVM.filter.value = newFilter
             },
@@ -79,7 +83,8 @@ fun FilterAndSearch(
                         city = city,
                         street = street,
                         minPrice = priceStart.toInt(),
-                        maxPrice = priceEnd.toInt()
+                        maxPrice = priceEnd.toInt(),
+                        tags = tags
                     )
                     postsVM.filter.value = newFilter
                 },
@@ -99,7 +104,8 @@ fun FilterAndSearch(
                     city = city,
                     street = street,
                     minPrice = priceStart.toInt(),
-                    maxPrice = priceEnd.toInt()
+                    maxPrice = priceEnd.toInt(),
+                    tags = tags
                 )
                 postsVM.filter.value = newFilter
             },
@@ -135,7 +141,8 @@ fun FilterAndSearch(
                             city = city,
                             street = street,
                             minPrice = priceStart.toInt(),
-                            maxPrice = priceEnd.toInt()
+                            maxPrice = priceEnd.toInt(),
+                            tags = tags
                         )
                         postsVM.filter.value = newFilter
                     },
@@ -165,7 +172,8 @@ fun FilterAndSearch(
                             city = city,
                             street = street,
                             minPrice = priceStart.toInt(),
-                            maxPrice = priceEnd.toInt()
+                            maxPrice = priceEnd.toInt(),
+                            tags = tags
                         )
                         postsVM.filter.value = newFilter
                     },
@@ -173,10 +181,25 @@ fun FilterAndSearch(
                 )
             }
 
-            Spacer(modifier = Modifier.height(512.dp))
+        } // End of Row of price range
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = tags,
+            onValueChange = {
+                tags = it
+                val newFilter = Filter(
+                    city = city,
+                    street = street,
+                    minPrice = priceStart.toInt(),
+                    maxPrice = priceEnd.toInt(),
+                    tags = tags
+                )
+                postsVM.filter.value = newFilter
+            },
+            label = { Text(text = "tag1,tag2...") }
+        )
 
-
-        }
+        Spacer(modifier = Modifier.height(512.dp))
 
 
     }
