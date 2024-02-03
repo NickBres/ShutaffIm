@@ -15,7 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +41,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,8 +66,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.Intersted
+import com.example.shutaffim.Model.Post
 import com.example.shutaffim.R
 import com.example.shutaffim.Request
+import com.example.shutaffim.ViewModel.PostsVM
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -159,7 +163,33 @@ fun CustomSlider(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DisplayPost(navController: NavController) {
+fun DisplayPost(navController: NavController, postsVM: PostsVM) {
+
+
+    val default = Post(
+        "0",
+        "0",
+        "0",
+        "0",
+        0,
+        0,
+        0,
+        0,
+        listOf(""),
+        "",
+    )
+    val post by postsVM.currPost.observeAsState(default)
+
+    when {
+        post == default -> Text("Loading")
+        else -> PostScreen(navController = navController, postsVM = postsVM, post)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
+
     val sliderList = remember {
         mutableListOf(
             "https://www.gstatic.com/webp/gallery/1.webp",
@@ -169,34 +199,10 @@ fun DisplayPost(navController: NavController) {
             "https://www.gstatic.com/webp/gallery/5.webp",
         )
     }
-    val price = 1000
-    val bedroomNumber = 3
-    val floorNumber = 2
-    val hasFurniture: () -> String = {
-        val isFurnished = true // Replace with your actual condition
-        if (isFurnished) {
-            "Furnished"
-        } else {
-            "Unfurnished"
-        }
-    }
-    val hasInternet: () -> String = {
-        val isFurnished = true // Replace with your actual condition
-        if (isFurnished) {
-            "Wifi"
-        } else {
-            "No Wifi"
-        }
-    }
-    val freeText =
-        "Lorem ipsum dolor sit amet, consectetur , nisl nisl aliquet nisl, nec aliquam nisl" +
-                "Lorem ipsum dolor sit amet, consectetur aliquam nisl "
-    val location = "Tel-Aviv, Dizengoff, 42"
+
     var interestedClick by remember {
         mutableStateOf(false)
     }
-    val publisher = true
-    val alreadyInterested = false
 
     Scaffold(
         modifier = Modifier
@@ -212,7 +218,7 @@ fun DisplayPost(navController: NavController) {
                 },
 
                 actions = {
-                    if (publisher) {
+                    if (false) {
                         IconButton(onClick = { /* doSomething() */ }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Edit")
                         }
@@ -244,7 +250,7 @@ fun DisplayPost(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$price₪",
+                    text = "${post.price}₪",
                     style = TextStyle(
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.primary,
@@ -264,7 +270,7 @@ fun DisplayPost(navController: NavController) {
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = location,
+                    text = "${post.city}, ${post.street}, ${post.house_num}",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(4.dp),
@@ -280,7 +286,7 @@ fun DisplayPost(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Details",
+                    text = "Tags",
                     style = TextStyle(
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -288,94 +294,32 @@ fun DisplayPost(navController: NavController) {
                     )
                 )
             }
-            Row(
+            LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 0.dp, top = 0.dp, end = 8.dp, bottom = 8.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(start = 0.dp, top = 0.dp, end = 8.dp, bottom = 4.dp)
             ) {
-                Text(
-                    text = "⚫",
-                    modifier = Modifier.alpha(0.3f),
-                    style = TextStyle(
-                        fontSize = 8.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "$bedroomNumber Badroom",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "⚫",
-                    modifier = Modifier.alpha(0.3f),
-                    style = TextStyle(
-                        fontSize = 8.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
+                items(post.tags) { tag ->
+                    Card(
+                        modifier = Modifier
+                            .padding(4.dp),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
+                    ) {
+                        Text(
+                            text = tag,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                            ),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
 
-                    text = " $floorNumber floor",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                        //opacity = 0.5f
-                    )
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "⚫",
-                    modifier = Modifier.alpha(0.3f),
-                    style = TextStyle(
-                        fontSize = 8.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
-                    )
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-
-                    text = hasFurniture(),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                        //opacity = 0.5f
-                    )
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "⚫",
-                    modifier = Modifier.alpha(0.3f),
-                    style = TextStyle(
-                        fontSize = 8.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
-                    )
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-
-                    text = hasInternet(),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                        //opacity = 0.5f
-                    )
-                )
+                }
             }
             Spacer(modifier = Modifier.height(32.dp))
             Row(
@@ -403,7 +347,7 @@ fun DisplayPost(navController: NavController) {
                 )
             ) {
                 BasicTextField(
-                    value = freeText,
+                    value = post.about,
                     onValueChange = { },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -416,7 +360,7 @@ fun DisplayPost(navController: NavController) {
                 )
             }
             Spacer(modifier = Modifier.height(54.dp))
-            if(publisher) {
+            if (false) {
                 Button(
                     onClick = { interestedClick = !interestedClick },
                     modifier = Modifier
@@ -440,9 +384,8 @@ fun DisplayPost(navController: NavController) {
                         )
                     }
                 }
-            }
-            else {
-                if (alreadyInterested) {
+            } else {
+                if (true) {
                     Button(
                         onClick = { interestedClick = !interestedClick },
                         modifier = Modifier
@@ -496,7 +439,7 @@ fun DisplayPost(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PostScreenPreview() {
-    DisplayPost(navController = NavController(LocalContext.current))
+    DisplayPost(navController = NavController(LocalContext.current), postsVM = PostsVM())
 
 }
 

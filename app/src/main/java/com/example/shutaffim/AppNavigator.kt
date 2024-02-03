@@ -26,13 +26,13 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
             MenuScreen(navController, authViewModel)
         }
         composable(Screen.EditProfileScreen.route) {
-            EditProfileScreen(navController)
+            EditProfileScreen(navController, authViewModel)
         }
         composable(Screen.PostsSearchScreen.route) {
             PostsSearch(navController, postsVM)
         }
         composable(Screen.PostScreen.route) {
-            DisplayPost(navController)
+            DisplayPost(navController, postsVM)
         }
         composable(Screen.MyPostsScreen.route) {
             MyPosts(navController, postsVM)
@@ -44,7 +44,7 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
             Intersted(navController)
         }
         composable(Screen.ProfileScreen.route) {
-            Profile(navController)
+            Profile(navController, authViewModel)
         }
     }
 }

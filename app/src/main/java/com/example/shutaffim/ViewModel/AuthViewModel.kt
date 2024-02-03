@@ -64,4 +64,16 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            _authResult.value = userRepo.logout()
+        }
+    }
+
+    fun updateInfo(user: User) {
+        viewModelScope.launch {
+            _authResult.value = userRepo.update(user)
+        }
+    }
 }

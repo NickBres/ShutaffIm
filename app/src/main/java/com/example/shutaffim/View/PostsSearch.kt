@@ -48,6 +48,7 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
     }
 
     val posts by postsVM.posts.observeAsState(emptyList())
+    postsVM.loadPosts()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -105,7 +106,7 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
                     .padding(start = 4.dp, end = 4.dp),
             ) {
                 items(posts) { post ->
-                    PostItem(post, navController, Screen.PostScreen)
+                    PostItem(post, navController, Screen.PostScreen, postsVM)
                 }
             }
 

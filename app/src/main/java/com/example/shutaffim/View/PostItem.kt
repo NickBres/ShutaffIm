@@ -27,13 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.Post
+import com.example.shutaffim.ViewModel.PostsVM
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostItem(post: Post, navController: NavController, screen: Screen) {
+fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: PostsVM) {
     val size = 100.dp
 
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -54,6 +55,7 @@ fun PostItem(post: Post, navController: NavController, screen: Screen) {
 
         ),
         onClick = { /* TODO Enter to the item screen*/
+            postsVM.loadPost(post.id)
             when(screen.route){
                 Screen.PostScreen.route -> navController.navigate(Screen.PostScreen.route)
                 Screen.EditPostScreen.route -> navController.navigate(Screen.EditPostScreen.route)

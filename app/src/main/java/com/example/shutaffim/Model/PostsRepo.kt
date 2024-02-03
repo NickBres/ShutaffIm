@@ -75,7 +75,22 @@ class PostsRepository(
 
     suspend fun getPost(postId: String): Result<Post> = try {
         val documentSnapshot = firestore.collection("posts").document(postId).get().await()
-        val post = documentSnapshot.toObject(Post::class.java)
+        val post = Post(
+            id = documentSnapshot.id,
+            date = documentSnapshot.getString("date") ?: "",
+            city = documentSnapshot.getString("city") ?: "",
+            street = documentSnapshot.getString("street") ?: "",
+            house_num = documentSnapshot.getLong("house_num")?.toInt() ?: 0,
+            curr_roommates = documentSnapshot.getLong("curr_roommates")?.toInt() ?: 0,
+            max_roommates = documentSnapshot.getLong("max_roommates")?.toInt() ?: 0,
+            price = documentSnapshot.getLong("price")?.toInt() ?: 0,
+            tags = documentSnapshot.get("tags") as List<String>? ?: listOf(),
+            about = documentSnapshot.getString("about") ?: "",
+            pic1 = documentSnapshot.getString("pic1") ?: "",
+            pic2 = documentSnapshot.getString("pic2") ?: "",
+            pic3 = documentSnapshot.getString("pic3") ?: "",
+            pic4 = documentSnapshot.getString("pic4") ?: ""
+        )
         if (post != null) {
             Result.Success(post)
         } else {

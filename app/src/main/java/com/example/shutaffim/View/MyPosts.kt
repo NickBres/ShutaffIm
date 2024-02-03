@@ -61,7 +61,7 @@ fun MyPosts(navController: NavController, postsVM: PostsVM) {
                     .padding(start = 4.dp, end = 4.dp),
             ) {
                 items(posts) { post ->
-                    PostItem(post, navController, Screen.EditPostScreen)
+                    PostItem(post, navController, Screen.EditPostScreen, postsVM)
                 }
             }
 

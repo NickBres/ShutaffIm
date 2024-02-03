@@ -93,8 +93,8 @@ class UserRepo(private val auth: FirebaseAuth,
             if (userDocument.exists()) {
                 val user = User(
                     email = userDocument.getString("email") ?: "",
-                    fName = userDocument.getString("firstName") ?: "",
-                    lName = userDocument.getString("lastName") ?: "",
+                    fName = userDocument.getString("fname") ?: "",
+                    lName = userDocument.getString("lname") ?: "",
                     about = userDocument.getString("about") ?: "",
                     picture = userDocument.getString("picture") ?: "",
                     type = userDocument.getString("type") ?: ""

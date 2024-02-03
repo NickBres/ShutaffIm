@@ -27,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,13 +43,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.shutaffim.Model.User
+import com.example.shutaffim.ViewModel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfile(navController: NavController) {
+fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
+
+    val user = authVM.currentUser.observeAsState()
+    fName = user.value?.fName ?: ""
+    lName = user.value?.lName ?: ""
+    about = user.value?.about ?: ""
 
 
     Scaffold(
@@ -57,8 +65,11 @@ fun EditProfile(navController: NavController) {
             TopAppBar(
                 title = { androidx.compose.material3.Text(text = "") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp()} ) {
-                        androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        androidx.compose.material3.Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -148,7 +159,19 @@ fun EditProfile(navController: NavController) {
                     Spacer(modifier = Modifier.height(32.dp))
 
                     Button(
-                        onClick = {/* TODO  */ },
+                        onClick = {
+                            val newUser =
+                                User(
+                                    user.value?.email!!,
+                                    fName,
+                                    lName,
+                                    about,
+                                    user.value?.picture!!,
+                                    user.value?.type!!
+                                )
+                            authVM.updateInfo(newUser)
+                            navController.navigateUp()
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
@@ -179,7 +202,7 @@ fun EditProfile(navController: NavController) {
     )}
 
 @Composable
-fun EditProfileScreen(navController: NavController) {
+fun EditProfileScreen(navController: NavController, authVM: AuthViewModel) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -193,12 +216,12 @@ fun EditProfileScreen(navController: NavController) {
                 .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -128.dp)
         )
-        EditProfile(navController)
+        EditProfile(navController, authVM)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenViewPreview() {
-    EditProfileScreen(navController = NavController(LocalContext.current))
+    EditProfileScreen(navController = NavController(LocalContext.current), authVM = AuthViewModel())
 }

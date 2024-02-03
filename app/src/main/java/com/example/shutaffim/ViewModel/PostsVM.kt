@@ -30,6 +30,9 @@ class PostsVM : ViewModel() {
 
     private val postsRepo: PostsRepository
 
+    private val _currPost = MutableLiveData<Post>()
+    val currPost: MutableLiveData<Post> get() = _currPost
+
 
     init {
         postsRepo = PostsRepository(
@@ -54,12 +57,8 @@ class PostsVM : ViewModel() {
         viewModelScope.launch {
             when (val result = postsRepo.getPost(postId)) {
                 is Result.Success -> {
-                    val postIndex = _posts.value?.indexOfFirst { it.id == postId }
-                    postIndex?.let {
-                        val updatedPosts = _posts.value?.toMutableList()
-                        updatedPosts?.set(it, result.data)
-                        _posts.value = updatedPosts!!
-                    }
+                    _currPost.value = result.data!!
+
                 }
 
                 else -> {

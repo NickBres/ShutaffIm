@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,6 +52,7 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.R
 import com.example.shutaffim.Screen
+import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ui.theme.surface
 
 
@@ -93,36 +95,14 @@ fun showPic(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(navController: NavController) {
+fun Profile(navController: NavController, authVM: AuthViewModel) {
     val pic = remember {
 
         "https://www.gstatic.com/webp/gallery/5.webp"
     }
 
-    val fName = "Moshe"
-    val lName = "nahshon"
-    val Email = "ofdihbfi@gmail.com"
-    val phoneNumber = "054-1234567"
-    val hasFurniture: () -> String = {
-        val isFurnished = true // Replace with your actual condition
-        if (isFurnished) {
-            "Furnished"
-        } else {
-            "Unfurnished"
-        }
-    }
-    val hasInternet: () -> String = {
-        val isFurnished = true // Replace with your actual condition
-        if (isFurnished) {
-            "Wifi"
-        } else {
-            "No Wifi"
-        }
-    }
-    val About =
-        "Lorem ipsum dolor sit amet, consectetur , nisl nisl aliquet nisl, nec aliquam nisl" +
-                "Lorem ipsum dolor sit amet, consectetur aliquam nisl "
-    val location = "Tel-Aviv, Dizengoff, 42"
+    val user by authVM.currentUser.observeAsState()
+
     var EditClick by remember {
         mutableStateOf(false)
     }
@@ -189,11 +169,11 @@ fun Profile(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "First Name:  " + fName,
+                        text = "First Name:  " + user?.fName,
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                             // Set your desired text color
+                            // Set your desired text color
                         )
                     )
                 }
@@ -215,7 +195,7 @@ fun Profile(navController: NavController) {
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Last Name:  " + lName,
+                        text = "Last Name:  " + user?.lName,
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
@@ -241,7 +221,7 @@ fun Profile(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Email:  " + Email,
+                        text = "Email:  " + user?.email,
                         style = TextStyle(
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -250,34 +230,7 @@ fun Profile(navController: NavController) {
                     )
                 }
             }
-                Spacer(modifier = Modifier.height(16.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .background(
-                        color = surface,// Set your desired background color
-                        shape = RoundedCornerShape(8.dp) // Set your desired corner radius
-                    )
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Phone Number:  " + phoneNumber,
 
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -305,7 +258,7 @@ fun Profile(navController: NavController) {
                 )
             ) {
                 BasicTextField(
-                    value = About,
+                    value = user?.about ?: "",
                     onValueChange = { },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -326,7 +279,7 @@ fun Profile(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PostScreenPreview() {
-    Profile(navController = NavController(LocalContext.current))
+    Profile(navController = NavController(LocalContext.current), authVM = AuthViewModel())
 
 }
 
