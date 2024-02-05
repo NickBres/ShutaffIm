@@ -71,12 +71,14 @@ fun EditPost(
     postsVM: PostsVM = viewModel(),
     authVM: AuthViewModel
 ) {
-    val user = authVM.currentUser.observeAsState()
+    var user = authVM.currentUser.observeAsState()
 
-    var id by remember {
+
+    var userId by remember {
         mutableStateOf( "")
     }
-    id = user.value?.email ?: ""
+    userId = user.value?.email ?: ""
+
     var city by remember {
         mutableStateOf("")
     }
@@ -149,59 +151,63 @@ fun EditPost(
                         )
                     }
                 },
-//                actions = {
-//
-//                    IconButton(onClick = {
-//                        navController.navigate(Screen.InterestedScreen.route)
-//                    }) {
-//                        Icon(
-//                            imageVector = Icons.Filled.Delete,
-//                            contentDescription = "delete post"
-//                        )
-//                    }
-//
-//
-//                }
                 actions = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp) // Adjust spacing as needed
-                    ) {
-                        Text(
-                            text = "Interested",
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        IconButton(onClick = {
-                            navController.navigate(Screen.InterestedScreen.route)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.AccountBox,
-                                contentDescription = "Localized description"
-                            )
-                        }
 
+                    IconButton(onClick = {
+                        postsVM.deletePost(post.value?.id ?: "")
+                        navController.navigateUp()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "delete post"
+                        )
                     }
+
+
                 }
+//                actions = {
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.spacedBy(4.dp) // Adjust spacing as needed
+//                    ) {
+//                        Text(
+//                            text = "Interested",
+//                            color = MaterialTheme.colorScheme.primary
+//                        )
+//                        IconButton(onClick = {
+//                            navController.navigate(Screen.InterestedScreen.route)
+//                        }) {
+//                            Icon(
+//                                imageVector = Icons.Filled.AccountBox,
+//                                contentDescription = "Localized description"
+//                            )
+//                        }
+//
+//                    }
+//                }
 
                 ,
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                          /* do something */ },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-//                Icon(Icons.Default.Add, contentDescription = "Add")
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Localized description",
-                    tint = Color.Red
-                )
-            }
+//            FloatingActionButton(
+//                onClick = {
+//                          postsVM.deletePost(post.value?.id ?: "")
+//                            navController.navigateUp()
+//                          /* do something */ },
+//                containerColor = MaterialTheme.colorScheme.primary,
+//                contentColor = MaterialTheme.colorScheme.onPrimary
+//            ) {
+////                Icon(Icons.Default.Add, contentDescription = "Add")
+//                Icon(
+//                    imageVector = Icons.Filled.Delete,
+//                    contentDescription = "Localized description",
+//                    tint = Color.Red
+//                )
+//            }
 
         },
+
         content = {
             Column(
                 modifier = Modifier
@@ -531,7 +537,9 @@ fun EditPost(
                             max_roommates = max_partner.toInt(),
                             price = price.toInt(),
                             tags = postsVM.tagsToList(tags),
-                            about = about_apartment
+                            about = about_apartment,
+                            userId = userId
+//                            email = email
                         )
                         postsVM.createNewPost(newPost)
                         navController.navigate(Screen.MyPostsScreen.route)

@@ -18,6 +18,7 @@ class PostsRepository(
     suspend fun createPost(post: Post): Result<Boolean> = try {
         val documentReference = firestore.collection("posts").add(post).await()
         val postId = documentReference.id
+//        val userId
         documentReference.update("id", postId).await()
         Result.Success(true)
     } catch (e: Exception) {
@@ -45,7 +46,8 @@ class PostsRepository(
                     pic1 = document.getString("pic1") ?: "",
                     pic2 = document.getString("pic2") ?: "",
                     pic3 = document.getString("pic3") ?: "",
-                    pic4 = document.getString("pic4") ?: ""
+                    pic4 = document.getString("pic4") ?: "",
+                    userId = document.getString("userId") ?: ""
                 ).also { post ->
                     println("Mapped to Post: $post")
                 }
@@ -66,8 +68,8 @@ class PostsRepository(
         Result.Error(e)
     }
 
-    suspend fun deletePost(post: Post): Result<Boolean> = try {
-        firestore.collection("posts").document(post.id).delete().await()
+    suspend fun deletePost(postid: String): Result<Boolean> = try {
+        firestore.collection("posts").document(postid).delete().await()
         Result.Success(true)
     } catch (e: Exception) {
         Result.Error(e)
@@ -89,7 +91,8 @@ class PostsRepository(
             pic1 = documentSnapshot.getString("pic1") ?: "",
             pic2 = documentSnapshot.getString("pic2") ?: "",
             pic3 = documentSnapshot.getString("pic3") ?: "",
-            pic4 = documentSnapshot.getString("pic4") ?: ""
+            pic4 = documentSnapshot.getString("pic4") ?: "",
+            userId = documentSnapshot.getString("userId") ?: ""
         )
         if (post != null) {
             Result.Success(post)

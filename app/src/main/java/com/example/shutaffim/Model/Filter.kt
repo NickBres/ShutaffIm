@@ -6,5 +6,6 @@ data class Filter(
     val street: String = "",
     val minPrice: Int = 0,
     val maxPrice: Int = 10000,
-    val tags: String = ""
-)
+    val tags: String = "",
+    val email: String = ""
+    )
