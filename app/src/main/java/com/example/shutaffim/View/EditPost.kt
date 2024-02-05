@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
@@ -28,6 +29,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,13 +40,14 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,6 +60,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Screen
+import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
 
 
@@ -64,9 +68,15 @@ import com.example.shutaffim.ViewModel.PostsVM
 @Composable
 fun EditPost(
     navController: NavController,
-    postsVM: PostsVM = viewModel()
+    postsVM: PostsVM = viewModel(),
+    authVM: AuthViewModel
 ) {
+    val user = authVM.currentUser.observeAsState()
 
+    var id by remember {
+        mutableStateOf( "")
+    }
+    id = user.value?.email ?: ""
     var city by remember {
         mutableStateOf("")
     }
@@ -91,6 +101,17 @@ fun EditPost(
     var about_apartment by remember {
         mutableStateOf("")
     }
+
+    val post = postsVM.currPost.observeAsState()
+    city = post.value?.city ?: ""
+    street = post.value?.street ?: ""
+    house_num = post.value?.house_num.toString()
+    current_partner = post.value?.curr_roommates.toString()
+    max_partner = post.value?.max_roommates.toString()
+    price = post.value?.price.toString()
+    about_apartment = post.value?.about ?: ""
+
+
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 // Handle the result of the image picker
     val activityResultLauncher = rememberLauncherForActivityResult(
@@ -128,20 +149,58 @@ fun EditPost(
                         )
                     }
                 },
+//                actions = {
+//
+//                    IconButton(onClick = {
+//                        navController.navigate(Screen.InterestedScreen.route)
+//                    }) {
+//                        Icon(
+//                            imageVector = Icons.Filled.Delete,
+//                            contentDescription = "delete post"
+//                        )
+//                    }
+//
+//
+//                }
                 actions = {
-
-                    IconButton(onClick = {
-                        navController.navigate(Screen.InterestedScreen.route)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "delete post"
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp) // Adjust spacing as needed
+                    ) {
+                        Text(
+                            text = "Interested",
+                            color = MaterialTheme.colorScheme.primary
                         )
+                        IconButton(onClick = {
+                            navController.navigate(Screen.InterestedScreen.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.AccountBox,
+                                contentDescription = "Localized description"
+                            )
+                        }
+
                     }
+                }
 
-
-                },
+                ,
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                          /* do something */ },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+//                Icon(Icons.Default.Add, contentDescription = "Add")
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Localized description",
+                    tint = Color.Red
+                )
+            }
+
         },
         content = {
             Column(
@@ -180,6 +239,8 @@ fun EditPost(
                         },
                         singleLine = true
                     )
+
+
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -473,7 +534,7 @@ fun EditPost(
                             about = about_apartment
                         )
                         postsVM.createNewPost(newPost)
-                        navController.navigate(Screen.TypeScreen.route)
+                        navController.navigate(Screen.MyPostsScreen.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -505,5 +566,5 @@ fun EditPost(
 @Preview(showBackground = true)
 @Composable
 fun EditSecreenViewPreview() {
-    EditPost(navController = NavController(LocalContext.current))
+//    EditPost(navController = NavController(LocalContext.current))
 }

@@ -38,7 +38,7 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
             MyPosts(navController, postsVM)
         }
         composable(Screen.EditPostScreen.route) {
-            EditPost(navController)
+            EditPost(navController, postsVM, authViewModel)
         }
         composable(Screen.InterestedScreen.route) {
             Intersted(navController)
