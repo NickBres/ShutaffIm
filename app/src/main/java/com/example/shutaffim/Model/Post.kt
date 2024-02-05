@@ -14,5 +14,6 @@ data class Post(
     val pic1: String = "",
     val pic2: String = "",
     val pic3: String = "",
-    val pic4: String = ""
+    val pic4: String = "",
+    val userId: String
 )

@@ -54,7 +54,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             when (val result = userRepo.getCurrentUser()) {
                 is Result.Success -> {
-                    _currentUser.value = result.data
+                    _currentUser.value = result.data.copy()///add copy
                     println("User data: ${result.data}")
                 }
 

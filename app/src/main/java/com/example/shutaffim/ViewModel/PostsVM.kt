@@ -1,5 +1,7 @@
 package com.example.shutaffim.ViewModel
 
+import android.provider.ContactsContract.CommonDataKinds.Email
+import androidx.compose.runtime.State
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,7 @@ import com.example.shutaffim.Model.InterestedInPost
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
 import com.example.shutaffim.Model.Result
+import com.example.shutaffim.Model.UserPost
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -16,7 +19,10 @@ class PostsVM : ViewModel() {
 
     private val _posts = MutableLiveData<List<Post>>()
     val posts: MutableLiveData<List<Post>> get() = _posts
-
+/////////////////////////////////////////////
+    private val _postsUser = MutableLiveData<List<Post>>()
+    val postsUser: MutableLiveData<List<Post>> get() = _postsUser
+////////////////////////////////////////
     private val _interestedInPost: MutableLiveData<List<InterestedInPost>> = MutableLiveData()
     val interestedInPost: MutableLiveData<List<InterestedInPost>> get() = _interestedInPost
 
@@ -107,6 +113,31 @@ class PostsVM : ViewModel() {
         }
     }
 
+    //////////////////////////////////////////////////////
+    fun applyFilter(email: String) {
+//        viewModelScope.launch {
+            loadPosts()
+            filterPosts(email)
+//        }
+
+    }
+    fun filterPosts(email: String) {
+        // Convert filter tags string to list and trim each tag
+                viewModelScope.launch {
+            val updatedPosts = _posts.value?.filter { post ->
+                val matchesemail =
+                    post.userId.contains(email, ignoreCase = true)
+
+
+                matchesemail
+            }
+
+        _postsUser.value = updatedPosts ?: listOf()
+        }
+    }
+
+
+
 
     fun tagsToList(tags: String): List<String> {
         return tags.split(",").map { it.trim() }
@@ -124,10 +155,10 @@ class PostsVM : ViewModel() {
         }
     }
 
-    fun createNewPost(post: Post) {
+    fun createNewPost(post: Post ) {
         post.date = System.currentTimeMillis().toString()
         viewModelScope.launch {
-            when (val result = postsRepo.createPost(post)) {
+            when (val result = postsRepo.createPost(post )) {
                 is Result.Success -> {
                     loadPosts()
                     /* TODO: Filter to my posts */
@@ -155,9 +186,9 @@ class PostsVM : ViewModel() {
         }
     }
 
-    fun deletePost(post: Post) {
+    fun deletePost(postid: String) {
         viewModelScope.launch {
-            when (val result = postsRepo.deletePost(post)) {
+            when (val result = postsRepo.deletePost(postid)) {
                 is Result.Success -> {
                     loadPosts()
                     /* TODO: Filter to my posts */
