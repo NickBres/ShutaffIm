@@ -26,9 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
-import com.example.shutaffim.ViewModel.AuthViewModel
-import com.example.shutaffim.ViewModel.PostsVM
 import com.example.shutaffim.ViewModel.UserPostVM
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestView(
@@ -40,6 +39,11 @@ fun RequestView(
     var interestedMsg by remember {
         mutableStateOf("")
     }
+
+    var enableBtn by remember {
+        mutableStateOf(true)
+    }
+
     Column(
 
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,10 +81,12 @@ fun RequestView(
             Button(
                 onClick = { /*TODO*/
                         userpostVM.addInterestedToPost(user.email, post.id, interestedMsg,)
+                    enableBtn = false
                           },
                 modifier = Modifier
                     .padding(8.dp)
                     .size(300.dp, 50.dp),
+                enabled = enableBtn
 
 
                 ) {

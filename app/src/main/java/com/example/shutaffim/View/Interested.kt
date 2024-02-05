@@ -3,7 +3,6 @@ package com.example.shutaffim
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,15 +20,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.shutaffim.ViewModel.UserPostVM
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Intersted(navController: NavController) {
+fun Intersted(navController: NavController, userPostVM: UserPostVM = UserPostVM()) {
 
     val postImg = listOf(
         R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash,
@@ -37,20 +36,18 @@ fun Intersted(navController: NavController) {
         R.drawable.joao_marcelo_martins_hfoprrwjvgg_unsplash,
     )
 
-    val dummyListperson = listOf(
-        Person(postImg, "alis", "050", "18.01.2023"),
-        Person(postImg, "bob", "051", "18.02.2023"),
-        Person(postImg , "yair" , "050" ,"18.03.2023")
-        )
     var new_post by remember {
         mutableStateOf(false)
     }
+
+
+    ///  var listOfInterestedInPost = userPostVM.interestedInPost.observeAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(title = { Text(text = "Intersted") }, navigationIcon = {
-                IconButton(onClick = { navController.navigateUp()}) {
+                IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
@@ -68,9 +65,9 @@ fun Intersted(navController: NavController) {
                     .padding(it)
                     .padding(start = 4.dp, end = 4.dp),
             ) {
-                items(dummyListperson) { person ->
-                    InterstedItem(person ,navController ,Screen.EditPostScreen)
-                }
+//                items() { person ->
+//                    InterstedItem(person ,navController ,Screen.EditPostScreen)
+//                }
             }
 
             if (new_post) {
@@ -85,5 +82,5 @@ fun Intersted(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun MyInterstedScreenViewPreview() {
-    Intersted(navController = NavController(LocalContext.current))
+    // Intersted(navController = NavController(LocalContext.current))
 }

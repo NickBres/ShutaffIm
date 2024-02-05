@@ -72,6 +72,7 @@ import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
 import com.example.shutaffim.R
 import com.example.shutaffim.RequestView
+import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
 import com.example.shutaffim.ViewModel.UserPostVM
@@ -251,7 +252,10 @@ fun PostScreen(navController: NavController,
 
                 actions = {
                     if (currUser.type == UserType.Publisher.type) {
-                        IconButton(onClick = { /* doSomething() */ }) {
+                        IconButton(onClick = {
+                            postsVM.loadPost(post.id)
+                            navController.navigate(Screen.EditPostScreen.route)
+                        }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Edit")
                         }
                     }

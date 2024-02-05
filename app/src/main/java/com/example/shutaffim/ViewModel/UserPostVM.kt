@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shutaffim.Injection
 import com.example.shutaffim.Model.Request
-import com.example.shutaffim.Model.UserPostRepo
-import kotlinx.coroutines.launch
 import com.example.shutaffim.Model.Result
+import com.example.shutaffim.Model.UserPostRepo
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class UserPostVM : ViewModel() {
 
@@ -26,7 +26,7 @@ class UserPostVM : ViewModel() {
     private val _upResult = MutableLiveData<Result<Boolean>>()
     val upResult: LiveData<Result<Boolean>> get() = _upResult
     fun addInterestedToPost(userId: String, postId: String,msg: String) {
-        val request = Request(userId,postId,true,msg)
+        val request = Request(userId, postId, false, msg)
         viewModelScope.launch {
             _upResult.value = userpostRepo.addInterestedToPost(request)
             if(_upResult.value is Result.Success){
