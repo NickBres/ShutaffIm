@@ -56,10 +56,7 @@ fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: 
         ),
         onClick = { /* TODO Enter to the item screen*/
             postsVM.loadPost(post.id)
-            when(screen.route){
-                Screen.PostScreen.route -> navController.navigate(Screen.PostScreen.route)
-                Screen.EditPostScreen.route -> navController.navigate(Screen.EditPostScreen.route)
-            }
+            navController.navigate(Screen.PostScreen.route)
         }
 
     ) {

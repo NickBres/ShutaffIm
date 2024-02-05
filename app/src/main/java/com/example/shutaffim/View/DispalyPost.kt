@@ -67,9 +67,14 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.Intersted
 import com.example.shutaffim.Model.Post
+import com.example.shutaffim.Model.Request
+import com.example.shutaffim.Model.User
+import com.example.shutaffim.Model.UserType
 import com.example.shutaffim.R
-import com.example.shutaffim.Request
+import com.example.shutaffim.RequestView
+import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
+import com.example.shutaffim.ViewModel.UserPostVM
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -163,7 +168,11 @@ fun CustomSlider(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DisplayPost(navController: NavController, postsVM: PostsVM) {
+fun DisplayPost(navController: NavController,
+                postsVM: PostsVM,
+                authViewModel: AuthViewModel,
+
+                ) {
 
 
     val default = Post(
@@ -179,16 +188,34 @@ fun DisplayPost(navController: NavController, postsVM: PostsVM) {
         "",
     )
     val post by postsVM.currPost.observeAsState(default)
+    val currUser by authViewModel.currentUser.observeAsState(default)
+
+
 
     when {
         post == default -> Text("Loading")
-        else -> PostScreen(navController = navController, postsVM = postsVM, post)
+        currUser == default -> Text("Loading")
+
+        else -> PostScreen(navController = navController,
+            postsVM = postsVM,
+            post,
+            currUser as User,
+            )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
+fun PostScreen(navController: NavController,
+               postsVM: PostsVM,
+               post: Post,
+               currUser: User,
+               userpostVM : UserPostVM = UserPostVM()
+) {
+
+    val interestedListState = userpostVM.interestedInPost.observeAsState()
+    val interestedList = interestedListState.value
+    val intrestedIdList = getInterestedIdList(interestedList)
 
     val sliderList = remember {
         mutableListOf(
@@ -218,7 +245,7 @@ fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
                 },
 
                 actions = {
-                    if (false) {
+                    if (currUser.type == UserType.Publisher.type) {
                         IconButton(onClick = { /* doSomething() */ }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Edit")
                         }
@@ -360,7 +387,7 @@ fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
                 )
             }
             Spacer(modifier = Modifier.height(54.dp))
-            if (false) {
+            if (currUser.type == UserType.Publisher.type) {
                 Button(
                     onClick = { interestedClick = !interestedClick },
                     modifier = Modifier
@@ -384,10 +411,11 @@ fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
                         )
                     }
                 }
-            } else {
-                if (true) {
+            } else {//if consumer
+                if (intrestedIdList.contains(currUser.email)  == true){
                     Button(
-                        onClick = { interestedClick = !interestedClick },
+                        onClick = { interestedClick = !interestedClick
+                                    },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
@@ -407,7 +435,9 @@ fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
                     }
                 } else {
                     Button(
-                        onClick = { interestedClick = !interestedClick },
+                        onClick = { interestedClick = !interestedClick
+
+                                    },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
@@ -424,7 +454,7 @@ fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
                         if (interestedClick) {
                             ModalBottomSheet(onDismissRequest = { interestedClick = false },
                                 content = {
-                                    Request()
+                                    RequestView(currUser, post, UserPostVM())
                                 }
                             )
                         }
@@ -434,12 +464,21 @@ fun PostScreen(navController: NavController, postsVM: PostsVM, post: Post) {
         }
     }
 }
+fun getInterestedIdList(interestedList: List<Request>?): List<String> {
+    val intrestedIdList = mutableListOf<String>()
+    if (interestedList != null) {
+        for (interested in interestedList) {
+            intrestedIdList.add(interested.userId)
+        }
+    }
+    return intrestedIdList
+}
 
 
 @Preview(showBackground = true)
 @Composable
 fun PostScreenPreview() {
-    DisplayPost(navController = NavController(LocalContext.current), postsVM = PostsVM())
+   // DisplayPost(navController = NavController(LocalContext.current), postsVM = PostsVM(), authViewModel = AuthViewModel())
 
 }
 

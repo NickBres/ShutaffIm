@@ -1,18 +1,21 @@
 package com.example.shutaffim.ViewModel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.shutaffim.Injection
 import com.example.shutaffim.Model.Result
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserRepo
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import com.example.shutaffim.Screen
 
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel : ViewModel( ) {
     private val userRepo: UserRepo
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> get() = _currentUser
@@ -27,7 +30,12 @@ class AuthViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Result<Boolean>>()
     val authResult: LiveData<Result<Boolean>> get() = _authResult
 
+    /*TODO: for loading indicator */
+    //private var signUpInProgress = mutableStateOf(false)
+   // private var signInInProgress = mutableStateOf(false)
+
     fun signUp(
+        navController: NavController,
         email: String,
         password: String,
         firstName: String,
@@ -36,16 +44,39 @@ class AuthViewModel : ViewModel() {
         picture: String = "",
         type: String
     ) {
+        //signUpInProgress.value = true
         val user = User(email, firstName, lastName, about, picture, type)
         viewModelScope.launch {
             _authResult.value = userRepo.signUp(user, password)
+            //signUpInProgress.value = false
+            if(_authResult.value is Result.Success){
+                //navigate to type screen
+                navController.navigateUp()
+
+            }
+            else if(_authResult.value is Result.Error) {
+                println("Error: ${(_authResult.value as Result.Error).exception.message}")
+            }
         }
     }
 
-    fun login(email: String, password: String) {
+    fun login(
+                navController: NavController,
+                email: String,
+                 password: String) {
         viewModelScope.launch {
+            //signInInProgress.value = true
             _authResult.value = userRepo.login(email, password)
+           // signInInProgress.value = false
             updateUser()
+            if(_authResult.value is Result.Success){
+                //navigate to type screen
+                navController.navigate(Screen.TypeScreen.route)
+            }
+            else if(_authResult.value is Result.Error) {
+                println("Error: ${(_authResult.value as Result.Error).exception.message}")
+            }
+
         }
 
     }
@@ -54,7 +85,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             when (val result = userRepo.getCurrentUser()) {
                 is Result.Success -> {
-                    _currentUser.value = result.data
+                    _currentUser.value = result.data!!
                     println("User data: ${result.data}")
                 }
 

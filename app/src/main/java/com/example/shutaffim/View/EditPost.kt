@@ -38,6 +38,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,11 +53,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Screen
+import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
 
 
@@ -64,8 +66,11 @@ import com.example.shutaffim.ViewModel.PostsVM
 @Composable
 fun EditPost(
     navController: NavController,
-    postsVM: PostsVM = viewModel()
+    postsVM: PostsVM,
+    authViewModel: AuthViewModel,
 ) {
+
+    var currUser = authViewModel.currentUser.observeAsState()
 
     var city by remember {
         mutableStateOf("")
@@ -104,6 +109,7 @@ fun EditPost(
 
 
 
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -131,7 +137,9 @@ fun EditPost(
                 actions = {
 
                     IconButton(onClick = {
-                        navController.navigate(Screen.InterestedScreen.route)
+                       // navController.navigate(Screen.InterestedScreen.route)
+                        navController.navigateUp()
+
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
@@ -505,5 +513,5 @@ fun EditPost(
 @Preview(showBackground = true)
 @Composable
 fun EditSecreenViewPreview() {
-    EditPost(navController = NavController(LocalContext.current))
+    EditPost(navController = NavController(LocalContext.current), postsVM = PostsVM(), authViewModel = AuthViewModel())
 }

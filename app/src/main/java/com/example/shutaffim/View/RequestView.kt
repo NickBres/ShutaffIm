@@ -24,10 +24,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import com.example.shutaffim.Model.Post
+import com.example.shutaffim.Model.User
+import com.example.shutaffim.ViewModel.AuthViewModel
+import com.example.shutaffim.ViewModel.PostsVM
+import com.example.shutaffim.ViewModel.UserPostVM
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Request() {
+fun RequestView(
+    user:User,
+    post : Post,
+    userpostVM : UserPostVM = UserPostVM()
+) {
 
     var interestedMsg by remember {
         mutableStateOf("")
@@ -67,7 +75,9 @@ fun Request() {
             verticalAlignment = Alignment.CenterVertically,
         ){
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { /*TODO*/
+                        userpostVM.addInterestedToPost(user.email, post.id, interestedMsg,)
+                          },
                 modifier = Modifier
                     .padding(8.dp)
                     .size(300.dp, 50.dp),
@@ -93,5 +103,5 @@ fun Request() {
 @Preview(showBackground = true)
 @Composable
 fun PopUpViewPreview() {
-    Request()
+   // RequestView()
 }

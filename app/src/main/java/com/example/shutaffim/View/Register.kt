@@ -1,7 +1,7 @@
-package com.example.shutaffim
+package com.example.shutaffim.View
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -27,7 +28,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,27 +46,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.shutaffim.Model.Result
 import com.example.shutaffim.Model.UserType
+import com.example.shutaffim.R
 import com.example.shutaffim.ViewModel.AuthViewModel
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Register(
     navController: NavController,
-    authViewModel: AuthViewModel,
+     authViewModel: AuthViewModel ,
 ) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var phoneNumber by remember { mutableStateOf("") }
+    //var phoneNumber by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
-    var type by remember { mutableStateOf("") }
-    val context = LocalContext.current
+    //var type by remember { mutableStateOf("") }
 
-    val uresult by authViewModel.authResult.observeAsState()
+
 
     Column(
         modifier = Modifier
@@ -76,9 +76,7 @@ fun Register(
         verticalArrangement = Arrangement.Center
     ) {
 
-        Spacer(modifier = Modifier.height(2.dp))
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         ElevatedCard {
             OutlinedTextField(
@@ -95,7 +93,7 @@ fun Register(
                 )
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+
 
             OutlinedTextField(
                 modifier = Modifier
@@ -111,7 +109,7 @@ fun Register(
                 )
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+
 
 
             OutlinedTextField(
@@ -131,26 +129,26 @@ fun Register(
                 )
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                label = { Text(text = "Phone Number") },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                    cursorColor = MaterialTheme.colorScheme.primary
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Phone,
-                )
-            )
+//
+//            OutlinedTextField(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                value = phoneNumber,
+//                onValueChange = { phoneNumber = it },
+//                label = { Text(text = "Phone Number") },
+//                colors = TextFieldDefaults.outlinedTextFieldColors(
+//                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+//                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+//                    cursorColor = MaterialTheme.colorScheme.primary
+//                ),
+//                keyboardOptions = KeyboardOptions.Default.copy(
+//                    keyboardType = KeyboardType.Phone,
+//                )
+//            )
 
-            Spacer(modifier = Modifier.height(2.dp))
+
 
             OutlinedTextField(
                 modifier = Modifier
@@ -175,12 +173,11 @@ fun Register(
             )
 
 
-            Spacer(modifier = Modifier.height(2.dp))
 
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(16.dp),
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(text = "Password") },
@@ -209,9 +206,17 @@ fun Register(
 
             val options = listOf(UserType.Consumer.type, UserType.Publisher.type)
 
-            Box(modifier = Modifier.wrapContentSize()) {
+            Box(modifier = Modifier
+                .wrapContentSize()
+                .padding(start = 16.dp)
+                .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small)
+                .width(80.dp)
+                .height(30.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(selectedOption, modifier = Modifier.clickable { expanded = true })
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                DropdownMenu(expanded = expanded,
+                    onDismissRequest = { expanded = false }) {
                     options.forEach { label ->
                         DropdownMenuItem(
                             text = { Text(label) },
@@ -227,6 +232,7 @@ fun Register(
             Button(
                 onClick = { /* TODO: Handle registration logic */
                     authViewModel.signUp(
+                        navController = navController,
                         email = email,
                         password = password,
                         firstName = fName,
@@ -234,24 +240,6 @@ fun Register(
                         about = about,
                         type = selectedOption
                     )
-
-                    /* TODO: fix the issue */
-                    when (uresult) {
-                        is Result.Success -> {
-                            navController.navigateUp()
-                            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-                        }
-
-                        is Result.Error -> {
-                            // Handle error
-                                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
-                            }
-                            else -> {
-                                // Handle loading
-                                navController.navigateUp()
-                            }
-
-                        }
 
 
                           },
@@ -268,7 +256,7 @@ fun Register(
 
         Text(text = "Already have an account?")
         TextButton(onClick = {
-            navController.navigate(Screen.LoginScreen.route)
+           // navController.navigate(Screen.LoginScreen.route)
         }) {
             Text(
                 text = "Login",
@@ -296,13 +284,16 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
                 .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -128.dp)
         )
-        Register(navController, authViewModel = authViewModel)
+        Register(navController,authViewModel = authViewModel )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun RegisterViewPreview() {
-    RegisterScreen(navController = NavController(LocalContext.current),
-        authViewModel = AuthViewModel())
+    val navController = rememberNavController()
+    val  authViewModel = AuthViewModel()
+
+    RegisterScreen(navController = navController,
+        authViewModel = authViewModel)
 }
