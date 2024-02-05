@@ -113,7 +113,7 @@ fun InterstedItem(person: Person, navController: NavController, screen: Screen) 
                             .padding(start = 8.dp , end =128.dp),
                         style = TextStyle(fontWeight = FontWeight.Bold)
                     )
-                    val checkedState = remember { mutableStateOf(true) }
+                    val checkedState = remember { mutableStateOf(false) }
                     Checkbox(
                         checked = checkedState.value,
                         onCheckedChange = { checkedState.value = it },

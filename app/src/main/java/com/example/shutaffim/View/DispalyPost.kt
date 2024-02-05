@@ -186,6 +186,11 @@ fun DisplayPost(navController: NavController,
         0,
         listOf(""),
         "",
+        "",
+        "",
+        "",
+        "",
+        ""
     )
     val post by postsVM.currPost.observeAsState(default)
     val currUser by authViewModel.currentUser.observeAsState(default)

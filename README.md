@@ -27,3 +27,4 @@ This app is a collaborative university project aimed at providing practical expe
 ## Collaboration Model
 Our project embraces a collaborative approach, with work divided into sub-tasks and tracked on Freeform. We adopt agile methodologies, iterating over our application based on feedback and continuous learning. Peer code reviews are part of our routine to ensure code quality.
 
+![image](https://github.com/NickBres/Project/blob/master/graphics/barak.png)

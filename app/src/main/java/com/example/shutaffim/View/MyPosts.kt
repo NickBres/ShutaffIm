@@ -24,13 +24,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.shutaffim.Model.Filter
+import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
+import okhttp3.internal.wait
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPosts(navController: NavController, postsVM: PostsVM) {
+fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewModel) {
 
-    val posts by postsVM.posts.observeAsState(emptyList())
+//    val posts by postsVM.posts.observeAsState(emptyList())
+    val user by authVM.currentUser.observeAsState()
+
+    postsVM.applyFilter(user?.email ?: "")
+
+    val posts by postsVM.postsUser.observeAsState(emptyList())
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -54,6 +62,7 @@ fun MyPosts(navController: NavController, postsVM: PostsVM) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }, content = {
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -72,5 +81,5 @@ fun MyPosts(navController: NavController, postsVM: PostsVM) {
 @Preview(showBackground = true)
 @Composable
 fun PostsSearchViewPreview() {
-    MyPosts(navController = NavController(LocalContext.current), postsVM = PostsVM())
+//    MyPosts(navController = NavController(LocalContext.current), postsVM = PostsVM())
 }
