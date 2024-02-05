@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
@@ -29,7 +28,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -112,6 +109,7 @@ fun EditPost(
     max_partner = post.value?.max_roommates.toString()
     price = post.value?.price.toString()
     about_apartment = post.value?.about ?: ""
+    tags = postsVM.tagsToString(post.value?.tags ?: emptyList())
 
 
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -530,6 +528,8 @@ fun EditPost(
                 Button(
                     onClick = {
                         val newPost = Post(
+                            id = post.value?.id ?: "",
+                            date = post.value?.date ?: "",
                             city = city,
                             street = street,
                             house_num = house_num.toInt(),
@@ -539,9 +539,12 @@ fun EditPost(
                             tags = postsVM.tagsToList(tags),
                             about = about_apartment,
                             userId = userId
-//                            email = email
                         )
-                        postsVM.createNewPost(newPost)
+                        if (post.value == null || post.value?.id == "")
+                            postsVM.createNewPost(newPost)
+                        else
+                            postsVM.updatePost(newPost)
+                        postsVM.resetPost()
                         navController.navigate(Screen.MyPostsScreen.route)
                     },
                     modifier = Modifier

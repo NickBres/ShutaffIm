@@ -1,7 +1,5 @@
 package com.example.shutaffim.ViewModel
 
-import android.provider.ContactsContract.CommonDataKinds.Email
-import androidx.compose.runtime.State
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +9,6 @@ import com.example.shutaffim.Model.InterestedInPost
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
 import com.example.shutaffim.Model.Result
-import com.example.shutaffim.Model.UserPost
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -73,6 +70,26 @@ class PostsVM : ViewModel() {
                 }
             }
         }
+    }
+
+    fun resetPost() {
+        _currPost.value = Post(
+            id = "",
+            date = "",
+            city = "",
+            street = "",
+            house_num = 0,
+            curr_roommates = 0,
+            max_roommates = 0,
+            price = 0,
+            tags = listOf(),
+            about = "",
+            pic1 = "",
+            pic2 = "",
+            pic3 = "",
+            pic4 = "",
+            userId = ""
+        )
     }
 
     fun applyFilter() {
@@ -241,6 +258,10 @@ class PostsVM : ViewModel() {
                 }
             }
         }
+    }
+
+    fun tagsToString(tags: List<String>): String {
+        return tags.joinToString(", ")
     }
 
 
