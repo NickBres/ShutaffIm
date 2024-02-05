@@ -8,9 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shutaffim.Model.Screen.DisplayPost
+import com.example.shutaffim.View.LoginScreen
 import com.example.shutaffim.View.Profile
+import com.example.shutaffim.View.RegisterScreen
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
+
+
 
 @Composable
 fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
@@ -32,7 +36,7 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
             PostsSearch(navController, postsVM)
         }
         composable(Screen.PostScreen.route) {
-            DisplayPost(navController, postsVM)
+            DisplayPost(navController, postsVM, authViewModel)
         }
         composable(Screen.MyPostsScreen.route) {
             MyPosts(navController, postsVM, authViewModel)

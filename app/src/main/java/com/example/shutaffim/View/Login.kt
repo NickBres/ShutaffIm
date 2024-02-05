@@ -1,4 +1,4 @@
-package com.example.shutaffim
+package com.example.shutaffim.View
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +47,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shutaffim.ViewModel.AuthViewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import com.example.shutaffim.Model.Result
+import com.example.shutaffim.R
+import com.example.shutaffim.Screen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,8 +60,6 @@ import com.example.shutaffim.Model.Result
 fun Login(navController: NavController,
           authViewModel : AuthViewModel,
           ) {
-
-
     var email by remember {
         mutableStateOf("")
     }
@@ -75,14 +78,20 @@ fun Login(navController: NavController,
     ) {
 
         Spacer(modifier = Modifier.height(256.dp))
-        Text(
-            text = "ShutaffI'm",
-            style = TextStyle(
-                fontSize = 40.sp,
-                color = MaterialTheme.colorScheme.surface,
-                fontWeight = FontWeight.Bold
+            Text(
+                text = "ShutaffI'm",
+                style = TextStyle(
+                    fontSize = 40.sp,
+                    color = MaterialTheme.colorScheme.surface,
+                    fontWeight = FontWeight.Bold,
+                    shadow = Shadow(
+                        color = Color.Black,
+                        offset = Offset(2f, 2f),
+                        blurRadius = 4f
+                    )
+                )
             )
-        )
+
         Spacer(modifier = Modifier.height(128.dp))
 
         ElevatedCard(
@@ -165,17 +174,8 @@ fun Login(navController: NavController,
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                authViewModel.login(email, password)
-                when(result) {
-                    is Result.Success-> {
+                authViewModel.login(navController, email, password)
 
-                        navController.navigate(Screen.TypeScreen.route)
-                    }
-                    is Result.Error -> {
-                    }
-
-                    else -> {}
-                }
 
             },
             modifier = Modifier
@@ -186,8 +186,6 @@ fun Login(navController: NavController,
             Text(text = "Login")
         }
         Spacer(modifier = Modifier.height(16.dp))
-
-
 
         Spacer(modifier = Modifier.height(32.dp))
         Text(text = "Don't have an account?")

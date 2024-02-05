@@ -9,4 +9,5 @@ data class User(
     val about : String = "",
     val picture : String = "",
     val type : String ,
+
 )
