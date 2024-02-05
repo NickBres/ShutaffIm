@@ -3,6 +3,7 @@ package com.example.shutaffim
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,12 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.shutaffim.ViewModel.UserPostVM
+import com.example.shutaffim.Model.InterestedInPost
+import com.example.shutaffim.Model.Request
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Intersted(navController: NavController, userPostVM: UserPostVM = UserPostVM()) {
+fun Intersted(navController: NavController,
+                listOfInterested: List<Request> = listOf()) {
 
     val postImg = listOf(
         R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash,
@@ -65,9 +68,11 @@ fun Intersted(navController: NavController, userPostVM: UserPostVM = UserPostVM(
                     .padding(it)
                     .padding(start = 4.dp, end = 4.dp),
             ) {
-//                items() { person ->
-//                    InterstedItem(person ,navController ,Screen.EditPostScreen)
-//                }
+                items(listOfInterested) { request->
+                    InterstedItem(navController,request,Screen.EditPostScreen)
+
+
+                }
             }
 
             if (new_post) {

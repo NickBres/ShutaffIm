@@ -26,7 +26,9 @@ class PostsRepository(
     }
 
     suspend fun getPosts(): Result<List<Post>> = try {
-        val querySnapshot = firestore.collection("posts").get().await()
+        val querySnapshot = firestore.collection("posts")
+            .get()
+            .await()
         // Print out the documents before converting them to Post objects
         val posts = querySnapshot.documents.mapNotNull { document ->
             try {
@@ -75,6 +77,7 @@ class PostsRepository(
         Result.Error(e)
     }
 
+
     suspend fun getPost(postId: String): Result<Post> = try {
         val documentSnapshot = firestore.collection("posts").document(postId).get().await()
         val post = Post(
@@ -103,38 +106,62 @@ class PostsRepository(
         Result.Error(e)
     }
 
-    suspend fun getInterestedInPost(postId: String): Result<List<InterestedInPost>> = try {
-        val querySnapshot =
-            firestore.collection("posts").document(postId).collection("interested").get().await()
-        val interestedInPost =
-            querySnapshot.documents.mapNotNull { it.toObject(InterestedInPost::class.java) }
-        Result.Success(interestedInPost)
-    } catch (e: Exception) {
-        Result.Error(e)
-    }
 
-    suspend fun addInterestedInPost(interestedInPost: InterestedInPost): Result<Boolean> = try {
-        firestore.collection("posts").document(interestedInPost.postId).collection("interested")
-            .add(interestedInPost).await()
-        Result.Success(true)
-    } catch (e: Exception) {
-        Result.Error(e)
-    }
+    suspend fun addInterestedToPost(request: Request): Result<Boolean>? =
+        try {
+            firestore.collection("posts").document(request.postId)
+                .collection("interested")
+                .document(request.userId)
+                .set(request)
+                .await()
 
-    suspend fun deleteInterestedInPost(interestedInPost: InterestedInPost): Result<Boolean> = try {
-        firestore.collection("posts").document(interestedInPost.postId).collection("interested")
-            .document(interestedInPost.userEmail).delete().await()
-        Result.Success(true)
-    } catch (e: Exception) {
-        Result.Error(e)
-    }
+            Result.Success(true)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
 
-    suspend fun updateInterestedInPost(interestedInPost: InterestedInPost): Result<Boolean> = try {
-        firestore.collection("posts").document(interestedInPost.postId).collection("interested")
-            .document(interestedInPost.userEmail).set(interestedInPost).await()
-        Result.Success(true)
-    } catch (e: Exception) {
-        Result.Error(e)
-    }
+    suspend fun removeInterestedFromPost(request: Request): Result<Boolean>? =
+        try {
+            firestore.collection("posts").document(request.postId)
+                .collection("interested")
+                .document(request.userId)
+                .delete()
+                .await()
+
+            Result.Success(true)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+
+    suspend fun getInterestedInPost(postId: String): Result<List<Request>>? =
+        try {
+            val querySnapshot = firestore.collection("posts").document(postId)
+                .collection("interested")
+                .get()
+                .await()
+
+                val users = querySnapshot.documents.mapNotNull { document ->
+                try {
+                    println("1: users data: ${document.data}")
+                    Request(
+                        postId = document.getString("postId") ?: "",
+                        userId = document.getString("userId") ?: "",
+                        isApproved = document.getBoolean("isApproved") ?: false,
+                        message = document.getString("message") ?: ""
+                    ).also { user ->
+                        println("2: Mapped to Request: $user")
+                    }
+
+                } catch (e: Exception) {
+                    println("Exception while manually mapping document to Request: $e")
+                    null
+                }
+            }
+            Result.Success(users)
+        } catch (e: Exception) {
+
+            Result.Error(e)
+        }
+
 
 }

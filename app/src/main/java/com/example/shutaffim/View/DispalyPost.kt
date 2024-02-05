@@ -75,7 +75,6 @@ import com.example.shutaffim.RequestView
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
-import com.example.shutaffim.ViewModel.UserPostVM
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -216,12 +215,12 @@ fun PostScreen(navController: NavController,
                postsVM: PostsVM,
                post: Post,
                currUser: User,
-               userpostVM : UserPostVM = UserPostVM()
+
 ) {
 
-    val interestedListState = userpostVM.interestedInPost.observeAsState()
-    val interestedList = interestedListState.value
-    val intrestedIdList = getInterestedIdList(interestedList)
+    postsVM.getInterestedInPost(post.id)
+    val interestedIdList = postsVM. interestedInPostId
+    val listOfRequest by postsVM.interestedInPost.observeAsState(emptyList())
 
     val sliderList = remember {
         mutableListOf(
@@ -415,13 +414,13 @@ fun PostScreen(navController: NavController,
                     if (interestedClick) {
                         ModalBottomSheet(onDismissRequest = { interestedClick = false },
                             content = {
-                                Intersted(navController = navController)
+                                Intersted(navController = navController,listOfRequest)
                             }
                         )
                     }
                 }
             } else {//if consumer
-                if (intrestedIdList.contains(currUser.email)  == true){
+                if (interestedIdList.contains(currUser.email)){
                     Button(
                         onClick = { interestedClick = !interestedClick
                                     },
@@ -463,7 +462,7 @@ fun PostScreen(navController: NavController,
                         if (interestedClick) {
                             ModalBottomSheet(onDismissRequest = { interestedClick = false },
                                 content = {
-                                    RequestView(currUser, post, UserPostVM())
+                                    RequestView(currUser, post)
                                 }
                             )
                         }
@@ -473,15 +472,7 @@ fun PostScreen(navController: NavController,
         }
     }
 }
-fun getInterestedIdList(interestedList: List<Request>?): List<String> {
-    val intrestedIdList = mutableListOf<String>()
-    if (interestedList != null) {
-        for (interested in interestedList) {
-            intrestedIdList.add(interested.userId)
-        }
-    }
-    return intrestedIdList
-}
+
 
 
 @Preview(showBackground = true)

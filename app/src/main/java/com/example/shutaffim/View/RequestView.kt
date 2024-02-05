@@ -26,16 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
-import com.example.shutaffim.ViewModel.UserPostVM
+import com.example.shutaffim.ViewModel.PostsVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestView(
     user:User,
     post : Post,
-    userpostVM : UserPostVM = UserPostVM()
 ) {
-
+    val postVM = PostsVM()
     var interestedMsg by remember {
         mutableStateOf("")
     }
@@ -80,7 +79,9 @@ fun RequestView(
         ){
             Button(
                 onClick = { /*TODO*/
-                        userpostVM.addInterestedToPost(user.email, post.id, interestedMsg,)
+                        postVM.addInterestedToPost(user.email, post.id, interestedMsg)
+
+
                     enableBtn = false
                           },
                 modifier = Modifier

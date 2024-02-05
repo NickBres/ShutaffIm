@@ -1,5 +1,6 @@
 package com.example.shutaffim.ViewModel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.example.shutaffim.Model.Filter
 import com.example.shutaffim.Model.InterestedInPost
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
+import com.example.shutaffim.Model.Request
 import com.example.shutaffim.Model.Result
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,8 +22,6 @@ class PostsVM : ViewModel() {
     private val _postsUser = MutableLiveData<List<Post>>()
     val postsUser: MutableLiveData<List<Post>> get() = _postsUser
 ////////////////////////////////////////
-    private val _interestedInPost: MutableLiveData<List<InterestedInPost>> = MutableLiveData()
-    val interestedInPost: MutableLiveData<List<InterestedInPost>> get() = _interestedInPost
 
     private var _filter = MutableLiveData<Filter>()
     var filter: MutableLiveData<Filter>
@@ -35,6 +35,8 @@ class PostsVM : ViewModel() {
 
     private val _currPost = MutableLiveData<Post>()
     val currPost: MutableLiveData<Post> get() = _currPost
+
+
 
 
     init {
@@ -160,17 +162,17 @@ class PostsVM : ViewModel() {
         return tags.split(",").map { it.trim() }
     }
 
-    fun loadInterestedInPost(postId: String) {
-        viewModelScope.launch {
-            when (val result = postsRepo.getInterestedInPost(postId)) {
-                is Result.Success -> _interestedInPost.value = result.data!!
-                else -> {
-                    _interestedInPost.value = listOf()
-                    println("Error occurred while loading interested in post")
-                }
-            }
-        }
-    }
+//    fun loadInterestedInPost(postId: String) {
+//        viewModelScope.launch {
+//            when (val result = postsRepo.getInterestedInPost(postId)) {
+//                is Result.Success -> _interestedInPost.value = result.data!!
+//                else -> {
+//                    _interestedInPost.value = listOf()
+//                    println("Error occurred while loading interested in post")
+//                }
+//            }
+//        }
+//    }
 
     fun createNewPost(post: Post ) {
         post.date = System.currentTimeMillis().toString()
@@ -218,47 +220,63 @@ class PostsVM : ViewModel() {
         }
     }
 
-    fun addInterestedInPost(interestedInPost: InterestedInPost) {
-        viewModelScope.launch {
-            when (val result = postsRepo.addInterestedInPost(interestedInPost)) {
-                is Result.Success -> {
-                    loadInterestedInPost(interestedInPost.postId)
-                }
 
-                else -> {
-                    println("Error occurred while adding interested in post")
-                }
+
+    private  val _interestedInPost = MutableLiveData<List<Request>>()
+    val interestedInPost: LiveData<List<Request>> get() = _interestedInPost
+
+    //for id strings
+    private  val _interestedInPostId = mutableListOf<String>()
+    val interestedInPostId: MutableList<String> get() = _interestedInPostId
+
+    private val _upResult = MutableLiveData<Result<Boolean>>()
+    fun addInterestedToPost(userId: String, postId: String,msg: String) {
+        val request = Request(userId, postId, false, msg)
+        viewModelScope.launch {
+            _upResult.value = postsRepo.addInterestedToPost(request)
+            if(_upResult.value is Result.Success){
+                println("Post added to user's posts list")
+            }
+            else if(_upResult.value is Result.Error) {
+                println("Error: ${(_upResult.value as Result.Error).exception.message}")
             }
         }
     }
 
-    fun deleteInterestedInPost(interestedInPost: InterestedInPost) {
+    fun removeInterestedFromPost(userId: String, postId: String) {
+        val request = Request(userId,postId,true)
         viewModelScope.launch {
-            when (val result = postsRepo.deleteInterestedInPost(interestedInPost)) {
-                is Result.Success -> {
-                    loadInterestedInPost(interestedInPost.postId)
-                }
-
-                else -> {
-                    println("Error occurred while removing interested in post")
-                }
+            _upResult.value = postsRepo.removeInterestedFromPost(request)
+            if(_upResult.value is Result.Success){
+                println("Post removed from user's posts list")
+            }
+            else if(_upResult.value is Result.Error) {
+                println("Error: ${(_upResult.value as Result.Error).exception.message}")
             }
         }
     }
 
-    fun updateInterestedInPost(interestedInPost: InterestedInPost) {
+    fun getInterestedInPost(postId: String) {
         viewModelScope.launch {
-            when (val result = postsRepo.updateInterestedInPost(interestedInPost)) {
+            when (val result = postsRepo.getInterestedInPost(postId)) {
                 is Result.Success -> {
-                    loadInterestedInPost(interestedInPost.postId)
+                    _interestedInPost.value = result.data!!
+                    println("Interested users in post: ${result.data}")
+                    getInterestedIdList()
                 }
-
                 else -> {
-                    println("Error occurred while updating interested in post")
+                    println("Error occurred while loading interested users")
                 }
             }
         }
     }
+    fun getInterestedIdList(){
+        for (interested in interestedInPost.value!!) {
+            _interestedInPostId.add(interested.userId)
+            println("gogo interested.userId: ${interested.userId}")
+        }
+    }
+
 
     fun tagsToString(tags: List<String>): String {
         return tags.joinToString(", ")

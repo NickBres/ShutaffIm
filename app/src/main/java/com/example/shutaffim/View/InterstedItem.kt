@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.shutaffim.Model.Request
 
 data class Person(
     val images: List<Int>,
@@ -39,8 +40,9 @@ data class Person(
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InterstedItem(person: Person, navController: NavController, screen: Screen) {
+fun InterstedItem(navController: NavController, request: Request , screen: Screen) {
     val size = 70.dp
+    val dummyPic = R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash
 
     ElevatedCard(
         modifier = Modifier
@@ -69,7 +71,8 @@ fun InterstedItem(person: Person, navController: NavController, screen: Screen) 
                 .height(size)
         ) {
             Image(
-                painter = painterResource(id = person.images[2]),
+                /*TODO: change the image to the user image*/
+                painter = painterResource(dummyPic),
                 contentDescription = "",
                 modifier = Modifier
                     .height(size)
@@ -84,14 +87,14 @@ fun InterstedItem(person: Person, navController: NavController, screen: Screen) 
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = person.name,
+                        text = request.userId,
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                     )
                     Text(
-                        text = person.date
+                        text = "person.date"
                     )
 
 
@@ -108,7 +111,7 @@ fun InterstedItem(person: Person, navController: NavController, screen: Screen) 
                     )
 
                     Text(
-                        text = person.phone,
+                        text = "no-phone for now",
                         modifier = Modifier
                             .padding(start = 8.dp , end =128.dp),
                         style = TextStyle(fontWeight = FontWeight.Bold)
