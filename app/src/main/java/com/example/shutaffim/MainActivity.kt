@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.surface
                 ) {
                     AppNavigator(postsVM = postsVM,authViewModel = authViewModel)
-
                 }
             }
         }

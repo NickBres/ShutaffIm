@@ -20,14 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.shutaffim.Model.Filter
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
-import okhttp3.internal.wait
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +41,9 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(title = { Text(text = "My Posts") }, navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {
+                IconButton(onClick = {
+                    navController.navigate(Screen.TypeScreen.route)
+                }) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
@@ -55,7 +54,10 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
             )
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.EditPostScreen.route) },
+                onClick = {
+                    postsVM.resetPost()
+                    navController.navigate(Screen.EditPostScreen.route)
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {

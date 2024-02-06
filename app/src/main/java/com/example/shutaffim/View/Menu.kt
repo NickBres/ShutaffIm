@@ -60,7 +60,9 @@ fun Menu(
             TopAppBar(
                 title = { androidx.compose.material3.Text(text = "Login") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = {
+                        navController.navigate(Screen.LoginScreen.route)
+                    }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

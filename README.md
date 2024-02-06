@@ -14,17 +14,23 @@ This app is a collaborative university project aimed at providing practical expe
 * [Moshe Nahshon](https://github.com/moshenh01)
 
 ## Features
-- **User Registration/Login**: Secure account creation and sign-in.
-- **Profile Customization**: Users can create profiles detailing their living preferences and accommodation details.
+- **User Registration/Login**: Secure account creation and sign-in. (based on Firebase)
+- **Profile Customization**: Users can create profiles detailing their living preferences and
+  accommodation details.
 - **Advertisement Posting**: Allows users to post their housing requirements and availability.
 - **Search and Filter**: Robust search functionality to locate suitable roommate advertisements based on various criteria.
 
 ## Technology Stack
 - **Frontend**: Jetpack Compose for modern, native UI development on Android.
-- **Backend**: Firebase Authentication for user sign-in, Firebase Realtime Database for storing user and advertisement data.
-- **Version Control and Project Management**: GitHub for collaborative coding, Canva for project management and task tracking.
+- **Backend**: Firebase Authentication for user sign-in, Firebase Realtime Database for storing user
+  and advertisement data.
+- **Version Control and Project Management**: GitHub for collaborative coding and task tracking,
+  Freeform for project management.
 
 ## Collaboration Model
-Our project embraces a collaborative approach, with work divided into sub-tasks and tracked on Freeform. We adopt agile methodologies, iterating over our application based on feedback and continuous learning. Peer code reviews are part of our routine to ensure code quality.
+
+Our project embraces a collaborative approach, with work divided into sub-tasks and tracked on
+Github. We adopt agile methodologies, iterating over our application based on feedback and
+continuous learning. Peer code reviews are part of our routine to ensure code quality.
 
 ![image](https://github.com/NickBres/Project/blob/master/graphics/barak.png)

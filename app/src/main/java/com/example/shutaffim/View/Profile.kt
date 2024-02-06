@@ -115,7 +115,9 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
             TopAppBar(
                 title = { Text("My Profile") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = {
+                        navController.navigate(Screen.TypeScreen.route)
+                    }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

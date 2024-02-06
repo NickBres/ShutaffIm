@@ -56,7 +56,9 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
             TopAppBar(
                 title = { Text(text = "Posts") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = {
+                        navController.navigate(Screen.TypeScreen.route)
+                    }) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back"
