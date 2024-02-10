@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.ViewModel.PostsVM
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +37,8 @@ fun RequestView(
     user:User,
     post : Post,
 ) {
+
+
     val postVM = PostsVM()
     var interestedMsg by remember {
         mutableStateOf("")

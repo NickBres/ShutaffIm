@@ -4,6 +4,7 @@ package com.example.shutaffim
 import EditPost
 import PostsSearch
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -45,7 +46,7 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
             EditPost(navController, postsVM, authViewModel)
         }
         composable(Screen.InterestedScreen.route) {
-            Intersted(navController)
+            Interested(navController,postsVM,authViewModel)
         }
         composable(Screen.ProfileScreen.route) {
             Profile(navController, authViewModel)

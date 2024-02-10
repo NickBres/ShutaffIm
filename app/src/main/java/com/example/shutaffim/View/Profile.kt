@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -58,7 +59,7 @@ import com.example.shutaffim.ui.theme.surface
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun showPic(
+fun ShowPic(
     modifier: Modifier = Modifier,
     imageUrl: String,
     imageHeight: Dp = 200.dp,
@@ -71,22 +72,27 @@ fun showPic(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
-
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .scale(Scale.FILL)
-                .data(imageUrl)
-                .build(),
-            contentDescription = "Image",
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(id = R.drawable.pngwing_com),
-            error = painterResource(id = R.drawable.pngwing_com),
+        Box(
             modifier = modifier
                 .height(imageHeight)
                 .width(imageWidth)
+                .clip(MaterialTheme.shapes.medium) // Apply circular shape
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .scale(Scale.FILL)
+                    .data(imageUrl)
+                    .build(),
+                contentDescription = "Image",
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.pngwing_com),
+                error = painterResource(id = R.drawable.pngwing_com),
+                modifier = modifier
+                    .height(imageHeight)
+                    .width(imageWidth)
 
-        )
-
+            )
+        }
     }
 
 
@@ -131,8 +137,6 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                                 }
                             )
                         }
-
-
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -152,76 +156,85 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
 
         ) {
 
-            showPic(imageUrl = pic)//in rows
+            ShowPic(imageUrl = pic)//in rows
             Spacer(modifier = Modifier.height(32.dp))
-            Box(
+            Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .background(
-                        color = surface,// Set your desired background color
-                        shape = RoundedCornerShape(8.dp) // Set your desired corner radius
-                    )
-            ) {
-                Row(
+                    .size(height = 60.dp, width = 380.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+
+                ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(8.dp),
+                    contentAlignment = Alignment.CenterStart
+
                 ) {
+
                     Text(
                         text = "First Name:  " + user?.fName,
                         style = TextStyle(
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            // Set your desired text color
-                        )
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .background(
-                        color = surface,// Set your desired background color
-                        shape = RoundedCornerShape(8.dp) // Set your desired corner radius
-                    )
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Last Name:  " + user?.lName,
-                        style = TextStyle(
-                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                     )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Box(
+            Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .background(
-                        color = surface,// Set your desired background color
-                        shape = RoundedCornerShape(8.dp) // Set your desired corner radius
-                    )
-            ) {
-                Row(
+                    .size(height = 60.dp, width = 380.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+
+                ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(8.dp),
+                    contentAlignment = Alignment.CenterStart
+
                 ) {
+
+                    Text(
+                        text = "Last Name:  " + user?.lName,
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier
+                    .size(height = 60.dp, width = 380.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+
+                ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    contentAlignment = Alignment.CenterStart
+
+                ) {
+
                     Text(
                         text = "Email:  " + user?.email,
                         style = TextStyle(
@@ -259,17 +272,13 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             ) {
-                BasicTextField(
-                    value = user?.about ?: "",
-                    onValueChange = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    textStyle = TextStyle(
-                        fontSize = 14.sp,
+                Text(text = user?.about?: "No description",
+                    style = TextStyle(
+                        fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
-                    )
+                    ),
+                    modifier = Modifier.padding(8.dp)
                 )
             }
 
