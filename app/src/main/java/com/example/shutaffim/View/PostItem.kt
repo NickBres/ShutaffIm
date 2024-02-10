@@ -38,8 +38,6 @@ fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: 
     val size = 100.dp
 
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    val date = Date(post.date.toLong())
-    val dateString = sdf.format(date)
 
     ElevatedCard(
         modifier = Modifier
