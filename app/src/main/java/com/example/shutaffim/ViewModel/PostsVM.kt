@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shutaffim.Injection
 import com.example.shutaffim.Model.Filter
-import com.example.shutaffim.Model.InterestedInPost
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
 import com.example.shutaffim.Model.Request
@@ -277,9 +276,11 @@ class PostsVM : ViewModel() {
             }
         }
     }
+
     fun getInterestedIdList(){
         _interestedInPostId.clear()
         for (interested in _interestedInPost.value!!) {
+
             _interestedInPostId.add(interested.userId)
             println("gogo interested.userId: ${interested.userId}")
         }
@@ -304,9 +305,29 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
 
 
 
+    fun resetInterestedInPost() {
+        _interestedInPost.value = listOf()
+        _interestedInPostId.clear()
+    }
+
 
     fun tagsToString(tags: List<String>): String {
         return tags.joinToString(", ")
+    }
+
+    fun filterInterestedInPost(email: String) {
+        viewModelScope.launch {
+//            loadPosts()
+//            delay(500)
+            for (post in _posts.value!!) {
+                getInterestedInPost(post.id)
+                delay(100)
+                if (!_interestedInPostId.contains(email)) {
+                    _posts.value = _posts.value?.minus(post)
+                }
+                resetInterestedInPost()
+            }
+        }
     }
 
 

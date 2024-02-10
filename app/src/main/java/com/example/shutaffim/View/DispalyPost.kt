@@ -69,7 +69,6 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.Interested
 import com.example.shutaffim.Model.Post
-import com.example.shutaffim.Model.Request
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
 import com.example.shutaffim.R
@@ -83,7 +82,7 @@ import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CustomSlider(
+private fun CustomSlider(
     modifier: Modifier = Modifier,
     sliderList: MutableList<String>,
     dotsActiveColor: Color = Color.DarkGray,
@@ -255,7 +254,12 @@ fun PostScreen(navController: NavController,
             TopAppBar(
                 title = { Text("Post") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = {
+                        if (currUser.type == UserType.Publisher.type)
+                            navController.navigate(Screen.MyPostsScreen.route)
+                        else
+                            navController.navigate(Screen.PostsSearchScreen.route)
+                    }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

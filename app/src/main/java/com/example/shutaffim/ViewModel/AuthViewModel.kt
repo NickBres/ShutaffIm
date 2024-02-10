@@ -1,5 +1,6 @@
 package com.example.shutaffim.ViewModel
 
+
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
@@ -11,9 +12,9 @@ import com.example.shutaffim.Injection
 import com.example.shutaffim.Model.Result
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserRepo
+import com.example.shutaffim.Screen
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import com.example.shutaffim.Screen
 
 
 class AuthViewModel : ViewModel() {

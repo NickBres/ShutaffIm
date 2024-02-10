@@ -41,6 +41,7 @@ fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: 
     val date = Date(post.date)
     val dateString = sdf.format(date)
 
+
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()

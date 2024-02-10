@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
 import com.example.shutaffim.ui.theme.ShutaffImTheme
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
