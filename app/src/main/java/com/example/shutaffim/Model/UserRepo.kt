@@ -85,6 +85,30 @@ class UserRepo(private val auth: FirebaseAuth,
             Result.Error(e)
         }
     }
+    suspend fun getUserDataById(email: String): Result<User> = try {
+
+        val userDocument = firestore.collection("users").document(email).get().await()
+        if(userDocument.exists()){
+            val user = User(
+                email = userDocument.getString("email") ?: "",
+                fName = userDocument.getString("fname") ?: "",
+                lName = userDocument.getString("lname") ?: "",
+                about = userDocument.getString("about") ?: "",
+                picture = userDocument.getString("picture") ?: "",
+                type = userDocument.getString("type") ?: ""
+            )
+            if (user != null) {
+                Result.Success(user)
+            } else {
+                Result.Error(Exception("User data not found"))
+            }
+        }
+        else{
+            Result.Error(Exception("User data not found"))
+        }
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
 
     suspend fun getCurrentUser(): Result<User> = try {
         val uid = auth.currentUser?.email

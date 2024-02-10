@@ -1,5 +1,6 @@
 package com.example.shutaffim.ViewModel
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -76,7 +77,7 @@ class PostsVM : ViewModel() {
     fun resetPost() {
         _currPost.value = Post(
             id = "",
-            date = "",
+            date = 0L,
             city = "",
             street = "",
             house_num = 0,
@@ -174,7 +175,7 @@ class PostsVM : ViewModel() {
 //    }
 
     fun createNewPost(post: Post ) {
-        post.date = System.currentTimeMillis().toString()
+        post.date = System.currentTimeMillis()
         viewModelScope.launch {
             when (val result = postsRepo.createPost(post )) {
                 is Result.Success -> {
@@ -204,9 +205,9 @@ class PostsVM : ViewModel() {
         }
     }
 
-    fun deletePost(postid: String) {
+    fun deletePost(postId: String) {
         viewModelScope.launch {
-            when (val result = postsRepo.deletePost(postid)) {
+            when (val result = postsRepo.deletePost(postId)) {
                 is Result.Success -> {
                     loadPosts()
                     /* TODO: Filter to my posts */
@@ -229,8 +230,12 @@ class PostsVM : ViewModel() {
     val interestedInPostId: MutableList<String> get() = _interestedInPostId
 
     private val _upResult = MutableLiveData<Result<Boolean>>()
+
+
+
     fun addInterestedToPost(userId: String, postId: String,msg: String) {
-        val request = Request(userId, postId, false, msg)
+        val date = System.currentTimeMillis()
+        val request = Request(userId, postId,date, isApproved = false, msg)
         viewModelScope.launch {
             _upResult.value = postsRepo.addInterestedToPost(request)
             if(_upResult.value is Result.Success){
@@ -243,11 +248,13 @@ class PostsVM : ViewModel() {
     }
 
     fun removeInterestedFromPost(userId: String, postId: String) {
-        val request = Request(userId,postId,true)
+        val request = Request(userId,postId, isApproved = true)
         viewModelScope.launch {
             _upResult.value = postsRepo.removeInterestedFromPost(request)
             if(_upResult.value is Result.Success){
+                deleteInterestedIdFromList(userId)
                 println("Post removed from user's posts list")
+                getInterestedInPost(postId)
             }
             else if(_upResult.value is Result.Error) {
                 println("Error: ${(_upResult.value as Result.Error).exception.message}")
@@ -270,12 +277,33 @@ class PostsVM : ViewModel() {
         }
     }
 
-    fun getInterestedIdList() {
-        for (interested in interestedInPost.value!!) {
+    fun getInterestedIdList(){
+        _interestedInPostId.clear()
+        for (interested in _interestedInPost.value!!) {
+
             _interestedInPostId.add(interested.userId)
             println("gogo interested.userId: ${interested.userId}")
         }
     }
+    fun deleteInterestedIdFromList(userId: String){
+        _interestedInPostId.remove(userId)
+    }
+
+
+
+fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
+    viewModelScope.launch {
+        _upResult.value = postsRepo.updateIsApproved(postId, userId, isApproved)
+        if(_upResult.value is Result.Success){
+            println("isApproved updated")
+        }
+        else if(_upResult.value is Result.Error) {
+            println("Error: ${(_upResult.value as Result.Error).exception.message}")
+        }
+    }
+}
+
+
 
     fun resetInterestedInPost() {
         _interestedInPost.value = listOf()
@@ -301,6 +329,7 @@ class PostsVM : ViewModel() {
             }
         }
     }
+
 
 
 }

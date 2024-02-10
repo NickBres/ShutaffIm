@@ -529,7 +529,7 @@ fun EditPost(
                     onClick = {
                         val newPost = Post(
                             id = post.value?.id ?: "",
-                            date = post.value?.date ?: "",
+                            date = post.value?.date ?: System.currentTimeMillis(),
                             city = city,
                             street = street,
                             house_num = house_num.toInt(),

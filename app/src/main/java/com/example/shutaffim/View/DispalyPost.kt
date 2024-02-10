@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -61,11 +62,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.example.shutaffim.Intersted
+import com.example.shutaffim.Interested
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
@@ -175,7 +177,7 @@ fun DisplayPost(navController: NavController,
 
     val default = Post(
         "0",
-        "0",
+        0L,
         "0",
         "0",
         0,
@@ -193,16 +195,21 @@ fun DisplayPost(navController: NavController,
     val post by postsVM.currPost.observeAsState(default)
     val currUser by authViewModel.currentUser.observeAsState(default)
 
+    postsVM.getInterestedInPost(post.id)
+
+
 
 
     when {
         post == default -> Text("Loading")
         currUser == default -> Text("Loading")
 
+
         else -> PostScreen(navController = navController,
             postsVM = postsVM,
             post,
             currUser as User,
+            authViewModel = authViewModel
             )
     }
 }
@@ -213,12 +220,14 @@ fun PostScreen(navController: NavController,
                postsVM: PostsVM,
                post: Post,
                currUser: User,
+               authViewModel: AuthViewModel
 
 ) {
 
-    postsVM.getInterestedInPost(post.id)
-    val interestedIdList = postsVM. interestedInPostId
+    val interestedIdList = postsVM.interestedInPostId
+
     val listOfRequest by postsVM.interestedInPost.observeAsState(emptyList())
+
 
     val sliderList = remember {
         mutableListOf(
@@ -232,6 +241,9 @@ fun PostScreen(navController: NavController,
 
     var interestedClick by remember {
         mutableStateOf(false)
+    }
+    var enableBtn by remember {
+        mutableStateOf(true)
     }
 
     Scaffold(
@@ -384,17 +396,14 @@ fun PostScreen(navController: NavController,
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             ) {
-                BasicTextField(
-                    value = post.about,
-                    onValueChange = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    textStyle = TextStyle(
-                        fontSize = 14.sp,
+
+                Text(text = post.about,
+                    style = TextStyle(
+                        fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
-                    )
+                    ),
+                    modifier = Modifier.padding(8.dp)
                 )
             }
             Spacer(modifier = Modifier.height(54.dp))
@@ -417,7 +426,7 @@ fun PostScreen(navController: NavController,
                     if (interestedClick) {
                         ModalBottomSheet(onDismissRequest = { interestedClick = false },
                             content = {
-                                Intersted(navController = navController,listOfRequest)
+                                Interested(navController = navController, postsVM = postsVM, userVM = authViewModel)
                             }
                         )
                     }
@@ -426,15 +435,16 @@ fun PostScreen(navController: NavController,
                 if (interestedIdList.contains(currUser.email)){
                     Button(
                         onClick = { interestedClick = !interestedClick
-                                    },
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         colors = ButtonDefaults.buttonColors(
 
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            containerColor = colorResource(id = R.color.lightGreen),
                         )
                     ) {
+
                         Text(
                             text = "Already interested",
                             style = TextStyle(
@@ -444,11 +454,16 @@ fun PostScreen(navController: NavController,
                             )
                         )
                     }
+
+
                 } else {
                     Button(
-                        onClick = { interestedClick = !interestedClick
-
-                                    },
+                        onClick = {
+                            if(!interestedIdList.contains(currUser.email)) {
+                                interestedClick = !interestedClick }
+                            enableBtn = false
+                        },
+                        enabled = enableBtn,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
@@ -466,10 +481,13 @@ fun PostScreen(navController: NavController,
                             ModalBottomSheet(onDismissRequest = { interestedClick = false },
                                 content = {
                                     RequestView(currUser, post)
+
+
                                 }
                             )
                         }
                     }
+
                 }
             }
         }

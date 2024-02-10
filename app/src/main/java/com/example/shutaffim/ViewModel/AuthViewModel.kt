@@ -1,5 +1,8 @@
 package com.example.shutaffim.ViewModel
 
+
+import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -54,6 +57,10 @@ class AuthViewModel : ViewModel() {
 
             }
             else if(_authResult.value is Result.Error) {
+                Toast.makeText(
+                    navController.context,
+                    "Error: ${(_authResult.value as Result.Error).exception.message}",
+                    Toast.LENGTH_SHORT).show()
                 println("Error: ${(_authResult.value as Result.Error).exception.message}")
             }
         }
@@ -85,6 +92,22 @@ class AuthViewModel : ViewModel() {
             when (val result = userRepo.getCurrentUser()) {
                 is Result.Success -> {
                     _currentUser.value = result.data.copy()///add copy
+                    println("User data: ${result.data}")
+                }
+
+                is Result.Error -> {
+                    println("Failed to get user data")
+                }
+            }
+        }
+    }
+    private val _getUserFromId = MutableLiveData<User>()
+    val getUserFromId: LiveData<User> get() = _getUserFromId
+    fun getUserDataById(email: String) {
+        viewModelScope.launch {
+            when (val result = userRepo.getUserDataById(email)) {
+                is Result.Success -> {
+                    _getUserFromId.value = result.data.copy()///add copy
                     println("User data: ${result.data}")
                 }
 

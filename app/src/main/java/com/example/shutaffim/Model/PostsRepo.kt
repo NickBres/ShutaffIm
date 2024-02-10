@@ -36,7 +36,7 @@ class PostsRepository(
                 // Manually create a Post object from the document
                 Post(
                     id = document.id, // Assuming 'id' is always present and is the document ID
-                    date = document.getString("date") ?: "",
+                    date = document.getLong("date") ?: 0L,
                     city = document.getString("city") ?: "",
                     street = document.getString("street") ?: "",
                     house_num = document.getLong("house_num")?.toInt() ?: 0,
@@ -82,7 +82,7 @@ class PostsRepository(
         val documentSnapshot = firestore.collection("posts").document(postId).get().await()
         val post = Post(
             id = documentSnapshot.id,
-            date = documentSnapshot.getString("date") ?: "",
+            date = documentSnapshot.getLong("date") ?: 0L,
             city = documentSnapshot.getString("city") ?: "",
             street = documentSnapshot.getString("street") ?: "",
             house_num = documentSnapshot.getLong("house_num")?.toInt() ?: 0,
@@ -140,12 +140,13 @@ class PostsRepository(
                 .get()
                 .await()
 
-                val users = querySnapshot.documents.mapNotNull { document ->
+            val users = querySnapshot.documents.mapNotNull { document ->
                 try {
                     println("1: users data: ${document.data}")
                     Request(
                         postId = document.getString("postId") ?: "",
                         userId = document.getString("userId") ?: "",
+                        date = document.getLong("date") ?: 0L,
                         isApproved = document.getBoolean("isApproved") ?: false,
                         message = document.getString("message") ?: ""
                     ).also { user ->
@@ -162,6 +163,17 @@ class PostsRepository(
 
             Result.Error(e)
         }
+    suspend fun updateIsApproved(postId: String, userId: String, isApproved: Boolean): Result<Boolean>? =
+        try {
+            firestore.collection("posts").document(postId)
+                .collection("interested")
+                .document(userId)
+                .update("isApproved", isApproved)
+                .await()
 
+            Result.Success(true)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
 
 }

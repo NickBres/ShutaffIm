@@ -16,22 +16,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.InterestedInPost
 import com.example.shutaffim.Model.Request
+import com.example.shutaffim.ViewModel.AuthViewModel
+import com.example.shutaffim.ViewModel.PostsVM
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Intersted(navController: NavController,
-                listOfInterested: List<Request> = listOf()) {
+fun Interested(
+    navController: NavController,
+    postsVM : PostsVM,
+    userVM: AuthViewModel
+) {
+
+
+
 
     val postImg = listOf(
         R.drawable.connor_jalbert_5b1mb7sdbg0_unsplash,
@@ -43,44 +59,26 @@ fun Intersted(navController: NavController,
         mutableStateOf(false)
     }
 
-
-    ///  var listOfInterestedInPost = userPostVM.interestedInPost.observeAsState()
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(title = { Text(text = "Intersted") }, navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                titleContentColor = MaterialTheme.colorScheme.primary,
-                navigationIconContentColor = MaterialTheme.colorScheme.primary
-            )
-            )
-        }, floatingActionButton = {
-
-        }, content = {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-                    .padding(start = 4.dp, end = 4.dp),
-            ) {
-                items(listOfInterested) { request->
-                    InterstedItem(navController,request,Screen.EditPostScreen)
+   val listOfInterested by postsVM.interestedInPost.observeAsState(initial = listOf())
+    postsVM.getInterestedInPost(postsVM.currPost.value!!.id)
 
 
-                }
-            }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+            .padding(start = 4.dp, end = 4.dp),
+    ) {
+        items(listOfInterested) { request ->
+            InterestedItem(navController = navController, request = request, postsVM, userVM = userVM)
+        }
+    }
 
-            if (new_post) {
-                ModalBottomSheet(onDismissRequest = { new_post = false }, content = {
+    if (new_post) {
+        ModalBottomSheet(onDismissRequest = { new_post = false }, content = {
 
-                })
-            }
         })
+    }
 }
 
 
