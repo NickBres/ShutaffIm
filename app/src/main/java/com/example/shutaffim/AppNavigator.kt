@@ -33,7 +33,7 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
             EditProfileScreen(navController, authViewModel)
         }
         composable(Screen.PostsSearchScreen.route) {
-            PostsSearch(navController, postsVM)
+            PostsSearch(navController, postsVM, authViewModel)
         }
         composable(Screen.PostScreen.route) {
             DisplayPost(navController, postsVM, authViewModel)

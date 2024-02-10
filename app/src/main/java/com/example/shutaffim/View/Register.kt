@@ -53,9 +53,9 @@ import com.example.shutaffim.ViewModel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Register(
+private fun Register(
     navController: NavController,
-     authViewModel: AuthViewModel ,
+    authViewModel: AuthViewModel,
 ) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }

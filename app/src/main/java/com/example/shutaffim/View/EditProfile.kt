@@ -48,7 +48,7 @@ import com.example.shutaffim.ViewModel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfile(navController: NavController, authVM: AuthViewModel) {
+private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }

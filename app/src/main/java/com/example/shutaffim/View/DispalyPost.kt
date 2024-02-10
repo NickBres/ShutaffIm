@@ -80,7 +80,7 @@ import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CustomSlider(
+private fun CustomSlider(
     modifier: Modifier = Modifier,
     sliderList: MutableList<String>,
     dotsActiveColor: Color = Color.DarkGray,
@@ -170,7 +170,6 @@ fun CustomSlider(
 fun DisplayPost(navController: NavController,
                 postsVM: PostsVM,
                 authViewModel: AuthViewModel,
-
                 ) {
 
 

@@ -58,7 +58,7 @@ import com.example.shutaffim.ui.theme.surface
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun showPic(
+private fun showPic(
     modifier: Modifier = Modifier,
     imageUrl: String,
     imageHeight: Dp = 200.dp,

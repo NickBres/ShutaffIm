@@ -32,11 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -46,7 +44,7 @@ import com.example.shutaffim.ViewModel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Menu(
+private fun Menu(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
@@ -122,7 +120,7 @@ fun Menu(
                 } else if (currUser.value?.type == UserType.Consumer.type) {
 
                     ExtendedFloatingActionButton(
-                        onClick = { /* TODO: Navigate to login screen */
+                        onClick = {
                             navController.navigate(Screen.PostsSearchScreen.route)
                         },
                         icon = {
@@ -186,8 +184,4 @@ fun MenuScreen(navController: NavController, authViewModel: AuthViewModel) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TypeScreenViewPreview() {
-    MenuScreen(navController = NavController(LocalContext.current), authViewModel = AuthViewModel())
-}
+

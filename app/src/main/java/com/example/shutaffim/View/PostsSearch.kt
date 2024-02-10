@@ -24,9 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -34,17 +32,22 @@ import com.example.shutaffim.FilterAndSearch
 import com.example.shutaffim.PostItem
 import com.example.shutaffim.R
 import com.example.shutaffim.Screen
+import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
+fun PostsSearch(
+    navController: NavController,
+    postsVM: PostsVM = viewModel(),
+    authViewModel: AuthViewModel = viewModel()
+) {
 
     var showSearch by remember {
         mutableStateOf(false)
     }
     var assignedPostsOnly by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     val posts by postsVM.posts.observeAsState(emptyList())
@@ -68,6 +71,9 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
                 actions = {
                     IconButton(onClick = { assignedPostsOnly = !assignedPostsOnly }) {
                         if (assignedPostsOnly) {
+                            postsVM.filterInterestedInPost(
+                                authViewModel.currentUser.value?.email ?: ""
+                            )
                             Icon(
                                 painter = painterResource(id = R.drawable.task_icon),
                                 contentDescription = "Assigned Posts",
@@ -75,6 +81,7 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
                                 modifier = Modifier.size(32.dp)
                             )
                         } else {
+                            postsVM.loadPosts()
                             Icon(
                                 painter = painterResource(id = R.drawable.desc_icon),
                                 contentDescription = "Assigned Posts",
@@ -93,7 +100,10 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showSearch = !showSearch },
+                onClick = {
+                    assignedPostsOnly = false
+                    showSearch = !showSearch
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -127,12 +137,5 @@ fun PostsSearch(navController: NavController, postsVM: PostsVM = viewModel()) {
             }
         }
     )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PostsSearchViewPreview() {
-    PostsSearch(navController = NavController(LocalContext.current))
 }
 
