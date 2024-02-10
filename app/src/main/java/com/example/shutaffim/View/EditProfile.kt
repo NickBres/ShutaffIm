@@ -91,7 +91,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                 Spacer(modifier = Modifier.height(60.dp))
 
                 Text(
-                    text = "Profile",
+                    text = "Edit Profile",
                     style = TextStyle(
                         fontSize = 40.sp,
                         color = MaterialTheme.colorScheme.primary,
