@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
-import com.example.shutaffim.Model.InterestedInPost
+//import com.example.shutaffim.Model.InterestedInPost
 import com.example.shutaffim.Model.Request
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM

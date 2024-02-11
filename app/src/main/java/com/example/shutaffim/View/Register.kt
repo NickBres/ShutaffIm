@@ -128,28 +128,6 @@ private fun Register(
                     keyboardType = KeyboardType.Email,
                 )
             )
-
-
-//
-//            OutlinedTextField(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(16.dp),
-//                value = phoneNumber,
-//                onValueChange = { phoneNumber = it },
-//                label = { Text(text = "Phone Number") },
-//                colors = TextFieldDefaults.outlinedTextFieldColors(
-//                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-//                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-//                    cursorColor = MaterialTheme.colorScheme.primary
-//                ),
-//                keyboardOptions = KeyboardOptions.Default.copy(
-//                    keyboardType = KeyboardType.Phone,
-//                )
-//            )
-
-
-
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -144,6 +144,7 @@ private fun Menu(
                 Spacer(modifier = Modifier.height(70.dp))
 
                 TextButton(onClick = {
+                    authViewModel.insertIsMyPost(true)
                     navController.navigate(Screen.ProfileScreen.route)
                 }) {
                     Text(

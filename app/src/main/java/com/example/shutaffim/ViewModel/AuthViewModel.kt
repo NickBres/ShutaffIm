@@ -22,6 +22,16 @@ class AuthViewModel : ViewModel() {
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> get() = _currentUser
 
+
+    //////
+    private val _currentintersted = MutableLiveData<User>()
+
+    val currentintersted: LiveData<User> get() = _currentintersted
+
+    private val _isMyPost = MutableLiveData<Boolean>()
+
+    val isMyPost: LiveData<Boolean> get() = _isMyPost
+
     init {
         userRepo = UserRepo(
             auth = FirebaseAuth.getInstance(),
@@ -31,6 +41,7 @@ class AuthViewModel : ViewModel() {
 
     private val _authResult = MutableLiveData<Result<Boolean>>()
     val authResult: LiveData<Result<Boolean>> get() = _authResult
+
 
     /*TODO: for loading indicator */
     //private var signUpInProgress = mutableStateOf(false)
@@ -80,6 +91,10 @@ class AuthViewModel : ViewModel() {
                 navController.navigate(Screen.TypeScreen.route)
             }
             else if(_authResult.value is Result.Error) {
+                Toast.makeText(
+                    navController.context,
+                    "Error: ${(_authResult.value as Result.Error).exception.message}",
+                    Toast.LENGTH_SHORT).show()
                 println("Error: ${(_authResult.value as Result.Error).exception.message}")
             }
 
@@ -118,6 +133,26 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun insertcurrentintersted(email: String) {
+        viewModelScope.launch {
+            when (val result = userRepo.getUserDataById(email)) {
+                is Result.Success -> {
+                    _isMyPost.value = false
+                    _currentintersted.value = result.data.copy()///add copy
+                    println("User data: ${result.data}")
+                }
+
+                is Result.Error -> {
+                    println("Failed to get user data")
+                }
+            }
+        }
+    }
+    fun insertIsMyPost(boolean: Boolean) {
+        viewModelScope.launch {
+            _isMyPost.value = boolean
+        }
+    }
     fun logout() {
         viewModelScope.launch {
             _authResult.value = userRepo.logout()

@@ -103,15 +103,43 @@ private fun ShowPic(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(navController: NavController, authVM: AuthViewModel) {
+
+
     val pic = remember {
 
         "https://www.gstatic.com/webp/gallery/5.webp"
     }
 
     val user by authVM.currentUser.observeAsState()
+    val userintersted by authVM.currentintersted.observeAsState()
 
     var EditClick by remember {
         mutableStateOf(false)
+    }
+    var FirstName by remember {
+        mutableStateOf("")
+    }
+    var LastName by remember {
+        mutableStateOf("")
+    }
+    var Email by remember {
+        mutableStateOf("")
+    }
+    var about_user by remember {
+        mutableStateOf("")
+    }
+    if (authVM.isMyPost.value == true){
+        FirstName = user?.fName ?: ""
+        LastName = user?.lName ?: ""
+        Email = user?.email ?: ""
+        about_user = user?.about ?: ""
+
+    }else{
+        FirstName = userintersted?.fName ?: ""
+        LastName = userintersted?.lName ?: ""
+        Email = userintersted?.email ?: ""
+        about_user = userintersted?.about ?: ""
+
     }
 
     Scaffold(
@@ -128,15 +156,11 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = { navController.navigate(Screen.EditProfileScreen.route) }) {
-                        Icon(Icons.Filled.Edit, contentDescription = "Edit")
-                        if (EditClick) {
-                            ModalBottomSheet(onDismissRequest = { EditClick = false },
-                                content = {
 
-                                }
-                            )
+                actions = {
+                    if (authVM.isMyPost.value == true) {
+                        IconButton(onClick = { navController.navigate(Screen.EditProfileScreen.route) }) {
+                            Icon(Icons.Filled.Edit, contentDescription = "Edit")
                         }
                     }
                 },
@@ -178,7 +202,7 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                 ) {
 
                     Text(
-                        text = "First Name:  " + user?.fName,
+                        text = "First Name:  $FirstName",
                         style = TextStyle(
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -207,7 +231,7 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                 ) {
 
                     Text(
-                        text = "Last Name:  " + user?.lName,
+                        text = "Last Name:  $LastName",
                         style = TextStyle(
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -237,7 +261,7 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                 ) {
 
                     Text(
-                        text = "Email:  " + user?.email,
+                        text = "Email:  $Email",
                         style = TextStyle(
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -273,7 +297,7 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             ) {
-                Text(text = user?.about?: "No description",
+                Text(text = about_user,
                     style = TextStyle(
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface,

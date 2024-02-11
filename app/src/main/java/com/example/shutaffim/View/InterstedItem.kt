@@ -3,6 +3,7 @@ package com.example.shutaffim
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -188,6 +189,9 @@ fun InterestedItem(navController: NavController,
                                 .fillMaxWidth()
                                 .padding(16.dp)
                                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.0f))
+                                .clickable {
+                                    userVM.insertcurrentintersted(request.userId)
+                                    navController.navigate(Screen.ProfileScreen.route)/* do something when clicked */ }
                         ) {
                             Text(
                                 text = request.message,
