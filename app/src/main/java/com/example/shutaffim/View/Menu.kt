@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,7 +52,7 @@ private fun Menu(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { androidx.compose.material3.Text(text = "Login") },
+                title = { Text(text = "Login") },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.navigate(Screen.LoginScreen.route)
@@ -140,6 +141,34 @@ private fun Menu(
                             .size(280.dp)
                     )
                 }
+
+                Spacer(modifier = Modifier.height(70.dp))
+
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        navController.navigate(Screen.ForumScreen.route)
+                    },
+                    icon = {
+                        Icon(
+                            Icons.Default.MailOutline,
+                            "Search icon",
+                            modifier = Modifier.size(32.dp) // Adjust the size as needed
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "Forum",
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .height(100.dp)
+                        .size(280.dp)
+                )
 
                 Spacer(modifier = Modifier.height(70.dp))
 
