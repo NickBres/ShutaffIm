@@ -2,9 +2,9 @@ package com.example.shutaffim
 
 
 import EditPost
+import NewPost
 import PostsSearch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -50,6 +50,9 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
         }
         composable(Screen.ProfileScreen.route) {
             Profile(navController, authViewModel)
+        }
+        composable(Screen.NewPostScreen.route) {
+            NewPost(navController, postsVM, authViewModel)
         }
     }
 }

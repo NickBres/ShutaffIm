@@ -11,5 +11,5 @@ sealed class Screen(val route: String) {
     object EditPostScreen : Screen("EditPostScr")
     object InterestedScreen : Screen("InterestedScr")
     object ProfileScreen : Screen("ProfileScr")
-
+    object NewPostScreen : Screen("NewPostScr")
 }
