@@ -54,7 +54,7 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
         }
 
         composable(Screen.NewPostScreen.route) {
-            NewPost(navController, postsVM, authViewModel
+            NewPost(navController, postsVM, authViewModel)
                     }
         composable(Screen.ForumScreen.route) {
             Forum(navController)
