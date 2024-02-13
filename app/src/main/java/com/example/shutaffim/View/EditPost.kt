@@ -49,10 +49,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.shutaffim.Model.Post
@@ -65,7 +63,7 @@ import com.example.shutaffim.ViewModel.PostsVM
 @Composable
 fun EditPost(
     navController: NavController,
-    postsVM: PostsVM = viewModel(),
+    postsVM: PostsVM,
     authVM: AuthViewModel
 ) {
     var user = authVM.currentUser.observeAsState()
@@ -155,7 +153,7 @@ fun EditPost(
 
                     IconButton(onClick = {
                         postsVM.deletePost(post.value?.id ?: "")
-                        navController.navigateUp()
+                        navController.navigate(Screen.MyPostsScreen.route)
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
@@ -540,10 +538,7 @@ fun EditPost(
                             about = about_apartment,
                             userId = userId
                         )
-                        if (post.value == null || post.value?.id == "")
-                            postsVM.createNewPost(newPost)
-                        else
-                            postsVM.updatePost(newPost)
+                        postsVM.updatePost(newPost)
                         postsVM.resetPost()
                         navController.navigate(Screen.MyPostsScreen.route)
                     },
@@ -564,18 +559,4 @@ fun EditPost(
 
         }//content
     )//Scaffold
-}
-
-
-
-
-
-
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun EditSecreenViewPreview() {
-//    EditPost(navController = NavController(LocalContext.current))
 }

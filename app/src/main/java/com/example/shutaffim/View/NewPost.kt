@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -49,10 +48,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.shutaffim.Model.Post
@@ -64,10 +61,10 @@ import com.example.shutaffim.ViewModel.PostsVM
 @Composable
 fun NewPost(
     navController: NavController,
-    postsVM: PostsVM = viewModel(),
+    postsVM: PostsVM,
     authVM: AuthViewModel
 ) {
-    var user = authVM.currentUser.observeAsState()
+    val user = authVM.currentUser.observeAsState()
 
     var userId by remember {
         mutableStateOf( "")
@@ -98,15 +95,6 @@ fun NewPost(
     var about_apartment by remember {
         mutableStateOf("")
     }
-    val post = postsVM.currPost.observeAsState()
-    city = post.value?.city ?: ""
-    street = post.value?.street ?: ""
-    house_num = post.value?.house_num.toString()
-    current_partner = post.value?.curr_roommates.toString()
-    max_partner = post.value?.max_roommates.toString()
-    price = post.value?.price.toString()
-    about_apartment = post.value?.about ?: ""
-    tags = postsVM.tagsToString(post.value?.tags ?: emptyList())
 
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 // Handle the result of the image picker
@@ -463,8 +451,8 @@ fun NewPost(
                 Button(
                     onClick = {
                         val newPost = Post(
-                            id = post.value?.id ?: "",
-                            date = post.value?.date ?: System.currentTimeMillis(),
+                            id = "",
+                            date = System.currentTimeMillis(),
                             city = city,
                             street = street,
                             house_num = house_num.toInt(),
@@ -475,11 +463,7 @@ fun NewPost(
                             about = about_apartment,
                             userId = userId
                         )
-                        if (post.value == null || post.value?.id == "")
-                            postsVM.createNewPost(newPost)
-                        else
-                            postsVM.updatePost(newPost)
-                        postsVM.resetPost()
+                        postsVM.createNewPost(newPost)
                         navController.navigate(Screen.MyPostsScreen.route)
                     },
                     modifier = Modifier
@@ -491,15 +475,8 @@ fun NewPost(
                 ) {
                     Text(text = "Save")
                 }
-
-
             }
 
         }//content
     )//Scaffold
-}
-@Preview(showBackground = true)
-@Composable
-fun NewPostSecreenViewPreview() {
-//    NewPost(navController = NavController(LocalContext.current))
 }

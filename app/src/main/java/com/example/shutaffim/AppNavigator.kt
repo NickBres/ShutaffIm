@@ -21,7 +21,7 @@ import com.example.shutaffim.ViewModel.PostsVM
 @Composable
 fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.TopicScreen.route) {
+    NavHost(navController = navController, startDestination = Screen.LoginScreen.route) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(navController, authViewModel)
         }
