@@ -56,7 +56,7 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
             FloatingActionButton(
                 onClick = {
                     postsVM.resetPost()
-                    navController.navigate(Screen.EditPostScreen.route)
+                    navController.navigate(Screen.NewPostScreen.route)
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
