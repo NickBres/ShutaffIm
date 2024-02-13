@@ -5,5 +5,6 @@ data class Topic(
     val title: String,
     val description: String,
     val email: String,
-    val date: Long
+    val date: Long,
+    val userName: String = ""
 )
