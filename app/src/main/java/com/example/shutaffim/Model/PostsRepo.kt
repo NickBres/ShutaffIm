@@ -109,10 +109,17 @@ class PostsRepository(
 
     suspend fun addInterestedToPost(request: Request): Result<Boolean>? =
         try {
+            val newRequest = Request(
+                postId = request.postId,
+                userId = request.userId,
+                date = request.date,
+                isApproved = request.isApproved,
+                message = request.message
+            )
             firestore.collection("posts").document(request.postId)
                 .collection("interested")
                 .document(request.userId)
-                .set(request)
+                .set(newRequest)
                 .await()
 
             Result.Success(true)
