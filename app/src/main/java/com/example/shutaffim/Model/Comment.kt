@@ -4,5 +4,6 @@ data class Comment(
     val id: String,
     val text: String,
     val email: String,
-    val date: Long
+    val date: Long,
+    val userName: String = ""
 )

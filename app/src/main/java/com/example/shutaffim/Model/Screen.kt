@@ -13,5 +13,6 @@ sealed class Screen(val route: String) {
     object ProfileScreen : Screen("ProfileScr")
 
     object ForumScreen : Screen("ForumScr")
+    object TopicScreen : Screen("TopicScr")
 
 }
