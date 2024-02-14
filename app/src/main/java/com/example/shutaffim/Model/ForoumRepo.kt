@@ -77,7 +77,7 @@ class ForoumRepo(private val firestore: FirebaseFirestore)
         Result.Error(e)
     }
 
-    suspend fun addCommentToTitle(foroum: Foroum): Result<Boolean>? =
+    suspend fun addCommentToTitle(titleId: String,foroum: Foroum): Result<Boolean>? =
         try {
             val newTitle = Foroum(
                 id = foroum.id,
@@ -88,7 +88,7 @@ class ForoumRepo(private val firestore: FirebaseFirestore)
                 userName = foroum.userName
 
             )
-            firestore.collection("foroum").document(foroum.id)
+            firestore.collection("foroum").document(titleId)
                 .collection("Comments")
                 .document(newTitle.id)
                 .set(newTitle)
@@ -99,11 +99,11 @@ class ForoumRepo(private val firestore: FirebaseFirestore)
             Result.Error(e)
         }
 
-    suspend fun removeCommentFromTitle(foroum: Foroum): Result<Boolean>? =
+    suspend fun removeCommentFromTitle(titleId: String,commentId :String): Result<Boolean>? =
         try {
-            firestore.collection("foroum").document(foroum.id)
+            firestore.collection("foroum").document(titleId)
                 .collection("Comments")
-                .document(foroum.id)
+                .document(commentId)
                 .delete()
                 .await()
 
@@ -112,7 +112,7 @@ class ForoumRepo(private val firestore: FirebaseFirestore)
             Result.Error(e)
         }
 
-    suspend fun getInterestedInPost(titleId: String): Result<List<Foroum>>? =
+    suspend fun getComments(titleId: String): Result<List<Foroum>>? =
         try {
             val querySnapshot = firestore.collection("foroum").document(titleId)
                 .collection("Comments")
