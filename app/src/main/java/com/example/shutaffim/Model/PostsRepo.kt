@@ -18,7 +18,6 @@ class PostsRepository(
     suspend fun createPost(post: Post): Result<Boolean> = try {
         val documentReference = firestore.collection("posts").add(post).await()
         val postId = documentReference.id
-//        val userId
         documentReference.update("id", postId).await()
         Result.Success(true)
     } catch (e: Exception) {

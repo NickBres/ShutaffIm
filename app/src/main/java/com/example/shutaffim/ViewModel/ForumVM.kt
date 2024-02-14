@@ -2,14 +2,11 @@ package com.example.shutaffim.ViewModel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.shutaffim.Injection
-import com.example.shutaffim.Model.Post
-import com.example.shutaffim.Model.PostsRepository
-import com.example.shutaffim.Model.Topic
 import com.example.shutaffim.Model.ForumRepo
 import com.example.shutaffim.Model.Result
+import com.example.shutaffim.Model.Topic
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -80,35 +77,6 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
                 }
                 else -> {
                     println("Error occurred while creating topic")
-                }
-            }
-        }
-    }
-    fun updateTopic(topic: Topic) {
-        viewModelScope.launch {
-            when (val result = forumRepo.updateTopic(topic)) {
-                is Result.Success -> {
-                    loadTopics()
-                    /* TODO: Filter to my posts */
-                }
-
-                else -> {
-                    println("Error occurred while updating topic")
-                }
-            }
-        }
-    }
-
-    fun deleteTopic(topicId: String) {
-        viewModelScope.launch {
-            when (val result = forumRepo.deleteTopic(topicId)) {
-                is Result.Success -> {
-                    loadTopics()
-                    /* TODO: Filter to my posts */
-                }
-
-                else -> {
-                    println("Error occurred while deleting topic")
                 }
             }
         }
