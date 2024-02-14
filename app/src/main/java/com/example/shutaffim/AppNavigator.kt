@@ -15,13 +15,14 @@ import com.example.shutaffim.View.Profile
 import com.example.shutaffim.View.RegisterScreen
 import com.example.shutaffim.View.TopicView
 import com.example.shutaffim.ViewModel.AuthViewModel
+import com.example.shutaffim.ViewModel.ForumVM
 import com.example.shutaffim.ViewModel.PostsVM
 
 
 @Composable
-fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
+fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel,forumVM:ForumVM) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.TopicScreen.route) {
+    NavHost(navController = navController, startDestination = Screen.LoginScreen.route) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(navController, authViewModel)
         }
@@ -57,11 +58,12 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel) {
             NewPost(navController, postsVM, authViewModel)
                     }
         composable(Screen.ForumScreen.route) {
-            Forum(navController)
+            Forum(navController,forumVM)
         }
         composable(Screen.TopicScreen.route) {
             TopicView(navController)
 
         }
+
     }
 }

@@ -38,6 +38,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,101 +53,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.Topic
 import com.example.shutaffim.R
 import com.example.shutaffim.Screen
+import com.example.shutaffim.ViewModel.ForumVM
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Forum(navController: NavController) {
+fun Forum(navController: NavController,forumVM: ForumVM) {
 
-    val dummyTopics = listOf(
-        Topic(
-            id = "1",
-            title = "Incredible Idea",
-            description = "",
-            email = "email1@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Developer123"
-        ),
-        Topic(
-            id = "2",
-            title = "Fantastic Discussion",
-            description = "",
-            email = "email2@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Coder456"
-        ),
-        Topic(
-            id = "3",
-            title = "Amazing Topic",
-            description = "",
-            email = "email3@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Programmer789"
-        ),
-        Topic(
-            id = "4",
-            title = "Prodigious Conversation",
-            description = "",
-            email = "email4@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Engineer321"
-        ),
-        Topic(
-            id = "5",
-            title = "Magnificent Debate",
-            description = "",
-            email = "email5@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User654"
-        ),
-        Topic(
-            id = "6",
-            title = "Astounding Thought",
-            description = "",
-            email = "email6@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Developer987"
-        ),
-        Topic(
-            id = "7",
-            title = "Remarkable Subject",
-            description = "",
-            email = "email7@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Coder231"
-        ),
-        Topic(
-            id = "8",
-            title = "Impressive Theme",
-            description = "",
-            email = "email8@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Programmer564"
-        ),
-        Topic(
-            id = "9",
-            title = "Extraordinary Matter",
-            description = "",
-            email = "email9@example.com",
-            date = System.currentTimeMillis(),
-            userName = "Engineer897"
-        ),
-        Topic(
-            id = "10",
-            title = "Spectacular Point",
-            description = "",
-            email = "email10@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User345"
-        )
-    )
-
+    val topics by forumVM.topics.observeAsState(listOf())
     var sortMenu by remember { mutableStateOf(false) }
     val sortOptions = listOf("Newest", "Oldest", "Most Popular", "Mine")
     var selectedOption by remember { mutableStateOf("Newest") }
@@ -212,7 +133,7 @@ fun Forum(navController: NavController) {
                     .padding(it)
                     .padding(start = 4.dp, end = 4.dp)
             ) {
-                items(dummyTopics) { topic ->
+                items(topics) { topic ->
                     ForumItem(topic)
                 }
             }
@@ -286,7 +207,11 @@ fun Forum(navController: NavController) {
                             .offset(y = 32.dp),
                         onClick = {
                             if (title.isNotEmpty() && description.isNotEmpty()) {
+                                forumVM.createTopic(title,description)
+                                title =""
+                                description=""
                                 createWindow = false
+
                             }
                         },
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -366,8 +291,8 @@ fun ForumItem(topic: Topic) {
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ForumPreview() {
-    Forum(navController = NavController(LocalContext.current))
-}
+//@Preview(showBackground = true)
+//@Composable
+////fun ForumPreview() {
+////    Forum(navController = NavController(LocalContext.current), forumVM = ForumVM())
+////}

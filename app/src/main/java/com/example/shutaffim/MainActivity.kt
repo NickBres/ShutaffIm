@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.shutaffim.ViewModel.AuthViewModel
+import com.example.shutaffim.ViewModel.ForumVM
 import com.example.shutaffim.ViewModel.PostsVM
 import com.example.shutaffim.ui.theme.ShutaffImTheme
 class MainActivity : ComponentActivity() {
@@ -16,13 +17,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             val postsVM = PostsVM()
             val authViewModel = AuthViewModel()
+            val forumVM = ForumVM(authViewModel)
             ShutaffImTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.surface
                 ) {
-                    AppNavigator(postsVM = postsVM,authViewModel = authViewModel)
+                    AppNavigator(postsVM = postsVM,authViewModel = authViewModel,forumVM=forumVM)
                 }
             }
         }
