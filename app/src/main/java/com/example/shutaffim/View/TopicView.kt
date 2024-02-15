@@ -31,112 +31,42 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.Comment
 import com.example.shutaffim.Model.Topic
 import com.example.shutaffim.Screen
+import com.example.shutaffim.ViewModel.AuthViewModel
+import com.example.shutaffim.ViewModel.ForumVM
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopicView(navController: NavController) {
+fun TopicView(navController: NavController, forumVM: ForumVM, authViewModel: AuthViewModel) {
 
-    val dummyTopic = Topic(
+    val defaultTopic = Topic(
         id = "1",
-        title = "Incredible Idea",
-        description = "This is an incredible idea that explores various aspects of software development. It's a great place to share your thoughts and learn from others.",
-        email = "email1@example.com",
-        date = System.currentTimeMillis(),
-        userName = "Developer123"
+        title = "Title",
+        description = "Description",
+        email = "",
+        date = 0L
     )
+    val currTopic by forumVM.currTopic.observeAsState(defaultTopic)
 
-    val dummyComments = listOf(
-        Comment(
-            id = "1",
-            text = "Great topic!",
-            email = "email1@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User1"
-        ),
-        Comment(
-            id = "2",
-            text = "I totally agree with you.",
-            email = "email2@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User2"
-        ),
-        Comment(
-            id = "3",
-            text = "Interesting perspective.",
-            email = "email3@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User3"
-        ),
-        Comment(
-            id = "4",
-            text = "I have a different opinion.",
-            email = "email4@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User4"
-        ),
-        Comment(
-            id = "5",
-            text = "Can you elaborate more?",
-            email = "email5@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User5"
-        ),
-        Comment(
-            id = "6",
-            text = "This is very insightful.",
-            email = "email6@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User6"
-        ),
-        Comment(
-            id = "7",
-            text = "Thanks for sharing this.",
-            email = "email7@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User7"
-        ),
-        Comment(
-            id = "8",
-            text = "I learned something new today.",
-            email = "email8@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User8"
-        ),
-        Comment(
-            id = "9",
-            text = "This is a controversial topic.",
-            email = "email9@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User9"
-        ),
-        Comment(
-            id = "10",
-            text = "Let's keep the discussion going.",
-            email = "email10@example.com",
-            date = System.currentTimeMillis(),
-            userName = "User10"
-        )
-    )
+    val comments by forumVM.comments.observeAsState(listOf())
 
-    val owner = true;
+    val owner = authViewModel.currentUser.value?.email == currTopic.email;
 
     var newComment by remember { mutableStateOf("") }
 
@@ -146,10 +76,10 @@ fun TopicView(navController: NavController) {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(text = dummyTopic.title) },
+                title = { Text(text = currTopic.title) },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate(Screen.TypeScreen.route)
+                        navController.navigate(Screen.ForumScreen.route)
                     }) {
                         Icon(
                             Icons.Default.ArrowBack,
@@ -160,7 +90,8 @@ fun TopicView(navController: NavController) {
                 actions = {
                     if (owner) {
                         IconButton(onClick = {
-                            // delete topic
+                            forumVM.deleteTopic()
+                            navController.navigate(Screen.ForumScreen.route)
                         }) {
                             Icon(
                                 Icons.Default.Delete,
@@ -200,7 +131,13 @@ fun TopicView(navController: NavController) {
                     if (newComment.isNotEmpty()) {
                         FloatingActionButton(
                             onClick = {
-                                // add comment
+                                val comment = Comment(
+                                    text = newComment,
+                                    email = authViewModel.currentUser.value?.email!!,
+                                    date = System.currentTimeMillis()
+                                )
+                                forumVM.addComment(comment)
+                                newComment = ""
                             },
                             modifier = Modifier
                                 .padding(16.dp)
@@ -236,19 +173,19 @@ fun TopicView(navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = dummyTopic.userName,
+                            text = currTopic.userName,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             ),
                         )
                         Text(
-                            text = sdf.format(dummyTopic.date)
+                            text = sdf.format(currTopic.date)
                         )
                     }
                     Text(
                         modifier = Modifier.padding(8.dp),
-                        text = dummyTopic.description,
+                        text = currTopic.description,
                         style = TextStyle(
                             fontSize = 14.sp
                         )
@@ -256,7 +193,7 @@ fun TopicView(navController: NavController) {
                 }
                 LazyColumn(
                 ) {
-                    items(dummyComments) { comment ->
+                    items(comments) { comment ->
                         CommentItem(comment = comment)
                     }
                 }
@@ -315,10 +252,4 @@ fun CommentItem(comment: Comment) {
 
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewTopicView() {
-    TopicView(navController = NavController(LocalContext.current))
 }

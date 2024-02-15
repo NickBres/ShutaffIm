@@ -45,15 +45,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.Topic
 import com.example.shutaffim.R
@@ -107,6 +104,23 @@ fun Forum(navController: NavController,forumVM: ForumVM) {
                                     onClick = {
                                         selectedOption = label
                                         sortMenu = false
+                                        when (label) {
+                                            "Newest" -> {
+                                                forumVM.sortTopicsByDate(false)
+                                            }
+
+                                            "Oldest" -> {
+                                                forumVM.sortTopicsByDate(true)
+                                            }
+
+                                            "Most Popular" -> {
+                                                /* TODO count comments and sort by it*/
+                                            }
+
+                                            "Mine" -> {
+                                                forumVM.filterMineTopics()
+                                            }
+                                        }
                                     }
                                 )
                             }
@@ -134,7 +148,9 @@ fun Forum(navController: NavController,forumVM: ForumVM) {
                     .padding(start = 4.dp, end = 4.dp)
             ) {
                 items(topics) { topic ->
-                    ForumItem(topic)
+                    ForumItem(topic) { topicId ->
+                        forumVM.loadTopic(topicId, navController)
+                    }
                 }
             }
         }
@@ -229,7 +245,7 @@ fun Forum(navController: NavController,forumVM: ForumVM) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForumItem(topic: Topic) {
+fun ForumItem(topic: Topic, clicked: (topicID: String) -> Unit) {
 
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -242,7 +258,7 @@ fun ForumItem(topic: Topic) {
             containerColor = MaterialTheme.colorScheme.surface
         ),
         onClick = {
-
+            clicked(topic.id)
         }
     ) {
         Row(

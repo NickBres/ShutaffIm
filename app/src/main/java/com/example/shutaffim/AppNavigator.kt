@@ -22,6 +22,7 @@ import com.example.shutaffim.ViewModel.PostsVM
 @Composable
 fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel,forumVM:ForumVM) {
     val navController = rememberNavController()
+
     NavHost(navController = navController, startDestination = Screen.LoginScreen.route) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(navController, authViewModel)
@@ -61,7 +62,7 @@ fun AppNavigator(postsVM: PostsVM,authViewModel: AuthViewModel,forumVM:ForumVM) 
             Forum(navController,forumVM)
         }
         composable(Screen.TopicScreen.route) {
-            TopicView(navController)
+            TopicView(navController, forumVM, authViewModel)
 
         }
 
