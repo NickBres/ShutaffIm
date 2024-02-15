@@ -151,7 +151,7 @@ private fun Menu(
                     icon = {
                         Icon(
                             Icons.Default.MailOutline,
-                            "Search icon",
+                            "Forum",
                             modifier = Modifier.size(32.dp) // Adjust the size as needed
                         )
                     },
