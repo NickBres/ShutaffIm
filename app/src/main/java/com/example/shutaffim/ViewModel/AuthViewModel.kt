@@ -132,7 +132,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun insertcurrentintersted(email: String) {
+    fun insertCurrentInterested(email: String) {
         viewModelScope.launch {
             when (val result = userRepo.getUserDataById(email)) {
                 is Result.Success -> {

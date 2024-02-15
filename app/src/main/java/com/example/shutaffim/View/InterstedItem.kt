@@ -190,7 +190,7 @@ fun InterestedItem(navController: NavController,
                                 .padding(16.dp)
                                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.0f))
                                 .clickable {
-                                    userVM.insertcurrentintersted(request.userId)
+                                    userVM.insertCurrentInterested(request.userId)
                                     navController.navigate(Screen.ProfileScreen.route)/* do something when clicked */ }
                         ) {
                             Text(

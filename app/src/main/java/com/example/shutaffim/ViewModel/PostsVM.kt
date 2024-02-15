@@ -226,8 +226,8 @@ class PostsVM : ViewModel() {
     val interestedInPost: LiveData<List<Request>> get() = _interestedInPost
 
     //for id strings
-    private  val _interestedInPostId = mutableListOf<String>()
-    val interestedInPostId: MutableList<String> get() = _interestedInPostId
+    //private  val _interestedInPostId = mutableListOf<String>()
+   // val interestedInPostId: MutableList<String> get() = _interestedInPostId
 
     private val _upResult = MutableLiveData<Result<Boolean>>()
 
@@ -239,7 +239,8 @@ class PostsVM : ViewModel() {
         viewModelScope.launch {
             _upResult.value = postsRepo.addInterestedToPost(request)
             if(_upResult.value is Result.Success){
-                println("Post added to user's posts list")
+                println("Request of %s added to post".format(userId))
+                getInterestedInPost(postId)
             }
             else if(_upResult.value is Result.Error) {
                 println("Error: ${(_upResult.value as Result.Error).exception.message}")
@@ -252,8 +253,8 @@ class PostsVM : ViewModel() {
         viewModelScope.launch {
             _upResult.value = postsRepo.removeInterestedFromPost(request)
             if(_upResult.value is Result.Success){
-                deleteInterestedIdFromList(userId)
-                println("Post removed from user's posts list")
+                //deleteInterestedIdFromList(userId)
+                println("Request of %s removed from post".format(userId))
                 getInterestedInPost(postId)
             }
             else if(_upResult.value is Result.Error) {
@@ -267,8 +268,8 @@ class PostsVM : ViewModel() {
             when (val result = postsRepo.getInterestedInPost(postId)) {
                 is Result.Success -> {
                     _interestedInPost.value = result.data!!
-                    println("Interested users in post: ${result.data}")
-                    getInterestedIdList()
+                    println("*Interested users in post: ${result.data}")
+                   // getInterestedIdList()
                 }
                 else -> {
                     println("Error occurred while loading interested users")
@@ -277,17 +278,33 @@ class PostsVM : ViewModel() {
         }
     }
 
-    fun getInterestedIdList(){
-        _interestedInPostId.clear()
-        for (interested in _interestedInPost.value!!) {
-
-            _interestedInPostId.add(interested.userId)
-            println("gogo interested.userId: ${interested.userId}")
+    //for current post
+    fun getInterestedInPost() {
+        viewModelScope.launch {
+            when (val result = postsRepo.getInterestedInPost(_currPost.value!!.id)) {
+                is Result.Success -> {
+                    _interestedInPost.value = result.data!!
+                    println("Interested users in post: ${result.data}")
+                    //getInterestedIdList()
+                }
+                else -> {
+                    println("Error occurred while loading interested users")
+                }
+            }
         }
+
     }
-    fun deleteInterestedIdFromList(userId: String){
-        _interestedInPostId.remove(userId)
-    }
+
+//    fun getInterestedIdList(){
+//        _interestedInPostId.clear()
+//        for (interested in _interestedInPost.value!!) {
+//            _interestedInPostId.add(interested.userId)
+//            println("gogo interested.userId: ${interested.userId}")
+//        }
+//    }
+//    fun deleteInterestedIdFromList(userId: String){
+//        _interestedInPostId.remove(userId)
+//    }
 
 
 
@@ -307,7 +324,7 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
 
     fun resetInterestedInPost() {
         _interestedInPost.value = listOf()
-        _interestedInPostId.clear()
+       // _interestedInPostId.clear()
     }
 
 
@@ -322,7 +339,7 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
             for (post in _posts.value!!) {
                 getInterestedInPost(post.id)
                 delay(100)
-                if (!_interestedInPostId.contains(email)) {
+                if (!_interestedInPost.value!!.any { it.userId == email }) {
                     _posts.value = _posts.value?.minus(post)
                 }
                 resetInterestedInPost()

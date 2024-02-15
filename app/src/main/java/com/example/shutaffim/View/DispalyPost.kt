@@ -148,19 +148,19 @@ private fun CustomSlider(
         verticalAlignment = Alignment.CenterVertically
     ) {
         sliderList.forEachIndexed { index, _ ->
-        Box(
-            modifier = modifier
-                .padding(4.dp)
-                .size(dotsSize)
-                .clip(CircleShape)
-                .background(
-                    color = if (index == pagerState.currentPage) dotsActiveColor else dotsInActiveColor
-                )
-                .clickable {
-                    scope.launch {
-                        pagerState.animateScrollToPage(index)
+            Box(
+                modifier = modifier
+                    .padding(4.dp)
+                    .size(dotsSize)
+                    .clip(CircleShape)
+                    .background(
+                        color = if (index == pagerState.currentPage) dotsActiveColor else dotsInActiveColor
+                    )
+                    .clickable {
+                        scope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
                     }
-                }
             )
         }
     }
@@ -169,10 +169,11 @@ private fun CustomSlider(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DisplayPost(navController: NavController,
-                postsVM: PostsVM,
-                authViewModel: AuthViewModel,
-                ) {
+fun DisplayPost(
+    navController: NavController,
+    postsVM: PostsVM,
+    authViewModel: AuthViewModel,
+) {
 
 
     val default = Post(
@@ -205,29 +206,34 @@ fun DisplayPost(navController: NavController,
         currUser == default -> Text("Loading")
 
 
-        else -> PostScreen(navController = navController,
+        else -> PostScreen(
+            navController = navController,
             postsVM = postsVM,
             post,
             currUser as User,
             authViewModel = authViewModel
-            )
+        )
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreen(navController: NavController,
-               postsVM: PostsVM,
-               post: Post,
-               currUser: User,
-               authViewModel: AuthViewModel
+fun PostScreen(
+    navController: NavController,
+    postsVM: PostsVM,
+    post: Post,
+    currUser: User,
+    authViewModel: AuthViewModel
 
 ) {
 
-    val interestedIdList = postsVM.interestedInPostId
+
+    var state by remember {
+        mutableStateOf("")
+    }
 
     val listOfRequest by postsVM.interestedInPost.observeAsState(emptyList())
-
 
     val sliderList = remember {
         mutableListOf(
@@ -242,8 +248,8 @@ fun PostScreen(navController: NavController,
     var interestedClick by remember {
         mutableStateOf(false)
     }
-    var enableBtn by remember {
-        mutableStateOf(true)
+    var alreadyInterestedClic by remember {
+        mutableStateOf(false)
     }
 
     Scaffold(
@@ -397,7 +403,8 @@ fun PostScreen(navController: NavController,
                 )
             ) {
 
-                Text(text = post.about,
+                Text(
+                    text = post.about,
                     style = TextStyle(
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -407,7 +414,10 @@ fun PostScreen(navController: NavController,
                 )
             }
             Spacer(modifier = Modifier.height(54.dp))
-            if (currUser.type == UserType.Publisher.type) {
+
+
+            if (listOfRequest.isNotEmpty() && currUser.type == UserType.Publisher.type) {
+
                 Button(
                     onClick = { interestedClick = !interestedClick },
                     modifier = Modifier
@@ -426,15 +436,23 @@ fun PostScreen(navController: NavController,
                     if (interestedClick) {
                         ModalBottomSheet(onDismissRequest = { interestedClick = false },
                             content = {
-                                Interested(navController = navController, postsVM = postsVM, userVM = authViewModel)
+                                Interested(
+                                    navController = navController,
+                                    postsVM = postsVM,
+                                    userVM = authViewModel
+                                )
                             }
                         )
                     }
                 }
-            } else {//if consumer
-                if (interestedIdList.contains(currUser.email)){
+            } else {//-------------------- if consumer ---------------------
+
+                if (listOfRequest.any { it.userId == currUser.email }) {
+                    alreadyInterestedClic = false
                     Button(
-                        onClick = { interestedClick = !interestedClick
+                        onClick = {
+                            alreadyInterestedClic = !alreadyInterestedClic
+                            state = "Click Already interested"
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -442,6 +460,7 @@ fun PostScreen(navController: NavController,
                         colors = ButtonDefaults.buttonColors(
 
                             containerColor = colorResource(id = R.color.lightGreen),
+
                         )
                     ) {
 
@@ -453,17 +472,31 @@ fun PostScreen(navController: NavController,
                                 fontWeight = FontWeight.Bold,
                             )
                         )
+                        println("Before: state: $state , alreadyInterestedClick: $alreadyInterestedClic")
+                        if (alreadyInterestedClic && state == "Click Already interested") {
+
+                            ModalBottomSheet(onDismissRequest = { alreadyInterestedClic = false
+                                                                    state = ""
+                                                                     },
+                                content = {
+                                    RequestView(currUser, post, postsVM, state)
+
+                                }
+                            )
+
+                            println("After: state: $state , alreadyInterestedClick: $alreadyInterestedClic")
+                        }
                     }
-
-
                 } else {
+                    interestedClick = false
                     Button(
                         onClick = {
-                            if(!interestedIdList.contains(currUser.email)) {
-                                interestedClick = !interestedClick }
-                            enableBtn = false
+                            if (!listOfRequest.any { it.userId == currUser.email }) {
+                                interestedClick = !interestedClick
+                                state = "Click i'm interested"
+                            }
                         },
-                        enabled = enableBtn,
+
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
@@ -476,18 +509,20 @@ fun PostScreen(navController: NavController,
                                 fontWeight = FontWeight.Bold,
                             )
                         )
+                        println("Before: state: $state , interestedClick: $interestedClick")
+                        if (interestedClick && state == "Click i'm interested") {
 
-                        if (interestedClick) {
-                            ModalBottomSheet(onDismissRequest = { interestedClick = false },
+                            ModalBottomSheet(onDismissRequest = { interestedClick = false
+                                                                state = ""
+                            },
                                 content = {
-                                    RequestView(currUser, post)
-
+                                    RequestView(currUser, post, postsVM, state)
 
                                 }
                             )
+                            println("After: state: $state , interestedClick: $interestedClick")
                         }
                     }
-
                 }
             }
         }
@@ -495,11 +530,10 @@ fun PostScreen(navController: NavController,
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun PostScreenPreview() {
-   // DisplayPost(navController = NavController(LocalContext.current), postsVM = PostsVM(), authViewModel = AuthViewModel())
+    // DisplayPost(navController = NavController(LocalContext.current), postsVM = PostsVM(), authViewModel = AuthViewModel())
 
 }
 

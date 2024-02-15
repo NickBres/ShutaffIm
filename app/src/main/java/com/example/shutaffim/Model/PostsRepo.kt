@@ -148,7 +148,7 @@ class PostsRepository(
 
             val users = querySnapshot.documents.mapNotNull { document ->
                 try {
-                    println("1: users data: ${document.data}")
+                    //println("1: users data: ${document.data}")
                     Request(
                         postId = document.getString("postId") ?: "",
                         userId = document.getString("userId") ?: "",
@@ -156,7 +156,7 @@ class PostsRepository(
                         isApproved = document.getBoolean("isApproved") ?: false,
                         message = document.getString("message") ?: ""
                     ).also { user ->
-                        println("2: Mapped to Request: $user")
+                        //println("2: Mapped to Request: $user")
                     }
 
                 } catch (e: Exception) {
