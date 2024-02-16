@@ -85,6 +85,9 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     var lName by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var sex by remember { mutableStateOf("") }
+
     val user = authVM.currentUser.observeAsState()
     fName = user.value?.fName ?: ""
     lName = user.value?.lName ?: ""
@@ -119,6 +122,8 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
         picHasChange = true
 
     }
+    age =  user.value?.age.toString() ?: "0"
+    sex = user.value?.sex ?: ""
 
 
     Scaffold(
@@ -335,6 +340,8 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                     pictureName = bitmap.value.toString(),
                                     pictureUrl = user.value?.pictureUrl!!,
                                     user.value?.type!!
+                                    age = age.toInt(),
+                                    sex = sex
                                 )
                             authVM.updateInfo(newUser)
                             authVM.uploadImageToFirebase(bitmap.value, user.value?.email!!, user.value?.pictureName!!)

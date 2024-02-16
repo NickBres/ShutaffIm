@@ -111,6 +111,9 @@ class UserRepo(
                 pictureName = userDocument.getString("pictureName") ?: "",
                 pictureUrl = userDocument.getString("pictureUrl") ?: "",
                 type = userDocument.getString("type") ?: ""
+                age = userDocument.getString("age")?.toInt() ?: 0,
+                sex = userDocument.getString("sex") ?: ""
+
             )
             if (user != null) {
                 Result.Success(user)
@@ -134,9 +137,14 @@ class UserRepo(
                     fName = userDocument.getString("fname") ?: "",
                     lName = userDocument.getString("lname") ?: "",
                     about = userDocument.getString("about") ?: "",
+
                     pictureName = userDocument.getString("pictureName") ?: "",
                     pictureUrl = userDocument.getString("pictureUrl") ?: "",
                     type = userDocument.getString("type") ?: ""
+                    age = userDocument.getString("age")?.toInt() ?: 0,
+                    sex = userDocument.getString("sex") ?: ""
+
+                  
                 )
                 Log.d("user2", "$uid")
                 Result.Success(user)

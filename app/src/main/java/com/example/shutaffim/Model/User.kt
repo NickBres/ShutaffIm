@@ -11,5 +11,7 @@ data class User(
     val pictureName : String = "",
     val pictureUrl : String = "",
     val type : String ,
+    val age: Int,
+    val sex: String =""
 
 )
