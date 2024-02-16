@@ -1,8 +1,10 @@
 package com.example.shutaffim.ViewModel
 
 
+import android.graphics.Bitmap
+import android.net.Uri
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +16,7 @@ import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserRepo
 import com.example.shutaffim.Screen
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
@@ -22,7 +25,7 @@ class AuthViewModel : ViewModel() {
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> get() = _currentUser
 
-    //////
+    //------------------- for interested users -------------------
     private val _currentintersted = MutableLiveData<User>()
 
     val currentintersted: LiveData<User> get() = _currentintersted
@@ -31,15 +34,24 @@ class AuthViewModel : ViewModel() {
 
     val isMyPost: LiveData<Boolean> get() = _isMyPost
 
+    //------------------- for image of user  -------------------
+    private val _userImage = MutableLiveData<Uri>()
+    val userImage: LiveData<Uri> get() = _userImage
+
+
     init {
         userRepo = UserRepo(
             auth = FirebaseAuth.getInstance(),
-            firestore = Injection.instance()
+            firestore = Injection.firestoreInstance(),
+            storage = Injection.storageInstance()
         )
     }
 
     private val _authResult = MutableLiveData<Result<Boolean>>()
     val authResult: LiveData<Result<Boolean>> get() = _authResult
+
+    private val _authResult1 = MutableLiveData<Result<Boolean>>()
+    val authResult1: LiveData<Result<Boolean>> get() = _authResult1
 
 
     /*TODO: for loading indicator */
@@ -53,19 +65,21 @@ class AuthViewModel : ViewModel() {
         firstName: String,
         lastName: String,
         about: String,
-        picture: String = "",
+        pictureName: String,
+        pictureUrl: String,
         type: String,
+        bitmap: Bitmap
         age :Int,
         sex: String
 
     ) {
-        //signUpInProgress.value = true
-        val user = User(email, firstName, lastName, about, picture, type , age ,sex)
+        val user = User(email, firstName, lastName, about, pictureName,pictureUrl, type , age ,sex)
         viewModelScope.launch {
             _authResult.value = userRepo.signUp(user, password)
             //signUpInProgress.value = false
             if(_authResult.value is Result.Success){
                 //navigate to type screen
+                uploadImageToFirebase(bitmap, email, "")
                 navController.navigateUp()
 
             }
@@ -109,7 +123,8 @@ class AuthViewModel : ViewModel() {
             when (val result = userRepo.getCurrentUser()) {
                 is Result.Success -> {
                     _currentUser.value = result.data.copy()///add copy
-                    println("User data: ${result.data}")
+                    println("4.1 User data: ${result.data}")
+
                 }
 
                 is Result.Error -> {
@@ -125,7 +140,7 @@ class AuthViewModel : ViewModel() {
             when (val result = userRepo.getUserDataById(email)) {
                 is Result.Success -> {
                     _getUserFromId.value = result.data.copy()///add copy
-                    println("User data: ${result.data}")
+                    println("4.2 User data: ${result.data}")
                 }
 
                 is Result.Error -> {
@@ -165,5 +180,81 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _authResult.value = userRepo.update(user)
         }
+    }
+
+    //------------------- image management -------------------
+
+    fun uploadImageToFirebase(bitmap : Bitmap,userId :String,oldPIc:String) {//todo:cange name
+        println("OLD IMAGE: $oldPIc  "+"NEW IMAGE: $bitmap  " + "USER ID: $userId")
+        viewModelScope.launch {
+            when (val result = userRepo.getCurrentUser()) {
+                is Result.Success -> {
+                    _currentUser.value = result.data.copy()///add copy
+                    println("1.1 User data: ${result.data}")
+
+                    // Use async to launch the first operation
+                    val removeImageDeferred = viewModelScope.async {
+                        userRepo.removeProfileImageFromUser(oldPIc, userId)
+                    }
+
+                    // Wait for the completion of the first operation
+                    val removeImageResult = removeImageDeferred.await()
+
+                    if (removeImageResult is Result.Success) {
+                        println("1.1 User Image removed successfully")
+
+                        // Use async to launch the second operation
+                        val uploadImageDeferred = viewModelScope.async {
+                            userRepo.uploadImageToFirebase(bitmap, userId)
+                        }
+
+                        // Wait for the completion of the second operation
+                        val uploadImageResult = uploadImageDeferred.await()
+
+                        if (uploadImageResult is Result.Success) {
+                            println("1.1 Image uploaded successfully")
+                            updateUser()
+                        } else if (uploadImageResult is Result.Error) {
+                            println("Failed to upload image")
+                        }
+                    } else if (removeImageResult is Result.Error) {
+                        println("Failed to remove User image")
+                    }
+                }
+
+                is Result.Error -> {
+                    println("Failed to get user data")
+                }
+            }
+        }
+    }
+
+    fun removeImageFromUser() {//don't use without adding path
+        viewModelScope.launch {
+            _authResult.value = userRepo.removeImageFromUser()
+        }
+        if(_authResult.value is Result.Success){
+            println("Image removed successfully")
+        }
+        else if(_authResult.value is Result.Error){
+            println("Failed to remove image")
+        }
+    }
+
+
+    fun getUserProfileImage(bitmap : String){
+
+        viewModelScope.launch {
+            when (val result = userRepo.getUserProfileImage(bitmap )) {
+                is Result.Success -> {
+                    _userImage.value = result.data!!
+                    println("3. User image: ${result.data}")
+                }
+                is Result.Error -> {
+                    println("Failed to get user image")
+                }
+            }
+        }
+
     }
 }

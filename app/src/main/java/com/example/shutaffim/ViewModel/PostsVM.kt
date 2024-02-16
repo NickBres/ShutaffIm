@@ -1,6 +1,5 @@
 package com.example.shutaffim.ViewModel
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -41,7 +40,7 @@ class PostsVM : ViewModel() {
 
     init {
         postsRepo = PostsRepository(
-            firestore = Injection.instance()
+            firestore = Injection.firestoreInstance()
         )
         loadPosts()
     }

@@ -56,9 +56,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0") // image loading
     implementation("androidx.navigation:navigation-compose:2.7.6") // screen navigation/transitions
     implementation("androidx.compose.runtime:runtime-livedata:1.6.0") // live data
-
-    implementation("androidx.compose.runtime:runtime:1.6.0")//Compose Runtime
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.6.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.compose.runtime:runtime:1.6.1")//Compose Runtime
+    implementation("androidx.compose.runtime:runtime-rxjava2:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -68,9 +68,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("com.google.firebase:protolite-well-known-types:18.0.0")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("com.google.firebase:firebase-auth:22.3.1")
-    implementation("com.google.firebase:firebase-firestore-ktx:24.10.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

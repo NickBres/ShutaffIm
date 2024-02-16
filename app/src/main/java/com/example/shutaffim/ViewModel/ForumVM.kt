@@ -29,7 +29,7 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
 
     init {
         forumRepo = ForumRepo(
-            firestore = Injection.instance()
+            firestore = Injection.firestoreInstance()
         )
         loadTopics()
     }
