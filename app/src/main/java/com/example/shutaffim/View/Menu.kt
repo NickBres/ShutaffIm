@@ -1,5 +1,6 @@
 package com.example.shutaffim
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -29,12 +31,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.UserType
+//import com.example.shutaffim.View.Login
 import com.example.shutaffim.ViewModel.AuthViewModel
 
 
@@ -68,6 +73,27 @@ private fun Menu(
             )
         },
         content = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.background),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surface),
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = -150.dp, y = -90.dp)
+                )
 
             Column(
                 modifier = Modifier
@@ -179,13 +205,14 @@ private fun Menu(
                     Text(
                         text = "Profile",
                         style = TextStyle(
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.Bold
                         )
                     )
                 }
-
             }
+            }//content
+
         })
 }
 
@@ -196,6 +223,22 @@ fun MenuScreen(navController: NavController, authViewModel: AuthViewModel) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surface),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = -150.dp, y = -150.dp)
+        )
         Menu(navController, authViewModel)
     }
 }

@@ -148,6 +148,7 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
 
         topBar = {
             TopAppBar(
+
                 title = { Text("My Profile") },
                 navigationIcon = {
                     IconButton(onClick = {

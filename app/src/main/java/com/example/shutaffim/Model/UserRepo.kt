@@ -95,7 +95,10 @@ class UserRepo(private val auth: FirebaseAuth,
                 lName = userDocument.getString("lname") ?: "",
                 about = userDocument.getString("about") ?: "",
                 picture = userDocument.getString("picture") ?: "",
-                type = userDocument.getString("type") ?: ""
+                type = userDocument.getString("type") ?: "",
+                age = userDocument.getString("age")?.toInt() ?: 0,
+                sex = userDocument.getString("sex") ?: ""
+
             )
             if (user != null) {
                 Result.Success(user)
@@ -121,7 +124,9 @@ class UserRepo(private val auth: FirebaseAuth,
                     lName = userDocument.getString("lname") ?: "",
                     about = userDocument.getString("about") ?: "",
                     picture = userDocument.getString("picture") ?: "",
-                    type = userDocument.getString("type") ?: ""
+                    type = userDocument.getString("type") ?: "",
+                    age = userDocument.getString("age")?.toInt() ?: 0,
+                    sex = userDocument.getString("sex") ?: ""
                 )
                 Log.d("user2", "$uid")
                 Result.Success(user)
