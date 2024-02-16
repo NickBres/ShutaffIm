@@ -52,11 +52,15 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var sex by remember { mutableStateOf("") }
 
     val user = authVM.currentUser.observeAsState()
     fName = user.value?.fName ?: ""
     lName = user.value?.lName ?: ""
     about = user.value?.about ?: ""
+    age =  user.value?.age.toString() ?: "0"
+    sex = user.value?.sex ?: ""
 
 
     Scaffold(
@@ -167,7 +171,9 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                     lName,
                                     about,
                                     user.value?.picture!!,
-                                    user.value?.type!!
+                                    user.value?.type!!,
+                                    age = age.toInt(),
+                                    sex = sex
                                 )
                             authVM.updateInfo(newUser)
                             navController.navigateUp()

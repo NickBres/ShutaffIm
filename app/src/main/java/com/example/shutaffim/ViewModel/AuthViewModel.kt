@@ -54,10 +54,13 @@ class AuthViewModel : ViewModel() {
         lastName: String,
         about: String,
         picture: String = "",
-        type: String
+        type: String,
+        age :Int,
+        sex: String
+
     ) {
         //signUpInProgress.value = true
-        val user = User(email, firstName, lastName, about, picture, type)
+        val user = User(email, firstName, lastName, about, picture, type , age ,sex)
         viewModelScope.launch {
             _authResult.value = userRepo.signUp(user, password)
             //signUpInProgress.value = false
