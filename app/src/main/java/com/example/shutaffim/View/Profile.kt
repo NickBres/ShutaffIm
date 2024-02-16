@@ -1,6 +1,5 @@
 package com.example.shutaffim.View
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -46,18 +44,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Scale
+import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,9 +64,6 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
     val user by authVM.currentUser.observeAsState()
     val userintersted by authVM.currentintersted.observeAsState()
 
-    var EditClick by remember {
-        mutableStateOf(false)
-    }
     var FirstName by remember {
         mutableStateOf("")
     }
@@ -86,21 +77,21 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
         mutableStateOf("")
     }
     var pic by remember {
-        mutableStateOf("")
+        mutableStateOf(Picture())
     }
     if (authVM.isMyPost.value == true){
         FirstName = user?.fName ?: ""
         LastName = user?.lName ?: ""
         Email = user?.email ?: ""
         about_user = user?.about ?: ""
-        pic = user?.pictureUrl ?: ""
+        pic = user?.picture ?: Picture()
 
     }else{
         FirstName = userintersted?.fName ?: ""
         LastName = userintersted?.lName ?: ""
         Email = userintersted?.email ?: ""
         about_user = userintersted?.about ?: ""
-        pic = userintersted?.pictureUrl ?: ""
+        pic = userintersted?.picture ?: Picture()
 
     }
 
@@ -110,7 +101,6 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
 
         topBar = {
             TopAppBar(
-
                 title = { Text("My Profile") },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -128,9 +118,10 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.surface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.surface,
+                    actionIconContentColor = MaterialTheme.colorScheme.surface
                 ),
             )
 
@@ -151,7 +142,7 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
 
                 contentAlignment = Alignment.Center
             ) {
-                if (pic == "") {
+                if (pic.pictureUrl == "") {
                     Image(
                         painter = painterResource(id = R.drawable.pngwing_com),
                         contentDescription = "Profile Picture",
@@ -173,7 +164,7 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                     )
                 } else {
                     Image(
-                        painter = rememberAsyncImagePainter(user?.pictureUrl),
+                        painter = rememberAsyncImagePainter(user?.picture?.pictureUrl ?: ""),
                         contentDescription = "Profile Picture",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

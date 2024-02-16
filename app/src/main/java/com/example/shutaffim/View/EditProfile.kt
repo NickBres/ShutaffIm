@@ -67,9 +67,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.ViewModel.AuthViewModel
-import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +84,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
-    var picture by remember { mutableStateOf("") }
+    var picture by remember { mutableStateOf(Picture()) }
     var age by remember { mutableStateOf("") }
     var sex by remember { mutableStateOf("") }
 
@@ -92,7 +92,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     fName = user.value?.fName ?: ""
     lName = user.value?.lName ?: ""
     about = user.value?.about ?: ""
-    picture = user.value?.pictureUrl ?: ""
+    picture = user.value?.picture ?: Picture()
 
 
 
@@ -122,7 +122,6 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
         picHasChange = true
 
     }
-    age =  user.value?.age.toString() ?: "0"
     sex = user.value?.sex ?: ""
 
 
@@ -181,10 +180,10 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                 )
                                 .clickable(onClick = {
 
-                                    }
+                                }
                                 )
                         )
-                    } else if (picture == "") {
+                    } else if (picture.pictureUrl == "") {
                         Image(
                             painter = rememberAsyncImagePainter(R.drawable.pngwing_com),
                             contentDescription = "Profile Picture",
@@ -206,7 +205,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                         )
                     } else
                     Image(
-                       painter = rememberAsyncImagePainter(picture),
+                        painter = rememberAsyncImagePainter(picture.pictureUrl),
                         contentDescription = "Profile Picture",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -333,18 +332,17 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                         onClick = {
                             val newUser =
                                 User(
-                                    user.value?.email!!,
-                                    fName,
-                                    lName,
-                                    about,
-                                    pictureName = bitmap.value.toString(),
-                                    pictureUrl = user.value?.pictureUrl!!,
-                                    user.value?.type!!
-                                    age = age.toInt(),
+                                    email = user.value?.email!!,
+                                    fName = fName,
+                                    lName = lName,
+                                    about = about,
+                                    picture = authVM.currentUser.value!!.picture,
+                                    type = user.value?.type!!,
+                                    birthYear = 1999, // TODO: get from user
                                     sex = sex
                                 )
                             authVM.updateInfo(newUser)
-                            authVM.uploadImageToFirebase(bitmap.value, user.value?.email!!, user.value?.pictureName!!)
+                            authVM.uploadProfileImageToFirebase(bitmap.value, user.value?.email!!)
                             navController.navigateUp()
                         },
                         modifier = Modifier

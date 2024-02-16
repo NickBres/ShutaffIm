@@ -4,12 +4,14 @@ package com.example.shutaffim
 import EditPost
 import NewPost
 import PostsSearch
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shutaffim.Model.Screen.DisplayPost
-import com.example.shutaffim.Model.Screen.RegisterScreen
+import com.example.shutaffim.Model.Screen.Register
 import com.example.shutaffim.View.Forum
 import com.example.shutaffim.View.LoginScreen
 import com.example.shutaffim.View.Profile
@@ -19,6 +21,7 @@ import com.example.shutaffim.ViewModel.ForumVM
 import com.example.shutaffim.ViewModel.PostsVM
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigator(postsVM: PostsVM, authViewModel: AuthViewModel, forumVM: ForumVM) {
     val navController = rememberNavController()
@@ -27,7 +30,7 @@ fun AppNavigator(postsVM: PostsVM, authViewModel: AuthViewModel, forumVM: ForumV
             LoginScreen(navController, authViewModel)
         }
         composable(Screen.RegisterScreen.route) {
-            RegisterScreen(navController, authViewModel)
+            Register(navController, authViewModel)
         }
         composable(Screen.TypeScreen.route) {
             MenuScreen(navController, authViewModel)
@@ -56,7 +59,7 @@ fun AppNavigator(postsVM: PostsVM, authViewModel: AuthViewModel, forumVM: ForumV
 
         composable(Screen.NewPostScreen.route) {
             NewPost(navController, postsVM, authViewModel)
-                    }
+        }
         composable(Screen.ForumScreen.route) {
             Forum(navController,forumVM)
         }

@@ -47,9 +47,10 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                titleContentColor = MaterialTheme.colorScheme.primary,
-                navigationIconContentColor = MaterialTheme.colorScheme.primary
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.surface,
+                navigationIconContentColor = MaterialTheme.colorScheme.surface,
+                actionIconContentColor = MaterialTheme.colorScheme.surface
             )
             )
         }, floatingActionButton = {

@@ -1,12 +1,12 @@
 package com.example.shutaffim
 
+//import com.example.shutaffim.View.Login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,9 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.UserType
-//import com.example.shutaffim.View.Login
 import com.example.shutaffim.ViewModel.AuthViewModel
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,14 +51,6 @@ private fun Menu(
 
     val currUser by authViewModel.currentUser.observeAsState(null)
     authViewModel.updateUser()
-    when{
-        currUser == null ->{
-            println("Loading...")
-        }
-        else -> {
-            authViewModel.getUserProfileImage(currUser!!.pictureName)
-        }
-    }
 
 
     Scaffold(
@@ -77,16 +66,17 @@ private fun Menu(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.surface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         content = {
             Box(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(it),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -97,32 +87,12 @@ private fun Menu(
                         .align(Alignment.TopCenter)
                 )
 
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surface),
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = -150.dp, y = -90.dp)
-                )
-
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(it),
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Spacer(modifier = Modifier.height(100.dp))
-
-
-                ElevatedCard {
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                }
-
-                Spacer(modifier = Modifier.height(90.dp))
                 if (currUser?.type  == UserType.Publisher.type) {
                     ExtendedFloatingActionButton(
                         onClick = { /* TODO: Navigate to login screen */
@@ -137,7 +107,7 @@ private fun Menu(
                         },
                         text = {
                             Text(
-                                text = "Posting",
+                                text = "Post",
                                 style = TextStyle(
                                     fontSize = 30.sp,
                                     color = MaterialTheme.colorScheme.primary,
@@ -165,7 +135,7 @@ private fun Menu(
                         },
                         text = {
                             Text(
-                                text = "Searching",
+                                text = "Search",
                                 style = TextStyle(
                                     fontSize = 30.sp,
                                     color = MaterialTheme.colorScheme.primary,

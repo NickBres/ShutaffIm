@@ -127,11 +127,6 @@ fun EditPost(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary
-                ),
                 title = {
                     Text(
                         "Edit Post",
@@ -163,47 +158,14 @@ fun EditPost(
 
 
                 },
-//                actions = {
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.spacedBy(4.dp) // Adjust spacing as needed
-//                    ) {
-//                        Text(
-//                            text = "Interested",
-//                            color = MaterialTheme.colorScheme.primary
-//                        )
-//                        IconButton(onClick = {
-//                            navController.navigate(Screen.InterestedScreen.route)
-//                        }) {
-//                            Icon(
-//                                imageVector = Icons.Filled.AccountBox,
-//                                contentDescription = "Localized description"
-//                            )
-//                        }
-//
-//                    }
-//                }
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.surface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.surface,
+                    actionIconContentColor = MaterialTheme.colorScheme.surface
+                )
             )
         },
-        floatingActionButton = {
-//            FloatingActionButton(
-//                onClick = {
-//                          postsVM.deletePost(post.value?.id ?: "")
-//                            navController.navigateUp()
-//                          /* do something */ },
-//                containerColor = MaterialTheme.colorScheme.primary,
-//                contentColor = MaterialTheme.colorScheme.onPrimary
-//            ) {
-////                Icon(Icons.Default.Add, contentDescription = "Add")
-//                Icon(
-//                    imageVector = Icons.Filled.Delete,
-//                    contentDescription = "Localized description",
-//                    tint = Color.Red
-//                )
-//            }
-
-        },
-
         content = {
             Column(
                 modifier = Modifier

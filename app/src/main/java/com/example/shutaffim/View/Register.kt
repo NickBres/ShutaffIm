@@ -10,60 +10,37 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
-import android.content.Intent
-import android.net.Uri
-import android.provider.MediaStore
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.sharp.Share
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -74,34 +51,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.Model.UserType
-import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
+import java.time.LocalDate
 
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Register(
+fun Register(
     navController: NavController,
     authViewModel: AuthViewModel,
 ) {
@@ -110,17 +81,23 @@ private fun Register(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    //var phoneNumber by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
-    //var type by remember { mutableStateOf("") }
-    var age by remember {
+    var birthYear by remember {
         mutableStateOf("")
     }
 
 
+    val sexOptions = listOf("Male", "Female", "Other")
+    var selectedSexOption by remember { mutableStateOf("Select Sex") }
+    var sexExpanded by remember { mutableStateOf(false) }
+
+
     // ----------------- Image Picker -----------------
     val img: Bitmap =
-        BitmapFactory.decodeResource(Resources.getSystem(), android.R.drawable.ic_menu_report_image)//default image
+        BitmapFactory.decodeResource(
+            Resources.getSystem(),
+            android.R.drawable.ic_menu_report_image
+        )//default image
     val context = LocalContext.current
     val bitmap = remember { mutableStateOf(img) }
     val launcherCamera = rememberLauncherForActivityResult(
@@ -164,89 +141,11 @@ private fun Register(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                bitmap = bitmap.value.asImageBitmap(),
-                contentDescription = "Profile Picture",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(200.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        shape = CircleShape
-                    )
-                    .clickable(onClick = {
-
-                    }
-                    )
-            )
-
-            var expanded1 by remember { mutableStateOf(false) }
-            Box(
-                modifier = Modifier
-                    .padding(top = 100.dp, start = 170.dp)
-                    .background(Color.Black, CircleShape)
-
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic__baseline_photo_camera),
-                    contentDescription = "Add a photo",
-                    colorFilter = ColorFilter.tint(color = Color.White),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clip(CircleShape)
-                        .size(30.dp)
-                        .background(Color.Black, CircleShape)
-                        .clickable {
-                            expanded1 = true
-                        }
-                )
-
-                var selectedOption1 by remember { mutableStateOf("") }
-
-                val options1 = listOf("Camera", "Gallery")
-                DropdownMenu(expanded = expanded1,
-                    onDismissRequest = { expanded1 = false }) {
-                    options1.forEach { label ->
-                        DropdownMenuItem(
-                            text = { Text(label) },
-                            onClick = {
-                                selectedOption1 = label
-                                expanded1 = false
-                                when (selectedOption1) {
-                                    "Camera" -> {
-                                        launcherCamera.launch()
-                                    }
-                                    "Gallery" -> {
-                                        launchImage.launch("image/*")
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-
-        }
 
         //------------------- Card -------------------
 
         ElevatedCard {
 
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -264,7 +163,7 @@ private fun Register(
                             modifier = Modifier
                                 .size(130.dp)
                                 .border(
-                                    BorderStroke(8.dp, Color.White),
+                                    BorderStroke(8.dp, MaterialTheme.colorScheme.primary),
                                     CircleShape
                                 )
                                 .padding(5.dp)
@@ -272,7 +171,7 @@ private fun Register(
                         ) {
                             if (selectedImageUri == null) {
                             Icon(
-                                imageVector = Icons.Sharp.Share,
+                                imageVector = Icons.Default.Add,
                                 contentDescription = "Upload Image"
                             )
                             }
@@ -297,7 +196,6 @@ private fun Register(
 
                     }
 
-            }
            /** fname   * */
             OutlinedTextField(
                 modifier = Modifier
@@ -332,9 +230,11 @@ private fun Register(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                value = age,
-                onValueChange = { age = it.filter { it.isDigit() } }, // Only allow numeric input
-                label = { Text(text = "age") },
+                value = birthYear,
+                onValueChange = {
+                    birthYear = it
+                }, // Only allow numeric input
+                label = { Text(text = "Birth Year") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
@@ -413,34 +313,22 @@ private fun Register(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-
-            val sexOptions = listOf("Male", "Female")
-            var selectedSexOption by remember { mutableStateOf("Select Sex") }
-            var sexExpanded by remember { mutableStateOf(false) }
-
-
-
-
-
-
             ExposedDropdownMenuBox(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .wrapContentSize()
                     .padding(start = 8.dp),
-//                    .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small)
-//                    .width(250.dp)
-//                    .height(55.dp),
                 expanded = sexExpanded,
                 onExpandedChange = { sexExpanded = it },
             ) {
                 TextField(
-                    modifier = Modifier.menuAnchor().fillMaxWidth().padding(end = 8.dp),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                        .padding(end = 8.dp),
                     readOnly = true,
                     value = selectedSexOption,
                     onValueChange = {},
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = sexExpanded) },
-//                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
                     label = { Text(text = "sex") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -467,44 +355,34 @@ private fun Register(
             Spacer(modifier = Modifier.height(8.dp))
 //***********************************************************************
             val options = listOf(UserType.Consumer.type, UserType.Publisher.type)
-            var selectedOption by remember { mutableStateOf("User Type") }
+            var userType by remember { mutableStateOf("Select User Type") }
             var expanded by remember { mutableStateOf(false) }
-            var selectedOptionText by remember { mutableStateOf(options[0]) }
 // We want to react on tap/press on TextField to show menu
             ExposedDropdownMenuBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp),
-
-            Box(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(start = 16.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small)
-                    .width(80.dp)
-                    .height(30.dp),
-                contentAlignment = Alignment.Center
-
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
             ) {
                 TextField(
                     // The `menuAnchor` modifier must be passed to the text field for correctness.
-                    modifier = Modifier.menuAnchor().fillMaxWidth().padding(end = 8.dp),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                        .padding(end = 8.dp),
 
                     readOnly = true,
-                    value = selectedOption,
+                    value = userType,
                     onValueChange = {},
-//                    label = { Text("User Type",
-//                        fontSize = 16.sp) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-//                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
                     label = { Text(text = "user type") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.primary,)
+                        cursorColor = MaterialTheme.colorScheme.primary,
                     )
+                )
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
@@ -513,7 +391,7 @@ private fun Register(
                         DropdownMenuItem(
                             text = { Text(selectionOption) },
                             onClick = {
-                                selectedOption = selectionOption
+                                userType = selectionOption
                                 expanded = false
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -532,11 +410,11 @@ private fun Register(
                         firstName = fName,
                         lastName = lName,
                         about = about,
-                        type = selectedOption,
+                        type = userType,
                         pictureName = bitmap.value.toString(),
-                        pictureUrl = "",
-                        bitmap = bitmap.value
-                        age = age.toInt(),
+                        picture = Picture(), // TODO : add picture
+                        bitmap = bitmap.value,
+                        birthYear = birthYear.toInt(),
                         sex = selectedSexOption
                     )
 
@@ -545,8 +423,15 @@ private fun Register(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                enabled = fName.isNotBlank() &&lName.isNotBlank() && email.isNotBlank() && password.isNotBlank()
-                        &&selectedOption!="User Type"
+                enabled = fName.isNotBlank() &&
+                        lName.isNotBlank() &&
+                        email.isNotBlank() &&
+                        password.isNotBlank() &&
+                        selectedSexOption != "Select Sex" &&
+                        userType != "Select User Type" &&
+                        birthYear.isNotEmpty() &&
+                        birthYear.toInt() <= LocalDate.now().year &&
+                        birthYear.toInt() >= 1920
             ) {
                 Text(text = "Register")
             }
@@ -568,33 +453,4 @@ private fun Register(
         }
     }
 }
-@Composable
-fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "",
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primaryContainer),
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .graphicsLayer { alpha = 0.5f }
-                .offset(x = -128.dp, y = -128.dp)
-        )
-        Register(navController, authViewModel = authViewModel)
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun RegisterViewPreview() {
-    val navController = rememberNavController()
-    val authViewModel = AuthViewModel()
-
-    RegisterScreen(
-        navController = navController,
-        authViewModel = authViewModel
-    )
-}
