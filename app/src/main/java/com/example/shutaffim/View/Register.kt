@@ -1,6 +1,17 @@
-package com.example.shutaffim.View
+package com.example.shutaffim.Model.Screen
 
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,9 +23,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -33,8 +48,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -66,17 +86,118 @@ private fun Register(
     var about by remember { mutableStateOf("") }
     //var type by remember { mutableStateOf("") }
 
+    // ----------------- Image Picker -----------------
+    val img: Bitmap =
+        BitmapFactory.decodeResource(Resources.getSystem(), android.R.drawable.ic_menu_report_image)//default image
+    val context = LocalContext.current
+    val bitmap = remember { mutableStateOf(img) }
+    val launcherCamera = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) {
+        if (it != null) {
+            bitmap.value = it
+
+        }
+    }
+
+    val launchImage = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (Build.VERSION.SDK_INT < 28) {
+            bitmap.value = MediaStore.Images
+                .Media.getBitmap(context.contentResolver, uri)
+        } else {
+            val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+            bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
+        }
+
+    }
+
 
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
 
-        Spacer(modifier = Modifier.height(8.dp))
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                bitmap = bitmap.value.asImageBitmap(),
+                contentDescription = "Profile Picture",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = CircleShape
+                    )
+                    .clickable(onClick = {
+
+                    }
+                    )
+            )
+
+            var expanded1 by remember { mutableStateOf(false) }
+            Box(
+                modifier = Modifier
+                    .padding(top = 100.dp, start = 170.dp)
+                    .background(Color.Black, CircleShape)
+
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic__baseline_photo_camera),
+                    contentDescription = "Add a photo",
+                    colorFilter = ColorFilter.tint(color = Color.White),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .size(30.dp)
+                        .background(Color.Black, CircleShape)
+                        .clickable {
+                            expanded1 = true
+                        }
+                )
+
+                var selectedOption1 by remember { mutableStateOf("") }
+
+                val options1 = listOf("Camera", "Gallery")
+                DropdownMenu(expanded = expanded1,
+                    onDismissRequest = { expanded1 = false }) {
+                    options1.forEach { label ->
+                        DropdownMenuItem(
+                            text = { Text(label) },
+                            onClick = {
+                                selectedOption1 = label
+                                expanded1 = false
+                                when (selectedOption1) {
+                                    "Camera" -> {
+                                        launcherCamera.launch()
+                                    }
+                                    "Gallery" -> {
+                                        launchImage.launch("image/*")
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+
+        }
+
+        //------------------- Card -------------------
 
         ElevatedCard {
             OutlinedTextField(
@@ -184,12 +305,13 @@ private fun Register(
 
             val options = listOf(UserType.Consumer.type, UserType.Publisher.type)
 
-            Box(modifier = Modifier
-                .wrapContentSize()
-                .padding(start = 16.dp)
-                .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small)
-                .width(80.dp)
-                .height(30.dp),
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(start = 16.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small)
+                    .width(80.dp)
+                    .height(30.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(selectedOption, modifier = Modifier.clickable { expanded = true })
@@ -216,15 +338,19 @@ private fun Register(
                         firstName = fName,
                         lastName = lName,
                         about = about,
-                        type = selectedOption
+                        type = selectedOption,
+                        pictureName = bitmap.value.toString(),
+                        pictureUrl = "",
+                        bitmap = bitmap.value
+
                     )
 
 
-                          },
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                enabled = fName.isNotBlank() &&lName.isNotBlank() && email.isNotBlank() && password.isNotBlank()
+                enabled = fName.isNotBlank() && lName.isNotBlank() && email.isNotBlank() && password.isNotBlank()
             ) {
                 Text(text = "Register")
             }
@@ -262,7 +388,7 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
                 .graphicsLayer { alpha = 0.5f }
                 .offset(x = -128.dp, y = -128.dp)
         )
-        Register(navController,authViewModel = authViewModel )
+        Register(navController, authViewModel = authViewModel)
     }
 }
 
@@ -270,8 +396,10 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
 @Composable
 fun RegisterViewPreview() {
     val navController = rememberNavController()
-    val  authViewModel = AuthViewModel()
+    val authViewModel = AuthViewModel()
 
-    RegisterScreen(navController = navController,
-        authViewModel = authViewModel)
+    RegisterScreen(
+        navController = navController,
+        authViewModel = authViewModel
+    )
 }

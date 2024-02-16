@@ -1,7 +1,10 @@
 package com.example.shutaffim.View
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -24,7 +27,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -49,55 +51,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
-import com.example.shutaffim.ui.theme.surface
 
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-
-private fun ShowPic(
-    modifier: Modifier = Modifier,
-    imageUrl: String,
-    imageHeight: Dp = 200.dp,
-    imageWidth: Dp = 200.dp,
-) {
-
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Box(
-            modifier = modifier
-                .height(imageHeight)
-                .width(imageWidth)
-                .clip(MaterialTheme.shapes.medium) // Apply circular shape
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .scale(Scale.FILL)
-                    .data(imageUrl)
-                    .build(),
-                contentDescription = "Image",
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.pngwing_com),
-                error = painterResource(id = R.drawable.pngwing_com),
-                modifier = modifier
-                    .height(imageHeight)
-                    .width(imageWidth)
-
-            )
-        }
-    }
-
-
-}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,10 +65,7 @@ private fun ShowPic(
 fun Profile(navController: NavController, authVM: AuthViewModel) {
 
 
-    val pic = remember {
 
-        "https://www.gstatic.com/webp/gallery/5.webp"
-    }
 
     val user by authVM.currentUser.observeAsState()
     val userintersted by authVM.currentintersted.observeAsState()
@@ -128,17 +85,22 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
     var about_user by remember {
         mutableStateOf("")
     }
+    var pic by remember {
+        mutableStateOf("")
+    }
     if (authVM.isMyPost.value == true){
         FirstName = user?.fName ?: ""
         LastName = user?.lName ?: ""
         Email = user?.email ?: ""
         about_user = user?.about ?: ""
+        pic = user?.pictureUrl ?: ""
 
     }else{
         FirstName = userintersted?.fName ?: ""
         LastName = userintersted?.lName ?: ""
         Email = userintersted?.email ?: ""
         about_user = userintersted?.about ?: ""
+        pic = userintersted?.pictureUrl ?: ""
 
     }
 
@@ -181,7 +143,55 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
 
         ) {
 
-            ShowPic(imageUrl = pic)//in rows
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+
+                contentAlignment = Alignment.Center
+            ) {
+                if (pic == "") {
+                    Image(
+                        painter = painterResource(id = R.drawable.pngwing_com),
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = CircleShape
+                            )
+                            .clickable(onClick = {
+
+                            }
+                            )
+                    )
+                } else {
+                    Image(
+                        painter = rememberAsyncImagePainter(user?.pictureUrl),
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = CircleShape
+                            )
+                            .clickable(onClick = {
+
+                            }
+                            )
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(32.dp))
             Card(
                 modifier = Modifier

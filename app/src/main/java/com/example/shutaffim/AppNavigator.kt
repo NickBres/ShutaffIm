@@ -9,10 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shutaffim.Model.Screen.DisplayPost
+import com.example.shutaffim.Model.Screen.RegisterScreen
 import com.example.shutaffim.View.Forum
 import com.example.shutaffim.View.LoginScreen
 import com.example.shutaffim.View.Profile
-import com.example.shutaffim.View.RegisterScreen
 import com.example.shutaffim.View.TopicView
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.ForumVM

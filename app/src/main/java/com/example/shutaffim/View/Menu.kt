@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,7 @@ import com.example.shutaffim.Model.UserType
 import com.example.shutaffim.ViewModel.AuthViewModel
 
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Menu(
@@ -45,8 +47,17 @@ private fun Menu(
     authViewModel: AuthViewModel
 ) {
 
-    var currUser = authViewModel.currentUser.observeAsState()
+    val currUser by authViewModel.currentUser.observeAsState(null)
     authViewModel.updateUser()
+    when{
+        currUser == null ->{
+            println("Loading...")
+        }
+        else -> {
+            authViewModel.getUserProfileImage(currUser!!.pictureName)
+        }
+    }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -86,7 +97,7 @@ private fun Menu(
                 }
 
                 Spacer(modifier = Modifier.height(90.dp))
-                if (currUser.value?.type == UserType.Publisher.type) {
+                if (currUser?.type  == UserType.Publisher.type) {
                     ExtendedFloatingActionButton(
                         onClick = { /* TODO: Navigate to login screen */
                             navController.navigate(Screen.MyPostsScreen.route)
@@ -113,7 +124,7 @@ private fun Menu(
                             .size(280.dp),
 
                         )
-                } else if (currUser.value?.type == UserType.Consumer.type) {
+                } else if (currUser?.type == UserType.Consumer.type) {
 
                     ExtendedFloatingActionButton(
                         onClick = {

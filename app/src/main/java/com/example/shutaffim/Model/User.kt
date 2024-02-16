@@ -1,5 +1,6 @@
 package com.example.shutaffim.Model
 
+import android.graphics.Bitmap
 import java.net.URL
 
 data class User(
@@ -7,7 +8,8 @@ data class User(
     val fName : String,
     val lName : String,
     val about : String = "",
-    val picture : String = "",
+    val pictureName : String = "",
+    val pictureUrl : String = "",
     val type : String ,
 
 )
