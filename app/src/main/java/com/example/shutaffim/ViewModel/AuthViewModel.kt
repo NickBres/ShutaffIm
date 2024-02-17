@@ -57,7 +57,6 @@ class AuthViewModel : ViewModel() {
         firstName: String,
         lastName: String,
         about: String,
-        pictureName: String,
         picture: Picture,
         type: String,
         bitmap: Bitmap,

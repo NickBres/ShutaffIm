@@ -2,7 +2,6 @@
 
 package com.example.shutaffim
 
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -54,7 +53,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -77,9 +75,7 @@ import com.example.shutaffim.ViewModel.AuthViewModel
 private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
 
 
-    val img: Bitmap =
-        BitmapFactory.decodeResource(Resources.getSystem(),
-            android.R.drawable.ic_menu_report_image)//default image
+
 
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
@@ -95,17 +91,21 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     picture = user.value?.picture ?: Picture()
 
 
-
     //---------------image variables----------------
-    var picHasChange by remember { mutableStateOf(false) }
+    var picHasChanged by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val img: Bitmap =
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.logo_background
+        )//default image
     val bitmap = remember { mutableStateOf(img) }
     val launcherCamera = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) {
         if (it != null) {
             bitmap.value = it
-            picHasChange = true
+            picHasChanged = true
         }
     }
 
@@ -119,7 +119,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
             val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
             bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
         }
-        picHasChange = true
+        picHasChanged = true
 
     }
     sex = user.value?.sex ?: ""
@@ -163,7 +163,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
 
                     contentAlignment = Alignment.Center
                 ) {
-                    if (picHasChange) {
+                    if (picHasChanged) {
                         Image(
                             bitmap = bitmap.value.asImageBitmap(),
                             contentDescription = "Profile Picture",
@@ -178,10 +178,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                     color = MaterialTheme.colorScheme.secondary,
                                     shape = CircleShape
                                 )
-                                .clickable(onClick = {
 
-                                }
-                                )
                         )
                     } else if (picture.pictureUrl == "") {
                         Image(
@@ -198,10 +195,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                     color = MaterialTheme.colorScheme.secondary,
                                     shape = CircleShape
                                 )
-                                .clickable(onClick = {
 
-                                }
-                                )
                         )
                     } else
                     Image(
@@ -218,28 +212,26 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                 color = MaterialTheme.colorScheme.secondary,
                                 shape = CircleShape
                             )
-                            .clickable(onClick = {
 
-                            }
-                            )
                     )
 
                     var expanded1 by remember { mutableStateOf(false) }
                     Box(
                         modifier = Modifier
                             .padding(top = 100.dp, start = 170.dp)
-                            .background(Color.Black, CircleShape)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+
 
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic__baseline_photo_camera),
                             contentDescription = "Add a photo",
-                            colorFilter = ColorFilter.tint(color = Color.White),
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.surface),
                             modifier = Modifier
                                 .padding(8.dp)
                                 .clip(CircleShape)
                                 .size(30.dp)
-                                .background(Color.Black, CircleShape)
+                                .background(MaterialTheme.colorScheme.primary, CircleShape)
                                 .clickable {
                                     expanded1 = true
                                 }

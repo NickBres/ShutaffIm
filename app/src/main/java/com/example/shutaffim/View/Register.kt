@@ -1,7 +1,6 @@
 package com.example.shutaffim.Model.Screen
 
 
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -10,31 +9,32 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -50,9 +50,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -61,9 +63,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.Model.UserType
+import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
 import java.time.LocalDate
@@ -76,6 +79,7 @@ fun Register(
     navController: NavController,
     authViewModel: AuthViewModel,
 ) {
+    var picture by remember { mutableStateOf(Picture()) }
     var fName by remember { mutableStateOf("") }
     var lName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -93,45 +97,39 @@ fun Register(
 
 
     // ----------------- Image Picker -----------------
+    var picHasChanged by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val img: Bitmap =
         BitmapFactory.decodeResource(
-            Resources.getSystem(),
-            android.R.drawable.ic_menu_report_image
+            context.resources,
+            R.drawable.logo_background
         )//default image
-    val context = LocalContext.current
     val bitmap = remember { mutableStateOf(img) }
     val launcherCamera = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) {
         if (it != null) {
             bitmap.value = it
-
+            picHasChanged = true
         }
     }
 
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (Build.VERSION.SDK_INT < 28) {
+        if (Build.VERSION.SDK_INT < 34) {
             bitmap.value = MediaStore.Images
                 .Media.getBitmap(context.contentResolver, uri)
         } else {
             val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
             bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
         }
-
+        picHasChanged = true
     }
 
 
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
-
-    val activityResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-    ) { uri: Uri? ->
-        // Update the selectedImageUri when an image is selected
-        selectedImageUri = uri
-    }
 
     Column(
         modifier = Modifier
@@ -146,55 +144,112 @@ fun Register(
 
         ElevatedCard {
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.Center, // Align items in the center horizontally
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
 
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                        // Replace Image with IconButton
-                        IconButton(
-                            onClick = {
-                                activityResultLauncher.launch("image/*")
-                            },
-                            modifier = Modifier
-                                .size(130.dp)
-                                .border(
-                                    BorderStroke(8.dp, MaterialTheme.colorScheme.primary),
-                                    CircleShape
-                                )
-                                .padding(5.dp)
-                                .clip(CircleShape)
-                        ) {
-                            if (selectedImageUri == null) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Upload Image"
+                contentAlignment = Alignment.Center
+            ) {
+                if (picHasChanged) {
+                    Image(
+                        bitmap = bitmap.value.asImageBitmap(),
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = CircleShape
                             )
-                            }
-                            selectedImageUri?.let { uri ->
-                                Image(
-                                    painter = rememberImagePainter(uri),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(150.dp)
-                                        .border(
-                                            BorderStroke(5.dp, Color.White),
-                                            CircleShape
-                                        )
-                                        .padding(5.dp)
-                                        .clip(CircleShape)
 
-                                )
+                    )
+                } else if (picture.pictureUrl == "") {
+                    Image(
+                        painter = rememberAsyncImagePainter(R.drawable.pngwing_com),
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = CircleShape
+                            )
 
+                    )
+                } else
+                    Image(
+                        painter = rememberAsyncImagePainter(picture.pictureUrl),
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = CircleShape
+                            )
+
+                    )
+
+                var expanded1 by remember { mutableStateOf(false) }
+                Box(
+                    modifier = Modifier
+                        .padding(top = 100.dp, start = 170.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic__baseline_photo_camera),
+                        contentDescription = "Add a photo",
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.surface),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clip(CircleShape)
+                            .size(30.dp)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+                            .clickable {
+                                expanded1 = true
                             }
+                    )
+
+                    var selectedOption1 by remember { mutableStateOf("") }
+
+                    val options1 = listOf("Camera", "Gallery")
+                    DropdownMenu(expanded = expanded1,
+                        onDismissRequest = { expanded1 = false }) {
+                        options1.forEach { label ->
+                            DropdownMenuItem(
+                                text = { Text(label) },
+                                onClick = {
+                                    selectedOption1 = label
+                                    expanded1 = false
+                                    when (selectedOption1) {
+                                        "Camera" -> {
+                                            launcherCamera.launch()
+                                        }
+
+                                        "Gallery" -> {
+                                            launchImage.launch("image/*")
+                                        }
+                                    }
+                                }
+                            )
                         }
-
                     }
+                }
+
+            }
 
            /** fname   * */
             OutlinedTextField(
@@ -411,8 +466,7 @@ fun Register(
                         lastName = lName,
                         about = about,
                         type = userType,
-                        pictureName = bitmap.value.toString(),
-                        picture = Picture(), // TODO : add picture
+                        picture = picture, // TODO : add picture
                         bitmap = bitmap.value,
                         birthYear = birthYear.toInt(),
                         sex = selectedSexOption
