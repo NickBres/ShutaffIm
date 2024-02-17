@@ -1,10 +1,15 @@
-import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,18 +19,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.sharp.Face
-import androidx.compose.material.icons.sharp.Share
 import androidx.compose.material3.Button
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,6 +46,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,16 +56,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.shutaffim.Model.Post
+import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
@@ -109,14 +126,32 @@ fun EditPost(
     about_apartment = post.value?.about ?: ""
     tags = postsVM.tagsToString(post.value?.tags ?: emptyList())
 
+    val imagesToDelete = remember {
+        mutableStateOf(mutableListOf<String>())
+    }
 
-    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-// Handle the result of the image picker
-    val activityResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
+    var picHasChanged by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val img: Bitmap =
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.logo_background
+        )//default image
+    val bitmap = remember { mutableStateOf(img) }
+    val newImages = remember { mutableStateOf(listOf<Bitmap>()) }
+
+    val launchImage = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        // Update the imageUris when an image is selected
-        imageUris = imageUris + listOfNotNull(uri)
+        if (Build.VERSION.SDK_INT < 34) {
+            bitmap.value = MediaStore.Images
+                .Media.getBitmap(context.contentResolver, uri)
+        } else {
+            val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+            bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
+        }
+        picHasChanged = true
+        newImages.value = newImages.value + bitmap.value
     }
 
 
@@ -126,7 +161,7 @@ fun EditPost(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            CenterAlignedTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         "Edit Post",
@@ -171,11 +206,13 @@ fun EditPost(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
-                    .padding(start = 4.dp, end = 4.dp),
+                    .padding(start = 4.dp, end = 4.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
 
-            ) {
+
+                ) {
 
 
                 ElevatedCard {
@@ -445,48 +482,87 @@ fun EditPost(
                 }//ElevatedCard filed
                 Spacer(modifier = Modifier.height(8.dp))
 
+                Text(
+                    text = "Current Pictures",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 ElevatedCard {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        // Display up to 5 ImageButtons for triggering image upload
-                        for (i in 0 until minOf(imageUris.size, 5)) {
-                            Image(
-                                painter = rememberImagePainter(data = imageUris[i]),
-                                contentDescription = null,
-                                modifier = Modifier.size(50.dp) // Adjust size as needed
-                            )
-                        }
-
-                        if (imageUris.size < 5) {
-                            // Display the IconButton for triggering image upload
-                            IconButton(onClick = {
-                                // Trigger the file input when IconButton is clicked
-                                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                                activityResultLauncher.launch(intent.toString())
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Sharp.Share,
-                                    contentDescription = "Upload Image"
-                                )
+                        LazyRow(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            items(post.value?.pictures ?: emptyList()) { picture ->
+                                ExistingImageItem(pictureURL = picture.pictureUrl) {
+                                    if (imagesToDelete.value.contains(picture.pictureName)) {
+                                        imagesToDelete.value.remove(picture.pictureName)
+                                    } else {
+                                        imagesToDelete.value.add(picture.pictureName)
+                                    }
+                                }
                             }
-                            Text(
-                                text = "Upload Image",
-                                modifier = Modifier.fillMaxWidth() // Align text to the center
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Add pictures",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ElevatedCard {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        LazyRow(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            items(newImages.value) { bitmap ->
+                                ImageItem(bitmap = bitmap, onDelete = {
+                                    newImages.value = newImages.value - bitmap
+                                })
+                            }
+                        }
+                        IconButton(
+                            onClick = {
+                                launchImage.launch("image/*")
+                            }
+                        )
+                        {
+                            Icon(
+                                Icons.Default.AddPhotoAlternate,
+                                contentDescription = "Add new picture",
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
-                }//ElevatedCard img
+                }
 
 
 
                 Spacer(modifier = Modifier.height(64.dp))
                 Button(
                     onClick = {
+                        val updatedPictures =
+                            post.value?.pictures?.filterNot { it.pictureName in imagesToDelete.value }
+                                ?: emptyList()
                         val newPost = Post(
                             id = post.value?.id ?: "",
                             date = post.value?.date ?: System.currentTimeMillis(),
@@ -498,10 +574,12 @@ fun EditPost(
                             price = price.toInt(),
                             tags = postsVM.tagsToList(tags),
                             about = about_apartment,
-                            userId = userId
+                            userId = userId,
+                            pictures = updatedPictures
                         )
-                        postsVM.updatePost(newPost, listOf(), listOf())
+                        postsVM.updatePost(newPost, newImages.value, imagesToDelete.value)
                         postsVM.resetPost()
+                        navController.navigate(Screen.MyPostsScreen.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -520,4 +598,37 @@ fun EditPost(
 
         }//content
     )//Scaffold
+}
+
+@Composable
+fun ExistingImageItem(pictureURL: String, onDelete: () -> Unit) {
+    val isDelete = remember { mutableStateOf(false) }
+    ElevatedCard(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(4.dp)
+            .clickable {
+                onDelete()
+                isDelete.value = !isDelete.value
+            },
+        elevation = CardDefaults.cardElevation(4.dp),
+    ) {
+        Box {
+            Image(
+                painter = rememberAsyncImagePainter(pictureURL),
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.Crop
+            )
+            if (isDelete.value) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "delete",
+                    tint = Color.Red,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+        }
+    }
+
 }

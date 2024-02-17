@@ -98,24 +98,9 @@ class PostsRepository(
     }
 
     suspend fun deleteImagesFromPost(postId: String): Result<Boolean> = try {
-        val postRef = firestore.collection("posts").document(postId)
-        val querySnapshot = postRef.collection("pictures").get().await()
-        val pictures = querySnapshot.documents.mapNotNull { document ->
-            try {
-                Picture(
-                    pictureUrl = document.getString("pictureUrl") ?: "",
-                    pictureName = document.getString("pictureName") ?: ""
-                ).also { picture ->
-                    println("Mapped to Picture: $picture")
-                }
-            } catch (e: Exception) {
-                println("Exception while manually mapping document to Picture: $e")
-                null
-            }
-        }
-        for (picture in pictures) {
-            val imageRef = storage.reference.child("postsImages/$postId/${picture.pictureName}")
-            imageRef.delete().await()
+        val listAllTask = storage.reference.child("postsImages/$postId").listAll().await()
+        for (item in listAllTask.items) {
+            item.delete().await()
         }
         Result.Success(true)
     } catch (e: Exception) {
@@ -125,6 +110,8 @@ class PostsRepository(
 
     suspend fun getPost(postId: String): Result<Post> = try {
         val documentSnapshot = firestore.collection("posts").document(postId).get().await()
+        val picturesList = documentSnapshot.get("pictures") as? List<HashMap<String, Any>>
+        val pictures = picturesList?.map { hashMapToPicture(it) } ?: listOf()
         val post = Post(
             id = documentSnapshot.id,
             date = documentSnapshot.getLong("date") ?: 0L,
@@ -137,7 +124,7 @@ class PostsRepository(
             tags = documentSnapshot.get("tags") as List<String>? ?: listOf(),
             about = documentSnapshot.getString("about") ?: "",
             userId = documentSnapshot.getString("userId") ?: "",
-            pictures = documentSnapshot.get("pictures") as List<Picture>? ?: listOf()
+            pictures = pictures
         )
         if (post != null) {
             Result.Success(post)
@@ -228,8 +215,10 @@ class PostsRepository(
 
     suspend fun uploadPostsImages(postId: String, bitmaps: List<Bitmap>): Result<Boolean> =
         try {
-            var pictures = mutableListOf<Picture>()
             val postRef = firestore.collection("posts").document(postId)
+            val currPictures = postRef.get().await().get("pictures") as? List<HashMap<String, Any>>
+            val pictures =
+                currPictures?.map { hashMapToPicture(it) }?.toMutableList() ?: mutableListOf()
             for (bitmap in bitmaps) {
                 val imageRef = storage.reference.child("postsImages/$postId/${bitmap}")
                 val baos = ByteArrayOutputStream()

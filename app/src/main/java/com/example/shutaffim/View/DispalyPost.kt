@@ -231,13 +231,7 @@ fun PostScreen(
     val listOfRequest by postsVM.interestedInPost.observeAsState(emptyList())
 
     val sliderList = remember {
-        mutableListOf(
-            "https://www.gstatic.com/webp/gallery/1.webp",
-            "https://www.gstatic.com/webp/gallery/2.webp",
-            "https://www.gstatic.com/webp/gallery/3.webp",
-            "https://www.gstatic.com/webp/gallery/4.webp",
-            "https://www.gstatic.com/webp/gallery/5.webp",
-        )
+        post.pictures.map { it.pictureUrl }.toMutableList()
     }
 
     var interestedClick by remember {
