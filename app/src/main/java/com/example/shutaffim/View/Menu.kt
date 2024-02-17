@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -74,6 +75,7 @@ private fun Menu(
     var pic by remember {
         mutableStateOf(Picture())
     }
+    val context = LocalContext.current
 
     firstName = currUser?.fName ?: ""
     lastName = currUser?.lName ?: ""
@@ -88,6 +90,7 @@ private fun Menu(
                 title = { Text(text = "Login") },
                 navigationIcon = {
                     IconButton(onClick = {
+                        authViewModel.logout(context)
                         navController.navigate(Screen.LoginScreen.route)
                     }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")

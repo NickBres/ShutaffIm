@@ -67,6 +67,7 @@ private fun Login(
         mutableStateOf("")
     }
     var rememberMe by remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
     val result by authViewModel.authResult.observeAsState()
     Column(
@@ -174,7 +175,7 @@ private fun Login(
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                authViewModel.login(navController, email, password)
+                authViewModel.login(navController, email, password, rememberMe, context)
 
 
             },

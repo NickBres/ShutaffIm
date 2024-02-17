@@ -1,6 +1,7 @@
 package com.example.shutaffim.ViewModel
 
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -85,28 +86,27 @@ class AuthViewModel : ViewModel() {
     }
 
     fun login(
-                navController: NavController,
-                email: String,
-                 password: String) {
+        navController: NavController,
+        email: String,
+        password: String,
+        rememberMe: Boolean,
+        context: Context
+    ) {
         viewModelScope.launch {
-            //signInInProgress.value = true
             _authResult.value = userRepo.login(email, password)
-           // signInInProgress.value = false
-            updateUser()
-            if(_authResult.value is Result.Success){
-                //navigate to type screen
+            if (_authResult.value is Result.Success) {
+                saveRememberMePreference(rememberMe, context)
+                updateUser()
                 navController.navigate(Screen.TypeScreen.route)
-            }
-            else if(_authResult.value is Result.Error) {
+            } else if (_authResult.value is Result.Error) {
                 Toast.makeText(
                     navController.context,
                     "Error: ${(_authResult.value as Result.Error).exception.message}",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 println("Error: ${(_authResult.value as Result.Error).exception.message}")
             }
-
         }
-
     }
 
     fun updateUser() {
@@ -156,14 +156,18 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
     fun insertIsMyPost(boolean: Boolean) {
         viewModelScope.launch {
             _isMyPost.value = boolean
         }
     }
-    fun logout() {
+
+    fun logout(context: Context) {
         viewModelScope.launch {
-            _authResult.value = userRepo.logout()
+            userRepo.logout()
+            saveRememberMePreference(false, context) // Reset Remember Me preference on logout
+            _authResult.value = Result.Success(false) // Update the auth result as needed
         }
     }
 
@@ -222,5 +226,16 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
+    fun saveRememberMePreference(rememberMe: Boolean, context: Context) {
+        val prefs = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("RememberMe", rememberMe).apply()
+    }
+
+    fun getRememberMePreference(context: Context): Boolean {
+        val prefs = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        return prefs.getBoolean("RememberMe", false)
+    }
+
 
 }
