@@ -335,7 +335,11 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                     sex = sex
                                 )
                             authVM.updateInfo(newUser)
-                            authVM.uploadProfileImageToFirebase(bitmap.value, user.value?.email!!)
+                            if (picHasChanged)
+                                authVM.uploadProfileImageToFirebase(
+                                    bitmap.value,
+                                    user.value?.email!!
+                                )
                             navController.navigateUp()
                         },
                         modifier = Modifier

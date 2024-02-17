@@ -70,9 +70,9 @@ fun PostsSearch(
                 actions = {
                     IconButton(onClick = { assignedPostsOnly = !assignedPostsOnly }) {
                         if (assignedPostsOnly) {
-                            postsVM.filterInterestedInPost(
-                                authViewModel.currentUser.value?.email ?: ""
-                            )
+//                            postsVM.filterInterestedInPost(
+//                                authViewModel.currentUser.value?.email ?: ""
+//                            )
                             Icon(
                                 imageVector = Icons.Filled.Task,
                                 contentDescription = "Assigned Posts"
