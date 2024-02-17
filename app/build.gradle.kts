@@ -52,11 +52,11 @@ android {
 
 dependencies {
 
-
+    implementation("androidx.compose.material:material-icons-extended:1.6.1") // material icons
     implementation("io.coil-kt:coil-compose:2.5.0") // image loading
-    implementation("androidx.navigation:navigation-compose:2.7.6") // screen navigation/transitions
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.0") // live data
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.navigation:navigation-compose:2.7.7") // screen navigation/transitions
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1") // live data
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.compose.runtime:runtime:1.6.1")//Compose Runtime
     implementation("androidx.compose.runtime:runtime-rxjava2:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")

@@ -139,9 +139,10 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.surface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.surface,
+                    actionIconContentColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
@@ -298,9 +299,8 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
 
                     OutlinedTextField(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(16.dp)
-                            .height(100.dp),
+                            .wrapContentSize(),
                         value = about,
                         onValueChange = { about = it },
                         label = {
@@ -308,7 +308,8 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                 text = "About",
                                 style = TextStyle(
                                     fontSize = 18.sp
-                                )
+                                ),
+                                modifier = Modifier.fillMaxWidth()
                             )
                         },
                         colors = TextFieldDefaults.outlinedTextFieldColors(

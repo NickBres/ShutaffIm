@@ -1,9 +1,10 @@
 package com.example.shutaffim.View
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,46 +53,53 @@ import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
+import java.time.LocalDate
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(navController: NavController, authVM: AuthViewModel) {
 
 
-
-
     val user by authVM.currentUser.observeAsState()
     val userintersted by authVM.currentintersted.observeAsState()
 
-    var FirstName by remember {
+    var firstName by remember {
         mutableStateOf("")
     }
-    var LastName by remember {
+    var lastName by remember {
         mutableStateOf("")
     }
-    var Email by remember {
+    var email by remember {
         mutableStateOf("")
     }
-    var about_user by remember {
+    var aboutUser by remember {
         mutableStateOf("")
     }
     var pic by remember {
         mutableStateOf(Picture())
     }
-    if (authVM.isMyPost.value == true){
-        FirstName = user?.fName ?: ""
-        LastName = user?.lName ?: ""
-        Email = user?.email ?: ""
-        about_user = user?.about ?: ""
+    var age by remember {
+        mutableStateOf("0")
+    }
+    var sex by remember {
+        mutableStateOf("")
+    }
+    if (authVM.isMyPost.value == true) {
+        firstName = user?.fName ?: ""
+        lastName = user?.lName ?: ""
+        email = user?.email ?: ""
+        aboutUser = user?.about ?: ""
         pic = user?.picture ?: Picture()
-
-    }else{
-        FirstName = userintersted?.fName ?: ""
-        LastName = userintersted?.lName ?: ""
-        Email = userintersted?.email ?: ""
-        about_user = userintersted?.about ?: ""
-        pic = userintersted?.picture ?: Picture()
+        val currentYear = LocalDate.now().year
+        val birthYear = user?.birthYear
+        age = (currentYear - (birthYear ?: 0)).toString()
+        sex = when (user?.sex) {
+            "Male" -> "♂"
+            "Female" -> "♀"
+            else -> "⚧"
+        }
 
     }
 
@@ -130,9 +138,9 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
         Column(
             modifier = Modifier
                 .padding(8.dp)
-                .padding(innerPadding)
-
-
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Box(
@@ -157,10 +165,6 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                                 color = MaterialTheme.colorScheme.secondary,
                                 shape = CircleShape
                             )
-                            .clickable(onClick = {
-
-                            }
-                            )
                     )
                 } else {
                     Image(
@@ -177,108 +181,25 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
                                 color = MaterialTheme.colorScheme.secondary,
                                 shape = CircleShape
                             )
-                            .clickable(onClick = {
-
-                            }
-                            )
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(32.dp))
-            Card(
-                modifier = Modifier
-                    .size(height = 60.dp, width = 380.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-
-                ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    contentAlignment = Alignment.CenterStart
-
-                ) {
-
-                    Text(
-                        text = "First Name:  $FirstName",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
-                        )
                     )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Card(
-                modifier = Modifier
-                    .size(height = 60.dp, width = 380.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
 
-                ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    contentAlignment = Alignment.CenterStart
-
-                ) {
-
-                    Text(
-                        text = "Last Name:  $LastName",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Card(
-                modifier = Modifier
-                    .size(height = 60.dp, width = 380.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-
-                ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    contentAlignment = Alignment.CenterStart
-
-                ) {
-
-                    Text(
-                        text = "Email:  $Email",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-            }
-
+            Text(
+                text = "${firstName} ${lastName} , ${age} , ${sex}",
+                style = TextStyle(
+                    fontSize = 34.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 0.dp, top = 0.dp, end = 8.dp, bottom = 4.dp),
+                    .padding(end = 8.dp, bottom = 4.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -293,20 +214,67 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
             }
             Card(
                 modifier = Modifier
-                    .size(height = 150.dp, width = 400.dp),
+                    .wrapContentSize(),
                 elevation = CardDefaults.cardElevation(2.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             ) {
-                Text(text = about_user,
+                Text(
+                    text = aboutUser,
                     style = TextStyle(
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                     ),
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
                 )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 8.dp, bottom = 4.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Connect with me:",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            Card(
+                modifier = Modifier
+                    .wrapContentSize(),
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+
+                ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    contentAlignment = Alignment.CenterStart
+
+                ) {
+
+                    Text(
+                        text = email,
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
             }
 
         }

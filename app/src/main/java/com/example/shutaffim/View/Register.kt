@@ -170,7 +170,7 @@ fun Register(
                     )
                 } else if (picture.pictureUrl == "") {
                     Image(
-                        painter = rememberAsyncImagePainter(R.drawable.pngwing_com),
+                        painter = rememberAsyncImagePainter(R.drawable.logo_background),
                         contentDescription = "Profile Picture",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

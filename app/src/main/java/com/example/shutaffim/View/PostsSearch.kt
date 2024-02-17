@@ -1,12 +1,13 @@
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,13 +25,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.shutaffim.FilterAndSearch
 import com.example.shutaffim.PostItem
-import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
@@ -75,18 +74,14 @@ fun PostsSearch(
                                 authViewModel.currentUser.value?.email ?: ""
                             )
                             Icon(
-                                painter = painterResource(id = R.drawable.task_icon),
-                                contentDescription = "Assigned Posts",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(32.dp)
+                                imageVector = Icons.Filled.Task,
+                                contentDescription = "Assigned Posts"
                             )
                         } else {
                             postsVM.loadPosts()
                             Icon(
-                                painter = painterResource(id = R.drawable.desc_icon),
-                                contentDescription = "Assigned Posts",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(32.dp)
+                                imageVector = Icons.Filled.Description,
+                                contentDescription = "Assigned Posts"
                             )
                         }
                     }
