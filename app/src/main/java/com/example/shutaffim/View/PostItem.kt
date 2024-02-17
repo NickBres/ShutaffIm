@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.ViewModel.PostsVM
 import java.text.SimpleDateFormat
@@ -41,6 +42,13 @@ fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: 
     val date = Date(post.date)
     val dateString = sdf.format(date)
 
+    val imagePainter = if (post.pictures.isNotEmpty()) {
+        val pictureURL = post.pictures[0].pictureUrl
+        rememberAsyncImagePainter(pictureURL)
+    } else {
+        painterResource(id = R.drawable.logo_background) // replace with your default image resource id
+    }
+
 
     ElevatedCard(
         modifier = Modifier
@@ -55,7 +63,7 @@ fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: 
             contentColor = MaterialTheme.colorScheme.onSurface
 
         ),
-        onClick = { /* TODO Enter to the item screen*/
+        onClick = {
             postsVM.loadPost(post.id)
             navController.navigate(Screen.PostScreen.route)
         }
@@ -67,7 +75,7 @@ fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: 
                 .height(size)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.test_image), // TODO: change to post.image
+                painter = imagePainter,
                 contentDescription = "",
                 modifier = Modifier
                     .height(size)

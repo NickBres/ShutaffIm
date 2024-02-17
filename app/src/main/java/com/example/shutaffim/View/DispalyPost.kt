@@ -183,12 +183,9 @@ fun DisplayPost(
         0,
         0,
         0,
-        listOf(""),
+        listOf(),
         "",
-        "",
-        "",
-        "",
-        "",
+        listOf(),
         ""
     )
     val post by postsVM.currPost.observeAsState(default)

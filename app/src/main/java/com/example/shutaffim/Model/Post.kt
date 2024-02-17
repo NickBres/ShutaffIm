@@ -2,7 +2,7 @@ package com.example.shutaffim.Model
 
 data class Post(
     val id: String = "",
-    var date: Long= 0L,
+    var date: Long = 0L,
     val city: String,
     val street: String,
     val house_num: Int,
@@ -11,9 +11,6 @@ data class Post(
     val price: Int,
     val tags: List<String> = listOf(),
     val about: String = "",
-    val pic1: String = "",
-    val pic2: String = "",
-    val pic3: String = "",
-    val pic4: String = "",
+    val pictures: List<Picture> = listOf(),
     val userId: String
 )

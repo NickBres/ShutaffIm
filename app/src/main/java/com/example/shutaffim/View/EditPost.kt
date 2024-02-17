@@ -500,9 +500,8 @@ fun EditPost(
                             about = about_apartment,
                             userId = userId
                         )
-                        postsVM.updatePost(newPost)
+                        postsVM.updatePost(newPost, listOf(), listOf())
                         postsVM.resetPost()
-                        navController.navigate(Screen.MyPostsScreen.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()

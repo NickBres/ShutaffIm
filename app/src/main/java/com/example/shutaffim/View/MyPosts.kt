@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.shutaffim.ViewModel.AuthViewModel
@@ -35,7 +34,7 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
 
     postsVM.applyFilter(user?.email ?: "")
 
-    val posts by postsVM.postsUser.observeAsState(emptyList())
+    val posts by postsVM.posts.observeAsState(emptyList())
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -78,11 +77,4 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
             }
 
         })
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PostsSearchViewPreview() {
-//    MyPosts(navController = NavController(LocalContext.current), postsVM = PostsVM())
 }

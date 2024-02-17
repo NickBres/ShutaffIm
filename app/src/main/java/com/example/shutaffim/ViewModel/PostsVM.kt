@@ -1,15 +1,18 @@
 package com.example.shutaffim.ViewModel
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.shutaffim.Injection
 import com.example.shutaffim.Model.Filter
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
 import com.example.shutaffim.Model.Request
 import com.example.shutaffim.Model.Result
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -40,7 +43,8 @@ class PostsVM : ViewModel() {
 
     init {
         postsRepo = PostsRepository(
-            firestore = Injection.firestoreInstance()
+            firestore = Injection.firestoreInstance(),
+            storage = Injection.storageInstance()
         )
         loadPosts()
     }
@@ -85,10 +89,7 @@ class PostsVM : ViewModel() {
             price = 0,
             tags = listOf(),
             about = "",
-            pic1 = "",
-            pic2 = "",
-            pic3 = "",
-            pic4 = "",
+            pictures = listOf(),
             userId = ""
         )
     }
@@ -133,11 +134,8 @@ class PostsVM : ViewModel() {
 
     //////////////////////////////////////////////////////
     fun applyFilter(email: String) {
-//        viewModelScope.launch {
             loadPosts()
             filterPosts(email)
-//        }
-
     }
     fun filterPosts(email: String) {
         // Convert filter tags string to list and trim each tag
@@ -161,25 +159,15 @@ class PostsVM : ViewModel() {
         return tags.split(",").map { it.trim() }
     }
 
-//    fun loadInterestedInPost(postId: String) {
-//        viewModelScope.launch {
-//            when (val result = postsRepo.getInterestedInPost(postId)) {
-//                is Result.Success -> _interestedInPost.value = result.data!!
-//                else -> {
-//                    _interestedInPost.value = listOf()
-//                    println("Error occurred while loading interested in post")
-//                }
-//            }
-//        }
-//    }
 
-    fun createNewPost(post: Post ) {
+    fun createNewPost(post: Post, bitmaps: List<Bitmap>, navController: NavController) {
         post.date = System.currentTimeMillis()
         viewModelScope.launch {
-            when (val result = postsRepo.createPost(post )) {
+            when (val result = postsRepo.createPost(post)) {
                 is Result.Success -> {
+                    uploadPostImages(result.data.id, bitmaps)
                     loadPosts()
-                    /* TODO: Filter to my posts */
+                    navController.navigateUp()
                 }
 
                 else -> {
@@ -189,12 +177,37 @@ class PostsVM : ViewModel() {
         }
     }
 
-    fun updatePost(post: Post) {
+    private fun uploadPostImages(postId: String, bitmaps: List<Bitmap>) {
         viewModelScope.launch {
-            when (val result = postsRepo.updatePost(post)) {
+            when (val result = postsRepo.getPost(postId)) {
+                is Result.Success -> {
+                    _currPost.value = result.data.copy()
+                    val uploadPostsResult = viewModelScope.async {
+                        postsRepo.uploadPostsImages(postId, bitmaps)
+                    }.await()
+
+                    if (uploadPostsResult is Result.Success) {
+                        println("Post images uploaded successfully")
+                        loadPosts()
+                    } else {
+                        println("Error occurred while uploading post images")
+                    }
+
+                }
+
+                else -> {
+                    println("Error occurred while getting post")
+                }
+            }
+        }
+    }
+
+
+    fun updatePost(post: Post, newImages: List<Bitmap>, imagesToDelete: List<String>) {
+        viewModelScope.launch {
+            when (val result = postsRepo.updatePost(post, newImages, imagesToDelete)) {
                 is Result.Success -> {
                     loadPosts()
-                    /* TODO: Filter to my posts */
                 }
 
                 else -> {
@@ -293,17 +306,6 @@ class PostsVM : ViewModel() {
         }
 
     }
-
-//    fun getInterestedIdList(){
-//        _interestedInPostId.clear()
-//        for (interested in _interestedInPost.value!!) {
-//            _interestedInPostId.add(interested.userId)
-//            println("gogo interested.userId: ${interested.userId}")
-//        }
-//    }
-//    fun deleteInterestedIdFromList(userId: String){
-//        _interestedInPostId.remove(userId)
-//    }
 
 
 

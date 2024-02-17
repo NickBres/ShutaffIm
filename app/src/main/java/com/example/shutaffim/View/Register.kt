@@ -471,8 +471,6 @@ fun Register(
                         birthYear = birthYear.toInt(),
                         sex = selectedSexOption
                     )
-
-
                 },
                 modifier = Modifier
                     .fillMaxWidth()
