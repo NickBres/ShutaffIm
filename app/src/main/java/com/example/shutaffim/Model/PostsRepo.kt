@@ -237,6 +237,7 @@ class PostsRepository(
                 )
             }
             postRef.update("pictures", pictures).await()
+            println("*images uploaded successfully")
             Result.Success(true)
 
         } catch (e: Exception) {
@@ -249,9 +250,26 @@ class PostsRepository(
                 val imageRef = storage.reference.child("postsImages/$postId/${pictureName}")
                 imageRef.delete().await()
             }
+            println("*image removed successfully")
             Result.Success(true)
         } catch (e: Exception) {
             Result.Error(e)
         }
+
+    suspend fun removeInterestedCollection(postId: String): Result<Boolean>
+    {
+        return try {
+            val collection = firestore.collection("posts").document(postId).collection("interested").get().await()
+            for (document in collection.documents) {
+                document.reference.delete().await()
+            }
+            //remove the collection
+            firestore.collection("posts").document(postId).collection("interested").document("interested").delete().await()
+            Result.Success(true)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+
+    }
 
 }

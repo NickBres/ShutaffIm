@@ -52,9 +52,14 @@ class PostsVM : ViewModel() {
     fun loadPosts() {
         viewModelScope.launch {
             when (val result = postsRepo.getPosts()) {
-                is Result.Success -> _posts.value = result.data!!
+                is Result.Success -> {
+                    _posts.value = result.data!!
+                    println("3. Posts loaded here data: ${result.data}")
+                    println("3. Posts loaded successfully")
+                }
+
                 else -> {
-                    println("Error occurred while loading posts")
+                    println("3. Error occurred while loading posts")
                 }
             }
         }
@@ -166,7 +171,7 @@ class PostsVM : ViewModel() {
             when (val result = postsRepo.createPost(post)) {
                 is Result.Success -> {
                     uploadPostImages(result.data.id, bitmaps)
-                    loadPosts()
+
                     navController.navigateUp()
                 }
 
@@ -207,11 +212,11 @@ class PostsVM : ViewModel() {
         viewModelScope.launch {
             when (val result = postsRepo.updatePost(post, newImages, imagesToDelete)) {
                 is Result.Success -> {
+                    println("1. Post updated successfully")
                     loadPosts()
                 }
-
                 else -> {
-                    println("Error occurred while updating post")
+                    println("1. Error occurred while updating post")
                 }
             }
         }
@@ -221,12 +226,14 @@ class PostsVM : ViewModel() {
         viewModelScope.launch {
             when (val result = postsRepo.deletePost(postId)) {
                 is Result.Success -> {
+                   removeInterestedCollection(postId)
                     loadPosts()
+                    println("2. Post deleted successfully")
                     /* TODO: Filter to my posts */
                 }
 
                 else -> {
-                    println("Error occurred while deleting post")
+                    println("2. Error occurred while deleting post")
                 }
             }
         }
@@ -320,6 +327,17 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
         }
     }
 }
+    fun removeInterestedCollection(postId: String) {
+        viewModelScope.launch {
+            _upResult.value = postsRepo.removeInterestedCollection(postId)
+            if(_upResult.value is Result.Success){
+                println("Interested collection removed")
+            }
+            else if(_upResult.value is Result.Error) {
+                println("Error: ${(_upResult.value as Result.Error).exception.message}")
+            }
+        }
+    }
 
 
 
