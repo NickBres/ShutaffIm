@@ -112,7 +112,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (Build.VERSION.SDK_INT < 34) {
+        if (Build.VERSION.SDK_INT < 28) {
             bitmap.value = MediaStore.Images
                 .Media.getBitmap(context.contentResolver, uri)
         } else {

@@ -129,8 +129,8 @@ fun EditPost(
     val imagesToDelete = remember {
         mutableStateOf(mutableListOf<String>())
     }
-
     var picHasChanged by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     val img: Bitmap =
         BitmapFactory.decodeResource(
@@ -143,7 +143,7 @@ fun EditPost(
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (Build.VERSION.SDK_INT < 34) {
+        if (Build.VERSION.SDK_INT < 28) {
             bitmap.value = MediaStore.Images
                 .Media.getBitmap(context.contentResolver, uri)
         } else {

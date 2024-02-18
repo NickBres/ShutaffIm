@@ -194,7 +194,6 @@ class AuthViewModel : ViewModel() {
                             userId
                         )
                     }
-
                     // Wait for the completion of the first operation
                     val removeImageResult = removeImageDeferred.await()
 

@@ -1,6 +1,8 @@
 package com.example.shutaffim.Model.Screen
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -61,11 +63,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.Interested
+import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
@@ -82,7 +86,7 @@ import kotlin.math.absoluteValue
 @Composable
 private fun CustomSlider(
     modifier: Modifier = Modifier,
-    sliderList: MutableList<String>,
+    postsVM: PostsVM,
     dotsActiveColor: Color = Color.DarkGray,
     dotsInActiveColor: Color = Color.LightGray,
     dotsSize: Dp = 10.dp,
@@ -90,7 +94,8 @@ private fun CustomSlider(
     imageCornerRadius: Dp = 4.dp,
     imageHeight: Dp = 200.dp,
 ) {
-    val pagerState = rememberPagerState(pageCount = { sliderList.size })
+    val currPost by postsVM.currPost.observeAsState()
+    val pagerState = rememberPagerState(pageCount = { currPost?.pictures?.size ?: 0})
     val scope = rememberCoroutineScope()
 
     Row(
@@ -125,7 +130,7 @@ private fun CustomSlider(
                             Scale.FILL
                         )
                         .crossfade(true)
-                        .data(sliderList[page])
+                        .data(currPost?.pictures?.get(page)?.pictureUrl)
                         .build(),
                     contentDescription = "Image",
                     contentScale = ContentScale.Crop,
@@ -145,7 +150,7 @@ private fun CustomSlider(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        sliderList.forEachIndexed { index, _ ->
+        currPost?.pictures?.forEachIndexed { index, _ ->
             Box(
                 modifier = modifier
                     .padding(4.dp)
@@ -165,6 +170,7 @@ private fun CustomSlider(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayPost(
@@ -212,6 +218,7 @@ fun DisplayPost(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreen(
@@ -230,9 +237,10 @@ fun PostScreen(
 
     val listOfRequest by postsVM.interestedInPost.observeAsState(emptyList())
 
-    val sliderList = remember {
-        post.pictures.map { it.pictureUrl }.toMutableList()
-    }
+//    val sliderList = remember {
+//        post.pictures.map { it.pictureUrl }.toMutableList()
+//    }
+   // val currPost by postsVM.currPost.observeAsState(post)
 
     var interestedClick by remember {
         mutableStateOf(false)
@@ -286,7 +294,7 @@ fun PostScreen(
 
         ) {
 
-            CustomSlider(sliderList = sliderList)//in rows
+            CustomSlider(postsVM = postsVM)//in rows
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -405,7 +413,7 @@ fun PostScreen(
             Spacer(modifier = Modifier.height(54.dp))
 
 
-            if (listOfRequest.isNotEmpty() && currUser.type == UserType.Publisher.type) {
+            if ( currUser.type == UserType.Publisher.type) {
 
                 Button(
                     onClick = { interestedClick = !interestedClick },
