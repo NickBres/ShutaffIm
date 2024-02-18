@@ -352,6 +352,19 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
     }
 
     fun filterInterestedInPost(email: String) {
+        viewModelScope.launch {
+            val updatedInterested = _posts.value?.filter { post ->
+                getInterestedInPost(post.id)
+                delay(200)
+                for (request in _interestedInPost.value!!) {
+                    if (request.userId == email) {
+                        return@filter true
+                    }
+                }
+                return@filter false
+            }
+            _posts.value = updatedInterested ?: listOf()
+        }
 
     }
 
