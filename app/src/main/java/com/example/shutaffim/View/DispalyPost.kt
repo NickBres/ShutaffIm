@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -25,13 +26,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Diversity1
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +61,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,13 +68,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.example.shutaffim.Interested
-import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
@@ -282,8 +284,83 @@ fun PostScreen(
                     titleContentColor = MaterialTheme.colorScheme.surface,
                     navigationIconContentColor = MaterialTheme.colorScheme.surface,
                     actionIconContentColor = MaterialTheme.colorScheme.surface
-                ),
+                )
             )
+        },
+        floatingActionButton = {
+            if (currUser.type == UserType.Publisher.type) { // publisher
+
+                FloatingActionButton(
+                    onClick = {
+                        interestedClick = !interestedClick
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+                {
+                    Icon(Icons.Default.Diversity1, contentDescription = "Interested")
+                }
+
+            } else { // consumer
+                alreadyInterestedClic = false
+                if (listOfRequest.any { it.userId == currUser.email }) {
+
+                    FloatingActionButton(
+                        onClick = {
+                            alreadyInterestedClic = !alreadyInterestedClic
+                            state = "Click Already interested"
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(Icons.Default.Favorite, contentDescription = "Already Interested")
+                        println("Before: state: $state , alreadyInterestedClick: $alreadyInterestedClic")
+                        if (alreadyInterestedClic && state == "Click Already interested") {
+
+                            ModalBottomSheet(onDismissRequest = {
+                                alreadyInterestedClic = false
+                                state = ""
+                            },
+                                content = {
+                                    RequestView(currUser, post, postsVM, state)
+
+                                }
+                            )
+
+                            println("After: state: $state , alreadyInterestedClick: $alreadyInterestedClic")
+                        }
+                    }
+                } else {
+                    interestedClick = false
+                    FloatingActionButton(
+                        onClick = {
+                            if (!listOfRequest.any { it.userId == currUser.email }) {
+                                interestedClick = !interestedClick
+                                state = "Click i'm interested"
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(Icons.Default.FavoriteBorder, contentDescription = "Not Interested")
+                        println("Before: state: $state , interestedClick: $interestedClick")
+                        if (interestedClick && state == "Click i'm interested") {
+
+                            ModalBottomSheet(onDismissRequest = {
+                                interestedClick = false
+                                state = ""
+                            },
+                                content = {
+                                    RequestView(currUser, post, postsVM, state)
+
+                                }
+                            )
+                            println("After: state: $state , interestedClick: $interestedClick")
+                        }
+                    }
+                }
+            }
+
         }
     ) { innerPadding ->
         Column(
@@ -339,6 +416,67 @@ fun PostScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    text = "Roommates",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.Group,
+                    contentDescription = "Current Roommates",
+                    modifier = Modifier
+                        .padding(4.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Current: ${post.curr_roommates}",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.width(32.dp))
+                Divider(
+                    color = Color.Gray, modifier = Modifier
+                        .width(1.dp)
+                        .height(16.dp)
+                )
+                Spacer(modifier = Modifier.width(32.dp))
+                Icon(
+                    Icons.Default.Groups,
+                    contentDescription = "Max Roommates",
+                    modifier = Modifier
+                        .padding(4.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Max: ${post.max_roommates}",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 0.dp, top = 8.dp, end = 8.dp, bottom = 0.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
                     text = "Tags",
                     style = TextStyle(
                         fontSize = 16.sp,
@@ -374,6 +512,8 @@ fun PostScreen(
 
                 }
             }
+
+
             Spacer(modifier = Modifier.height(32.dp))
             Row(
                 modifier = Modifier
@@ -409,118 +549,6 @@ fun PostScreen(
                     ),
                     modifier = Modifier.padding(8.dp)
                 )
-            }
-            Spacer(modifier = Modifier.height(54.dp))
-
-
-            if ( currUser.type == UserType.Publisher.type) {
-
-                Button(
-                    onClick = { interestedClick = !interestedClick },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                ) {
-                    Text(
-                        text = "List of interested",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    )
-
-                    if (interestedClick) {
-                        ModalBottomSheet(onDismissRequest = { interestedClick = false },
-                            content = {
-                                Interested(
-                                    navController = navController,
-                                    postsVM = postsVM,
-                                    userVM = authViewModel
-                                )
-                            }
-                        )
-                    }
-                }
-            } else {//-------------------- if consumer ---------------------
-
-                if (listOfRequest.any { it.userId == currUser.email }) {
-                    alreadyInterestedClic = false
-                    Button(
-                        onClick = {
-                            alreadyInterestedClic = !alreadyInterestedClic
-                            state = "Click Already interested"
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-
-                            containerColor = colorResource(id = R.color.lightGreen),
-
-                        )
-                    ) {
-
-                        Text(
-                            text = "Already interested",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        )
-                        println("Before: state: $state , alreadyInterestedClick: $alreadyInterestedClic")
-                        if (alreadyInterestedClic && state == "Click Already interested") {
-
-                            ModalBottomSheet(onDismissRequest = { alreadyInterestedClic = false
-                                                                    state = ""
-                                                                     },
-                                content = {
-                                    RequestView(currUser, post, postsVM, state)
-
-                                }
-                            )
-
-                            println("After: state: $state , alreadyInterestedClick: $alreadyInterestedClic")
-                        }
-                    }
-                } else {
-                    interestedClick = false
-                    Button(
-                        onClick = {
-                            if (!listOfRequest.any { it.userId == currUser.email }) {
-                                interestedClick = !interestedClick
-                                state = "Click i'm interested"
-                            }
-                        },
-
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                    ) {
-                        Text(
-                            text = "i'm interested",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        )
-                        println("Before: state: $state , interestedClick: $interestedClick")
-                        if (interestedClick && state == "Click i'm interested") {
-
-                            ModalBottomSheet(onDismissRequest = { interestedClick = false
-                                                                state = ""
-                            },
-                                content = {
-                                    RequestView(currUser, post, postsVM, state)
-
-                                }
-                            )
-                            println("After: state: $state , interestedClick: $interestedClick")
-                        }
-                    }
-                }
             }
         }
     }
