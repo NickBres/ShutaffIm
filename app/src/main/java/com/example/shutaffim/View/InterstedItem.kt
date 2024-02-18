@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Message
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,14 +73,15 @@ fun InterestedItem(
     val userAbout = user?.about ?: ""
     val userEmail = user?.email ?: ""
     val message = request.message
-    var checked by remember { mutableStateOf(false) }
+    var checked by remember { mutableStateOf(request.isApproved) }
     var showMessage by remember { mutableStateOf(false) }
     var showUserAbout by remember { mutableStateOf(false) }
 
     ElevatedCard(
         modifier = Modifier
             .wrapContentSize()
-            .padding(8.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
     ) {
 
         Row(
