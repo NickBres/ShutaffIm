@@ -72,6 +72,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
+import com.example.shutaffim.Interested
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
@@ -289,7 +290,6 @@ fun PostScreen(
         },
         floatingActionButton = {
             if (currUser.type == UserType.Publisher.type) { // publisher
-
                 FloatingActionButton(
                     onClick = {
                         interestedClick = !interestedClick
@@ -299,6 +299,17 @@ fun PostScreen(
                 )
                 {
                     Icon(Icons.Default.Diversity1, contentDescription = "Interested")
+                    if (interestedClick) {
+                        ModalBottomSheet(onDismissRequest = { interestedClick = false },
+                            content = {
+                                Interested(
+                                    navController = navController,
+                                    postsVM = postsVM,
+                                    userVM = authViewModel
+                                )
+                            }
+                        )
+                    }
                 }
 
             } else { // consumer
