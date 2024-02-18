@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -72,7 +73,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.example.shutaffim.Interested
+import com.example.shutaffim.InterestedItem
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
@@ -240,10 +241,13 @@ fun PostScreen(
 
     val listOfRequest by postsVM.interestedInPost.observeAsState(emptyList())
 
+    val listOfInterested by postsVM.interestedInPost.observeAsState(initial = listOf())
+    postsVM.getInterestedInPost(postsVM.currPost.value!!.id)
+
 //    val sliderList = remember {
 //        post.pictures.map { it.pictureUrl }.toMutableList()
 //    }
-   // val currPost by postsVM.currPost.observeAsState(post)
+    // val currPost by postsVM.currPost.observeAsState(post)
 
     var interestedClick by remember {
         mutableStateOf(false)
@@ -302,11 +306,20 @@ fun PostScreen(
                     if (interestedClick) {
                         ModalBottomSheet(onDismissRequest = { interestedClick = false },
                             content = {
-                                Interested(
-                                    navController = navController,
-                                    postsVM = postsVM,
-                                    userVM = authViewModel
-                                )
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                        .padding(start = 4.dp, end = 4.dp),
+                                ) {
+                                    items(listOfInterested) { request ->
+                                        InterestedItem(
+                                            request = request,
+                                            userVM = authViewModel,
+                                            postVm = postsVM
+                                        )
+                                    }
+                                }
                             }
                         )
                     }

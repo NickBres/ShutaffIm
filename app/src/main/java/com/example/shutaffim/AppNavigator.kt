@@ -57,9 +57,6 @@ fun AppNavigator(postsVM: PostsVM, authViewModel: AuthViewModel, forumVM: ForumV
         composable(Screen.EditPostScreen.route) {
             EditPost(navController, postsVM, authViewModel)
         }
-        composable(Screen.InterestedScreen.route) {
-            Interested(navController, postsVM, authViewModel)
-        }
         composable(Screen.ProfileScreen.route) {
             Profile(navController, authViewModel)
         }
