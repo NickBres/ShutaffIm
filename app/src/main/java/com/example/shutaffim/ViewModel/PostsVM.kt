@@ -137,7 +137,7 @@ class PostsVM : ViewModel() {
                     listTags.isEmpty() || post.tags.any { it.toLowerCase() in listTags }
 
                 val matchesEmail =
-                    filter.email.isBlank() || post.userId.contains(filter.email, ignoreCase = true)
+                    filter.email.isBlank() || post.userId == filter.email
 
                 matchesId && matchesCity && matchesStreet && matchesPrice && matchesTags && matchesEmail
             }
