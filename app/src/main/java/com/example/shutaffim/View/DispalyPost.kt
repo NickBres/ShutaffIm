@@ -208,8 +208,6 @@ fun DisplayPost(
     }
 
 
-
-
     when {
         post == default -> Text("Loading")
         currUser == default -> Text("Loading")

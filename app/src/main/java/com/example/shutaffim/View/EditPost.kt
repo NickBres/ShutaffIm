@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.sharp.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -143,15 +144,18 @@ fun EditPost(
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (Build.VERSION.SDK_INT < 28) {
-            bitmap.value = MediaStore.Images
-                .Media.getBitmap(context.contentResolver, uri)
-        } else {
-            val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
-            bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
+        uri?.let {
+            if (Build.VERSION.SDK_INT < 28) {
+                bitmap.value = MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, uri)
+            } else {
+                val source =
+                    uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+                bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
+            }
+            picHasChanged = true
+            newImages.value = newImages.value + bitmap.value
         }
-        picHasChanged = true
-        newImages.value = newImages.value + bitmap.value
     }
 
 
@@ -182,8 +186,8 @@ fun EditPost(
                 actions = {
 
                     IconButton(onClick = {
-                        postsVM.deletePost(post.value?.id ?: "")
-                        navController.navigate(Screen.MyPostsScreen.route)
+                        postsVM.deletePost(post.value?.id ?: "", navController)
+
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
@@ -577,9 +581,9 @@ fun EditPost(
                             userId = userId,
                             pictures = updatedPictures
                         )
-                        postsVM.updatePost(newPost, newImages.value, imagesToDelete.value)
+                        postsVM.updatePost(newPost, newImages.value, imagesToDelete.value,navController)
                         postsVM.resetPost()
-                        navController.navigate(Screen.MyPostsScreen.route)
+
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -592,8 +596,19 @@ fun EditPost(
                 }
 
 
-            }
+            }//Column
+            Column(
+                modifier = Modifier
+                    .height(800.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                if(postsVM.updatePostInProgress.value){
+                    CircularProgressIndicator()
+                }
 
+            }
 
 
         }//content

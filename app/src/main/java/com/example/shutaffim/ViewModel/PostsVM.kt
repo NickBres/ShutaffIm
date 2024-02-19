@@ -1,6 +1,8 @@
 package com.example.shutaffim.ViewModel
 
 import android.graphics.Bitmap
+import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +14,7 @@ import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
 import com.example.shutaffim.Model.Request
 import com.example.shutaffim.Model.Result
+import com.example.shutaffim.Screen
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -193,32 +196,70 @@ class PostsVM : ViewModel() {
         }
     }
 
-
-    fun updatePost(post: Post, newImages: List<Bitmap>, imagesToDelete: List<String>) {
+    var updatePostInProgress = mutableStateOf(false)
+    fun updatePost(post: Post, newImages: List<Bitmap>, imagesToDelete: List<String>, navController: NavController) {
+        updatePostInProgress.value = true
         viewModelScope.launch {
             when (val result = postsRepo.updatePost(post, newImages, imagesToDelete)) {
+
                 is Result.Success -> {
+
                     println("1. Post updated successfully")
-                    loadPosts()
+
+                    // Load post here
+                    when (val loadResult = postsRepo.getPost(post.id)) {
+                        is Result.Success -> {
+                            _currPost.value = loadResult.data!!
+                            println("1. Post loaded successfully")
+                            updatePostInProgress.value = false
+                            navController.navigate(Screen.MyPostsScreen.route)
+                        }
+                        else -> {
+                            updatePostInProgress.value = false
+                            println("q. Error occurred while loading post")
+                        }
+                    }
                 }
                 else -> {
+                    updatePostInProgress.value = false
                     println("1. Error occurred while updating post")
                 }
             }
         }
     }
 
-    fun deletePost(postId: String) {
+    fun deletePost(postId: String,navController: NavController) {
         viewModelScope.launch {
             when (val result = postsRepo.deletePost(postId)) {
                 is Result.Success -> {
                    removeInterestedCollection(postId)
-                    loadPosts()
+                    Toast.makeText(
+                        navController.context,
+                        "Post deleted successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    // Load posts here
+                    val loadPostsResult = postsRepo.getPosts()
+                    when (loadPostsResult) {
+                        is Result.Success -> {
+                            _posts.value = loadPostsResult.data!!
+                            navController.navigate(Screen.MyPostsScreen.route)
+                            println("2. Post deleted and posts loaded successfully")
+                        }
+                        is Result.Error -> {
+                            println("2. Error occurred while loading posts")
+                        }
+                    }
                     println("2. Post deleted successfully")
                     /* TODO: Filter to my posts */
                 }
 
                 else -> {
+                    Toast.makeText(
+                        navController.context,
+                        "Error occurred while deleting post",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     println("2. Error occurred while deleting post")
                 }
             }
