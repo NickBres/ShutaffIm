@@ -19,11 +19,12 @@ This app is a collaborative university project aimed at providing practical expe
   accommodation details.
 - **Advertisement Posting**: Allows users to post their housing requirements and availability.
 - **Search and Filter**: Robust search functionality to locate suitable roommate advertisements based on various criteria.
+- **Forum**: Allows users to create topics to discuss on topics or look for help
 
 ## Technology Stack
 - **Frontend**: Jetpack Compose for modern, native UI development on Android.
 - **Backend**: Firebase Authentication for user sign-in, Firebase Realtime Database for storing user
-  and advertisement data.
+  and advertisement data, Firebase storage for storing images.
 - **Version Control and Project Management**: GitHub for collaborative coding and task tracking,
   Freeform for project management.
 
