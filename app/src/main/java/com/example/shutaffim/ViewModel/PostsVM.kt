@@ -12,6 +12,7 @@ import com.example.shutaffim.Model.Post
 import com.example.shutaffim.Model.PostsRepository
 import com.example.shutaffim.Model.Request
 import com.example.shutaffim.Model.Result
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,32 +40,38 @@ class PostsVM : ViewModel() {
     val currPost: MutableLiveData<Post> get() = _currPost
 
 
-
-
     init {
         postsRepo = PostsRepository(
             firestore = Injection.firestoreInstance(),
             storage = Injection.storageInstance()
         )
-        loadPosts()
+        viewModelScope.launch {
+            loadPosts()
+        }
     }
 
-    fun loadPosts() {
+    suspend fun loadPosts(): Result<List<Post>> {
+        // CompletableDeferred to hold the result of the async operation
+        val resultDeferred = CompletableDeferred<Result<List<Post>>>()
+
         viewModelScope.launch {
-            when (val result = postsRepo.getPosts()) {
+            val result = postsRepo.getPosts() // This is a suspend function call to your repository
+            when (result) {
                 is Result.Success -> {
-                    _posts.value = result.data!!
-                    println("3. Posts loaded here data: ${result.data}")
-                    println("3. Posts loaded successfully")
+                    _posts.value = result.data!! // Update LiveData on the main thread
                 }
 
-                else -> {
-                    println("3. Error occurred while loading posts")
+                is Result.Error -> {
+                    // Handle error if needed
+                    println("Error occurred while loading posts")
                 }
             }
+            resultDeferred.complete(result) // Complete the deferred with the result
         }
-        println("Posts: ${_posts.value}")
+
+        return resultDeferred.await() // Wait and return the result
     }
+
 
     fun loadPost(postId: String) {
         viewModelScope.launch {
@@ -257,26 +264,30 @@ class PostsVM : ViewModel() {
                 //deleteInterestedIdFromList(userId)
                 println("Request of %s removed from post".format(userId))
                 getInterestedInPost(postId)
-            }
-            else if(_upResult.value is Result.Error) {
+            } else if (_upResult.value is Result.Error) {
                 println("Error: ${(_upResult.value as Result.Error).exception.message}")
             }
         }
     }
 
-    fun getInterestedInPost(postId: String) {
+    suspend fun getInterestedInPost(postId: String): Result<List<Request>> {
+        val resultDeferred = CompletableDeferred<Result<List<Request>>>()
         viewModelScope.launch {
-            when (val result = postsRepo.getInterestedInPost(postId)) {
+            val result = postsRepo.getInterestedInPost(postId)
+            when (result) {
                 is Result.Success -> {
                     _interestedInPost.value = result.data!!
                     println("*Interested users in post: ${result.data}")
-                   // getInterestedIdList()
+
                 }
+
                 else -> {
                     println("Error occurred while loading interested users")
                 }
             }
+            resultDeferred.complete(result)
         }
+        return resultDeferred.await()
     }
 
     //for current post
@@ -335,21 +346,30 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
 
     fun filterInterestedInPost(email: String) {
         viewModelScope.launch {
-            val updatedInterested = _posts.value?.filter { post ->
-                getInterestedInPost(post.id)
-                delay(200)
-                for (request in _interestedInPost.value!!) {
-                    if (request.userId == email) {
-                        return@filter true
+            when (val result = loadPosts()) {
+                is Result.Success -> {
+                    val updatedInterested = result.data.filter { post ->
+                        val interestedResult = async { getInterestedInPost(post.id) }.await()
+                        if (interestedResult is Result.Success) {
+                            for (request in interestedResult.data) {
+                                if (request.userId == email) {
+                                    return@filter true
+                                }
+                            }
+                        } else {
+                            println("Error occurred while loading interested users")
+                        }
+                        return@filter false
                     }
+                    _posts.value = updatedInterested ?: listOf()
                 }
-                return@filter false
+
+                else -> {
+                    println("Posts not loaded")
+                }
             }
-            _posts.value = updatedInterested ?: listOf()
         }
 
     }
-
-
 
 }

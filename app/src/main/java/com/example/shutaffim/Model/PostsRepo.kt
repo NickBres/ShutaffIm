@@ -170,7 +170,7 @@ class PostsRepository(
             Result.Error(e)
         }
 
-    suspend fun getInterestedInPost(postId: String): Result<List<Request>>? =
+    suspend fun getInterestedInPost(postId: String): Result<List<Request>> =
         try {
             val querySnapshot = firestore.collection("posts").document(postId)
                 .collection("interested")

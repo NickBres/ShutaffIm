@@ -48,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -201,7 +202,10 @@ fun DisplayPost(
     val post by postsVM.currPost.observeAsState(default)
     val currUser by authViewModel.currentUser.observeAsState(default)
 
-    postsVM.getInterestedInPost(post.id)
+
+    LaunchedEffect(post.id) {
+        postsVM.getInterestedInPost(post.id)
+    }
 
 
 
@@ -239,10 +243,10 @@ fun PostScreen(
         mutableStateOf("")
     }
 
-    val listOfRequest by postsVM.interestedInPost.observeAsState(emptyList())
-
     val listOfInterested by postsVM.interestedInPost.observeAsState(initial = listOf())
-    postsVM.getInterestedInPost(postsVM.currPost.value!!.id)
+    LaunchedEffect(listOfInterested) {
+        postsVM.getInterestedInPost(postsVM.currPost.value!!.id)
+    }
 
 //    val sliderList = remember {
 //        post.pictures.map { it.pictureUrl }.toMutableList()
@@ -327,7 +331,7 @@ fun PostScreen(
 
             } else { // consumer
                 alreadyInterestedClic = false
-                if (listOfRequest.any { it.userId == currUser.email }) {
+                if (listOfInterested.any { it.userId == currUser.email }) {
 
                     FloatingActionButton(
                         onClick = {
@@ -358,7 +362,7 @@ fun PostScreen(
                     interestedClick = false
                     FloatingActionButton(
                         onClick = {
-                            if (!listOfRequest.any { it.userId == currUser.email }) {
+                            if (!listOfInterested.any { it.userId == currUser.email }) {
                                 interestedClick = !interestedClick
                                 state = "Click i'm interested"
                             }

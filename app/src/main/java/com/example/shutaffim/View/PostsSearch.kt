@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +51,9 @@ fun PostsSearch(
     }
 
     val posts by postsVM.posts.observeAsState(emptyList())
-    postsVM.loadPosts()
+    LaunchedEffect(Unit) {
+        postsVM.loadPosts()
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -78,7 +81,9 @@ fun PostsSearch(
                                 contentDescription = "Assigned Posts"
                             )
                         } else {
-                            postsVM.loadPosts()
+                            LaunchedEffect(posts) {
+                                postsVM.loadPosts()
+                            }
                             Icon(
                                 imageVector = Icons.Filled.Description,
                                 contentDescription = "Assigned Posts"
