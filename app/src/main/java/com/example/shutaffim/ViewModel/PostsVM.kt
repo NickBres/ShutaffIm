@@ -14,7 +14,6 @@ import com.example.shutaffim.Model.Request
 import com.example.shutaffim.Model.Result
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PostsVM : ViewModel() {
@@ -108,10 +107,8 @@ class PostsVM : ViewModel() {
 
     fun applyFilter() {
         viewModelScope.launch {
-            loadPosts()
-            delay(500)
-            if (_filter.value == null) _filter.value = Filter()
-            filterPosts(_filter.value!!)
+            val filter = _filter.value ?: Filter()
+            filterPosts(filter)
             _filter.value = Filter()
         }
     }

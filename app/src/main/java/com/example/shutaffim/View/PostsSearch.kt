@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.shutaffim.FilterAndSearch
@@ -34,6 +35,7 @@ import com.example.shutaffim.PostItem
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,9 +53,6 @@ fun PostsSearch(
     }
 
     val posts by postsVM.posts.observeAsState(emptyList())
-    LaunchedEffect(Unit) {
-        postsVM.loadPosts()
-    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -71,7 +70,9 @@ fun PostsSearch(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { assignedPostsOnly = !assignedPostsOnly }) {
+                    IconButton(onClick = {
+                        assignedPostsOnly = !assignedPostsOnly
+                    }) {
                         if (assignedPostsOnly) {
                             postsVM.filterInterestedInPost(
                                 authViewModel.currentUser.value?.email ?: ""
@@ -81,7 +82,7 @@ fun PostsSearch(
                                 contentDescription = "Assigned Posts"
                             )
                         } else {
-                            LaunchedEffect(posts) {
+                            LaunchedEffect(Unit) {
                                 postsVM.loadPosts()
                             }
                             Icon(
@@ -104,6 +105,9 @@ fun PostsSearch(
                 onClick = {
                     assignedPostsOnly = false
                     showSearch = !showSearch
+                    postsVM.viewModelScope.launch {
+                        postsVM.loadPosts()
+                    }
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
