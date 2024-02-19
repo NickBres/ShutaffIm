@@ -207,9 +207,6 @@ fun DisplayPost(
         postsVM.getInterestedInPost(post.id)
     }
 
-
-
-
     when {
         post == default -> Text("Loading")
         currUser == default -> Text("Loading")
@@ -242,23 +239,21 @@ fun PostScreen(
     var state by remember {
         mutableStateOf("")
     }
-
-    val listOfInterested by postsVM.interestedInPost.observeAsState(initial = listOf())
-    LaunchedEffect(listOfInterested) {
-        postsVM.getInterestedInPost(postsVM.currPost.value!!.id)
-    }
-
-//    val sliderList = remember {
-//        post.pictures.map { it.pictureUrl }.toMutableList()
-//    }
-    // val currPost by postsVM.currPost.observeAsState(post)
-
     var interestedClick by remember {
         mutableStateOf(false)
     }
     var alreadyInterestedClic by remember {
         mutableStateOf(false)
     }
+
+    val listOfInterestedRequests by postsVM.interestedInPost.observeAsState(initial = listOf())
+    LaunchedEffect(Unit) {
+        val listOfEmails = listOfInterestedRequests.map { it.userId }
+        if (listOfEmails.isNotEmpty())
+            authViewModel.getUsersList(listOfEmails)
+    }
+
+
 
     Scaffold(
         modifier = Modifier
@@ -308,7 +303,11 @@ fun PostScreen(
                 {
                     Icon(Icons.Default.Diversity1, contentDescription = "Interested")
                     if (interestedClick) {
-                        ModalBottomSheet(onDismissRequest = { interestedClick = false },
+                        ModalBottomSheet(
+                            onDismissRequest = {
+                                interestedClick = false
+
+                            },
                             content = {
                                 LazyColumn(
                                     modifier = Modifier
@@ -316,10 +315,11 @@ fun PostScreen(
                                         .padding(8.dp)
                                         .padding(start = 4.dp, end = 4.dp),
                                 ) {
-                                    items(listOfInterested) { request ->
+                                    items(listOfInterestedRequests) { request ->
+                                        val user = authViewModel.getUserFromList(request.userId)
                                         InterestedItem(
                                             request = request,
-                                            userVM = authViewModel,
+                                            user = user!!,
                                             postVm = postsVM
                                         )
                                     }
@@ -331,7 +331,7 @@ fun PostScreen(
 
             } else { // consumer
                 alreadyInterestedClic = false
-                if (listOfInterested.any { it.userId == currUser.email }) {
+                if (listOfInterestedRequests.any { it.userId == currUser.email }) {
 
                     FloatingActionButton(
                         onClick = {
@@ -362,7 +362,7 @@ fun PostScreen(
                     interestedClick = false
                     FloatingActionButton(
                         onClick = {
-                            if (!listOfInterested.any { it.userId == currUser.email }) {
+                            if (!listOfInterestedRequests.any { it.userId == currUser.email }) {
                                 interestedClick = !interestedClick
                                 state = "Click i'm interested"
                             }

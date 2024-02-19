@@ -143,7 +143,6 @@ class PostsRepository(
                 postId = request.postId,
                 userId = request.userId,
                 date = request.date,
-                isApproved = request.isApproved,
                 message = request.message
             )
             firestore.collection("posts").document(request.postId)
@@ -184,7 +183,6 @@ class PostsRepository(
                         postId = document.getString("postId") ?: "",
                         userId = document.getString("userId") ?: "",
                         date = document.getLong("date") ?: 0L,
-                        isApproved = document.getBoolean("isApproved") ?: false,
                         message = document.getString("message") ?: ""
                     ).also { user ->
                         //println("2: Mapped to Request: $user")
