@@ -22,6 +22,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.shutaffim.Model.Filter
 import com.example.shutaffim.ViewModel.AuthViewModel
 import com.example.shutaffim.ViewModel.PostsVM
 
@@ -32,7 +33,7 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
 //    val posts by postsVM.posts.observeAsState(emptyList())
     val user by authVM.currentUser.observeAsState()
 
-    postsVM.applyFilter(user?.email ?: "")
+    postsVM.filterPosts(Filter(email = user?.email ?: ""))
 
     val posts by postsVM.posts.observeAsState(emptyList())
 

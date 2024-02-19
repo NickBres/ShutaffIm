@@ -107,7 +107,6 @@ class PostsVM : ViewModel() {
             filterPosts(_filter.value!!)
             _filter.value = Filter()
         }
-
     }
 
     fun filterPosts(filter: Filter) {
@@ -130,30 +129,13 @@ class PostsVM : ViewModel() {
                 val matchesTags =
                     listTags.isEmpty() || post.tags.any { it.toLowerCase() in listTags }
 
-                matchesId && matchesCity && matchesStreet && matchesPrice && matchesTags
+                val matchesEmail =
+                    filter.email.isBlank() || post.userId.contains(filter.email, ignoreCase = true)
+
+                matchesId && matchesCity && matchesStreet && matchesPrice && matchesTags && matchesEmail
             }
 
             _posts.value = updatedPosts ?: listOf()
-        }
-    }
-
-    //////////////////////////////////////////////////////
-    fun applyFilter(email: String) {
-            loadPosts()
-            filterPosts(email)
-    }
-    fun filterPosts(email: String) {
-        // Convert filter tags string to list and trim each tag
-                viewModelScope.launch {
-            val updatedPosts = _posts.value?.filter { post ->
-                val matchesemail =
-                    post.userId.contains(email, ignoreCase = true)
-
-
-                matchesemail
-            }
-
-        _postsUser.value = updatedPosts ?: listOf()
         }
     }
 
