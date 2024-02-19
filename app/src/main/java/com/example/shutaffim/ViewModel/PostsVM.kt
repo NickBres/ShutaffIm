@@ -281,7 +281,7 @@ class PostsVM : ViewModel() {
 
     fun addInterestedToPost(userId: String, postId: String,msg: String) {
         val date = System.currentTimeMillis()
-        val request = Request(userId, postId,date, isApproved = false, msg)
+        val request = Request(userId, postId, date, msg)
         viewModelScope.launch {
             _upResult.value = postsRepo.addInterestedToPost(request)
             if(_upResult.value is Result.Success){
@@ -295,7 +295,7 @@ class PostsVM : ViewModel() {
     }
 
     fun removeInterestedFromPost(userId: String, postId: String) {
-        val request = Request(userId,postId, isApproved = true)
+        val request = Request(userId, postId)
         viewModelScope.launch {
             _upResult.value = postsRepo.removeInterestedFromPost(request)
             if(_upResult.value is Result.Success){

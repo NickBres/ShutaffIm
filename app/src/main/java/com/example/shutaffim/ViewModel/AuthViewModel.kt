@@ -126,15 +126,25 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    private val _getUserFromId = MutableLiveData<User>()
-    val getUserFromId: LiveData<User> get() = _getUserFromId
+    private val _usersList = MutableLiveData<List<User>>()
+    val usersList: LiveData<List<User>> get() = _usersList
+
+    suspend fun getUsersList(emails: List<String>) {
+        viewModelScope.launch {
+            _usersList.value = listOf() // Clear the list
+            emails.forEach {
+                getUserDataById(it)
+            }
+        }
+    }
+
     suspend fun getUserDataById(email: String): Result<User> {
         val resultDeferred = CompletableDeferred<Result<User>>()
         viewModelScope.launch {
             val result = userRepo.getUserDataById(email)
             when (result) {
                 is Result.Success -> {
-                    _getUserFromId.value = result.data.copy()///add copy
+                    _usersList.value = _usersList.value?.plus(result.data) ?: listOf(result.data)
                     println("4.2 User data: ${result.data}")
                 }
 
@@ -147,21 +157,10 @@ class AuthViewModel : ViewModel() {
         return resultDeferred.await()
     }
 
-    fun insertCurrentInterested(email: String) {
-        viewModelScope.launch {
-            when (val result = userRepo.getUserDataById(email)) {
-                is Result.Success -> {
-                    _isMyPost.value = false
-                    _currentintersted.value = result.data.copy()///add copy
-                    println("User data: ${result.data}")
-                }
-
-                is Result.Error -> {
-                    println("Failed to get user data")
-                }
-            }
-        }
+    fun getUserFromList(email: String): User? {
+        return _usersList.value?.find { it.email == email }
     }
+
 
     fun insertIsMyPost(boolean: Boolean) {
         viewModelScope.launch {
