@@ -16,6 +16,7 @@ import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserRepo
 import com.example.shutaffim.Screen
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -124,11 +125,14 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
     private val _getUserFromId = MutableLiveData<User>()
     val getUserFromId: LiveData<User> get() = _getUserFromId
-    fun getUserDataById(email: String) {
+    suspend fun getUserDataById(email: String): Result<User> {
+        val resultDeferred = CompletableDeferred<Result<User>>()
         viewModelScope.launch {
-            when (val result = userRepo.getUserDataById(email)) {
+            val result = userRepo.getUserDataById(email)
+            when (result) {
                 is Result.Success -> {
                     _getUserFromId.value = result.data.copy()///add copy
                     println("4.2 User data: ${result.data}")
@@ -138,7 +142,9 @@ class AuthViewModel : ViewModel() {
                     println("Failed to get user data")
                 }
             }
+            resultDeferred.complete(result)
         }
+        return resultDeferred.await()
     }
 
     fun insertCurrentInterested(email: String) {

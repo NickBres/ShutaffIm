@@ -52,11 +52,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.shutaffim.Model.Topic
 import com.example.shutaffim.R
 import com.example.shutaffim.Screen
 import com.example.shutaffim.ViewModel.ForumVM
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,7 +69,7 @@ fun Forum(navController: NavController,forumVM: ForumVM) {
 
     val topics by forumVM.topics.observeAsState(listOf())
     var sortMenu by remember { mutableStateOf(false) }
-    val sortOptions = listOf("Newest", "Oldest", "Most Popular", "Mine")
+    val sortOptions = listOf("Newest", "Oldest", "Mine")
     var selectedOption by remember { mutableStateOf("Newest") }
 
     var createWindow by remember { mutableStateOf(false) }
@@ -91,6 +93,9 @@ fun Forum(navController: NavController,forumVM: ForumVM) {
                     Box() {
                         IconButton(onClick = {
                             sortMenu = true
+                            forumVM.viewModelScope.launch {
+                                forumVM.loadTopics()
+                            }
                         }) {
                             Icon(
                                 Icons.Default.List,
@@ -112,10 +117,6 @@ fun Forum(navController: NavController,forumVM: ForumVM) {
 
                                             "Oldest" -> {
                                                 forumVM.sortTopicsByDate(true)
-                                            }
-
-                                            "Most Popular" -> {
-                                                /* TODO count comments and sort by it*/
                                             }
 
                                             "Mine" -> {
@@ -313,9 +314,3 @@ fun ForumItem(topic: Topic, clicked: (topicID: String) -> Unit) {
     }
 
 }
-
-//@Preview(showBackground = true)
-//@Composable
-////fun ForumPreview() {
-////    Forum(navController = NavController(LocalContext.current), forumVM = ForumVM())
-////}

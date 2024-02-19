@@ -10,7 +10,8 @@ import com.example.shutaffim.Model.ForumRepo
 import com.example.shutaffim.Model.Result
 import com.example.shutaffim.Model.Topic
 import com.example.shutaffim.Screen
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
@@ -31,43 +32,54 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
         forumRepo = ForumRepo(
             firestore = Injection.firestoreInstance()
         )
-        loadTopics()
+        viewModelScope.launch {
+            loadTopics()
+        }
     }
 
     fun updateUserNamesInTopics() {
         viewModelScope.launch {
             val updateTopics = _topics.value?.map { topic ->
-                authViewModel.getUserDataById(topic.email)
-                delay(300)
-                val userName =
-                    authViewModel.getUserFromId.value?.fName + " " + authViewModel.getUserFromId.value?.lName
-                Topic(
-                    id = topic.id,
-                    title = topic.title,
-                    description = topic.description,
-                    email = topic.email,
-                    date = topic.date,
-                    userName = userName
-                )
+                val userResult = async { authViewModel.getUserDataById(topic.email) }.await()
+                if (userResult is Result.Success) {
+                    val userName =
+                        userResult.data.fName + " " + userResult.data.lName
+                    Topic(
+                        id = topic.id,
+                        title = topic.title,
+                        description = topic.description,
+                        email = topic.email,
+                        date = topic.date,
+                        userName = userName
+                    )
+                } else {
+                    println("Error occurred while updating user names in topics")
+                    topic
+                }
             }
             _topics.value = updateTopics!!
         }
     }
-    fun loadTopics() {
+
+    suspend fun loadTopics(): Result<List<Topic>> {
+        val resultDeferred = CompletableDeferred<Result<List<Topic>>>()
         viewModelScope.launch {
-            //whem->switch case
-            when (val result = forumRepo.getTopics()) {
-                is Result.Success ->
-                {
+            //when->switch case
+            val result = forumRepo.getTopics()
+            when (result) {
+                is Result.Success -> {
                     _topics.value = result.data!!
                     updateUserNamesInTopics()
                 }
+
                 else -> {
                     println("Error occurred while loading topics")
                 }
             }
+            resultDeferred.complete(result)
         }
         println("Topics: ${_topics.value}")
+        return resultDeferred.await()
     }
 
     fun createTopic(title:String,description:String) {
@@ -75,8 +87,7 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
            title = title,
            description = description,
            email = authViewModel.currentUser.value!!.email,
-           date = System.currentTimeMillis(),
-           userName = authViewModel.currentUser.value!!.fName + " " + authViewModel.currentUser.value!!.lName
+           date = System.currentTimeMillis()
        )
         viewModelScope.launch {
             when (val result = forumRepo.createTopic(topic)) {
@@ -93,13 +104,14 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
 
     fun sortTopicsByDate(isAscending: Boolean) {
         viewModelScope.launch {
-            loadTopics()
+
             val sortedTopics = if (isAscending) {
                 _topics.value?.sortedBy { it.date }
             } else {
                 _topics.value?.sortedByDescending { it.date }
             }
             _topics.value = sortedTopics!!
+
         }
 
     }
@@ -114,23 +126,26 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
         viewModelScope.launch {
             when (val result = forumRepo.getTopic(topicId)) {
                 is Result.Success -> {
-                    authViewModel.getUserDataById(result.data.email)
-                    delay(300)
-                    val userName =
-                        authViewModel.getUserFromId.value?.fName + " " + authViewModel.getUserFromId.value?.lName
-                    val topicWithName = Topic(
-                        id = result.data.id,
-                        title = result.data.title,
-                        description = result.data.description,
-                        email = result.data.email,
-                        date = result.data.date,
-                        userName = userName
-                    )
-                    _currTopic.value = topicWithName
-                    loadComments()
-                    navController.navigate(Screen.TopicScreen.route)
+                    val userResult =
+                        async { authViewModel.getUserDataById(result.data.email) }.await()
+                    if (userResult is Result.Success) {
+                        val userName =
+                            userResult.data.fName + " " + userResult.data.lName
+                        val topicWithName = Topic(
+                            id = result.data.id,
+                            title = result.data.title,
+                            description = result.data.description,
+                            email = result.data.email,
+                            date = result.data.date,
+                            userName = userName
+                        )
+                        _currTopic.value = topicWithName
+                        loadComments()
+                        navController.navigate(Screen.TopicScreen.route)
+                    } else {
+                        println("Error occurred while loading topic, user not found")
+                    }
                 }
-
                 else -> {
                     println("Error occurred while loading topic")
                 }
@@ -156,17 +171,21 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
     fun updateUserNamesInComments() {
         viewModelScope.launch {
             val updateComments = _comments.value?.map { comment ->
-                authViewModel.getUserDataById(comment.email)
-                delay(300)
-                val userName =
-                    authViewModel.getUserFromId.value?.fName + " " + authViewModel.getUserFromId.value?.lName
-                Comment(
-                    id = comment.id,
-                    text = comment.text,
-                    email = comment.email,
-                    date = comment.date,
-                    userName = userName
-                )
+                val userResult = async { authViewModel.getUserDataById(comment.email) }.await()
+                if (userResult is Result.Success) {
+                    val userName =
+                        userResult.data.fName + " " + userResult.data.lName
+                    Comment(
+                        id = comment.id,
+                        text = comment.text,
+                        email = comment.email,
+                        date = comment.date,
+                        userName = userName
+                    )
+                } else {
+                    println("Error occurred while updating user names in comments")
+                    comment
+                }
             }
             _comments.value = updateComments!!
         }
@@ -192,7 +211,6 @@ class ForumVM(val authViewModel: AuthViewModel): ViewModel() {
                 is Result.Success -> {
                     loadTopics()
                 }
-
                 else -> {
                     println("Error occurred while deleting topic")
                 }
