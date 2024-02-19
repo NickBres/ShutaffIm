@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.sharp.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -512,6 +513,18 @@ fun NewPost(
                 ) {
                     Text(text = "Save")
                 }
+            }//culomn
+            Column(
+                modifier = Modifier
+                    .height(800.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                if(postsVM.isLoading.value){
+                    CircularProgressIndicator()
+                }
+
             }
 
         }//content

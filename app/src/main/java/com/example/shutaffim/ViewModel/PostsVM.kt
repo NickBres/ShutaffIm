@@ -16,6 +16,7 @@ import com.example.shutaffim.Model.Request
 import com.example.shutaffim.Model.Result
 import com.example.shutaffim.Screen
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -40,6 +41,9 @@ class PostsVM : ViewModel() {
 
     private val _currPost = MutableLiveData<Post>()
     val currPost: MutableLiveData<Post> get() = _currPost
+//-------------loading variable ----------------
+
+    var isLoading = mutableStateOf(false)
 
 
     init {
@@ -155,24 +159,33 @@ class PostsVM : ViewModel() {
 
 
     fun createNewPost(post: Post, bitmaps: List<Bitmap>, navController: NavController) {
+        isLoading.value = true
         post.date = System.currentTimeMillis()
         viewModelScope.launch {
             when (val result = postsRepo.createPost(post)) {
                 is Result.Success -> {
-                    uploadPostImages(result.data.id, bitmaps)
+                  val res1 =  uploadPostImages(result.data.id, bitmaps).await()
+                    if(res1){
+                        isLoading.value = false
+                        navController.navigateUp()
+                    }
+                    else{
+                        isLoading.value = false
+                        println("Error occurred while creating post")
+                    }
 
-                    navController.navigateUp()
                 }
 
                 else -> {
+                    isLoading.value = false
                     println("Error occurred while creating post")
                 }
             }
         }
     }
 
-    private fun uploadPostImages(postId: String, bitmaps: List<Bitmap>) {
-        viewModelScope.launch {
+    private fun uploadPostImages(postId: String, bitmaps: List<Bitmap>) : Deferred<Boolean> {
+        return viewModelScope.async {
             when (val result = postsRepo.getPost(postId)) {
                 is Result.Success -> {
                     _currPost.value = result.data.copy()
@@ -183,22 +196,25 @@ class PostsVM : ViewModel() {
                     if (uploadPostsResult is Result.Success) {
                         println("Post images uploaded successfully")
                         loadPosts()
+                       true
                     } else {
                         println("Error occurred while uploading post images")
+                        false
                     }
 
                 }
 
                 else -> {
                     println("Error occurred while getting post")
+                    false
                 }
             }
         }
     }
 
-    var updatePostInProgress = mutableStateOf(false)
+
     fun updatePost(post: Post, newImages: List<Bitmap>, imagesToDelete: List<String>, navController: NavController) {
-        updatePostInProgress.value = true
+        isLoading.value = true
         viewModelScope.launch {
             when (val result = postsRepo.updatePost(post, newImages, imagesToDelete)) {
 
@@ -211,17 +227,17 @@ class PostsVM : ViewModel() {
                         is Result.Success -> {
                             _currPost.value = loadResult.data!!
                             println("1. Post loaded successfully")
-                            updatePostInProgress.value = false
+                            isLoading.value = false
                             navController.navigate(Screen.MyPostsScreen.route)
                         }
                         else -> {
-                            updatePostInProgress.value = false
+                            isLoading.value = false
                             println("q. Error occurred while loading post")
                         }
                     }
                 }
                 else -> {
-                    updatePostInProgress.value = false
+                    isLoading.value = false
                     println("1. Error occurred while updating post")
                 }
             }

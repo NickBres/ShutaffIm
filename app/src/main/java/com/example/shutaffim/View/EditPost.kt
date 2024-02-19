@@ -604,7 +604,7 @@ fun EditPost(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ){
-                if(postsVM.updatePostInProgress.value){
+                if(postsVM.isLoading.value){
                     CircularProgressIndicator()
                 }
 
