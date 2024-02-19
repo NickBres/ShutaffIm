@@ -44,6 +44,11 @@ class ForumRepo(private val firestore: FirebaseFirestore)
     }
 
     suspend fun deleteTopic(topicId: String): Result<Boolean> = try {
+        firestore.collection("topics").document(topicId).collection("comments").get()
+            .await().documents.forEach {
+            firestore.collection("topics").document(topicId).collection("comments").document(it.id)
+                .delete().await()
+        }
         firestore.collection("topics").document(topicId).delete().await()
         Result.Success(true)
     } catch (e: Exception) {
