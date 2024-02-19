@@ -112,14 +112,17 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (Build.VERSION.SDK_INT < 28) {
-            bitmap.value = MediaStore.Images
-                .Media.getBitmap(context.contentResolver, uri)
-        } else {
-            val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
-            bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
+        uri?.let {
+            if (Build.VERSION.SDK_INT < 28) {
+                bitmap.value = MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, uri)
+            } else {
+                val source =
+                    uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+                bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }!!
+            }
+            picHasChanged = true
         }
-        picHasChanged = true
 
     }
     sex = user.value?.sex ?: ""
