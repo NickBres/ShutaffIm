@@ -75,7 +75,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.InterestedItem
+import com.example.shutaffim.Model.Picture
 import com.example.shutaffim.Model.Post
+import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
 import com.example.shutaffim.R
 import com.example.shutaffim.RequestView
@@ -109,6 +111,16 @@ fun PostScreen(
         listOf(),
         ""
     )
+    val defaultUser = User(
+        "",
+        "",
+        "",
+        "",
+        Picture(),
+        "",
+        0,
+        ""
+    )
     val currUser by authViewModel.currentUser.observeAsState()
     val post by postsVM.currPost.observeAsState(defaultPost)
 
@@ -124,7 +136,7 @@ fun PostScreen(
     }
 
     val listOfInterestedRequests by postsVM.interestedInPost.observeAsState(initial = listOf())
-    LaunchedEffect(Unit) {
+    LaunchedEffect(listOfInterestedRequests) {
         val listOfEmails = listOfInterestedRequests.map { it.userId }
         if (listOfEmails.isNotEmpty())
             authViewModel.getUsersList(listOfEmails)
@@ -183,20 +195,18 @@ fun PostScreen(
                         ModalBottomSheet(
                             onDismissRequest = {
                                 interestedClick = false
-
                             },
                             content = {
                                 LazyColumn(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .padding(8.dp)
-                                        .padding(start = 4.dp, end = 4.dp),
                                 ) {
                                     items(listOfInterestedRequests) { request ->
                                         val user = authViewModel.getUserFromList(request.userId)
                                         InterestedItem(
                                             request = request,
-                                            user = user!!,
+                                            user = user ?: defaultUser,
                                             postVm = postsVM
                                         )
                                     }
