@@ -25,10 +25,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.shutaffim.Model.Post
 import com.example.shutaffim.ViewModel.PostsVM
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -65,6 +67,9 @@ fun PostItem(post: Post, navController: NavController, screen: Screen, postsVM: 
         ),
         onClick = {
             postsVM.loadPost(post.id)
+            postsVM.viewModelScope.launch {
+                postsVM.getInterestedInPost(post.id)
+            }
             navController.navigate(Screen.PostScreen.route)
         }
 

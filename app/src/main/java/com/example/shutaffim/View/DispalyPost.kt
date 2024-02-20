@@ -76,7 +76,6 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.shutaffim.InterestedItem
 import com.example.shutaffim.Model.Post
-import com.example.shutaffim.Model.User
 import com.example.shutaffim.Model.UserType
 import com.example.shutaffim.R
 import com.example.shutaffim.RequestView
@@ -87,105 +86,16 @@ import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun CustomSlider(
-    modifier: Modifier = Modifier,
-    postsVM: PostsVM,
-    dotsActiveColor: Color = Color.DarkGray,
-    dotsInActiveColor: Color = Color.LightGray,
-    dotsSize: Dp = 10.dp,
-    pagerPaddingValues: PaddingValues = PaddingValues(horizontal = 0.dp),
-    imageCornerRadius: Dp = 4.dp,
-    imageHeight: Dp = 200.dp,
-) {
-    val currPost by postsVM.currPost.observeAsState()
-    val pagerState = rememberPagerState(pageCount = { currPost?.pictures?.size ?: 0})
-    val scope = rememberCoroutineScope()
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        HorizontalPager(
-            state = pagerState,
-            contentPadding = pagerPaddingValues,
-            modifier = modifier.weight(1f)
-        ) { page ->
-            val pageOffset =
-                (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-
-            val scaleFactor =
-                0.75f + (1f - 0.75f) * (1f - pageOffset.absoluteValue)
-
-            Box(modifier = modifier
-                .graphicsLayer {
-                    scaleX = scaleFactor
-                    scaleY = scaleFactor
-                }
-                .alpha(
-                    scaleFactor.coerceIn(0f, 1f)
-                )
-                .padding(0.dp)
-                .clip(RoundedCornerShape(imageCornerRadius))) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .scale(
-                            Scale.FILL
-                        )
-                        .crossfade(true)
-                        .data(currPost?.pictures?.get(page)?.pictureUrl)
-                        .build(),
-                    contentDescription = "Image",
-                    contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = R.drawable.pngwing_com),
-                    error = painterResource(id = R.drawable.pngwing_com),
-                    modifier = modifier
-                        .height(imageHeight)
-                        .alpha(if (pagerState.currentPage == page) 1f else 0.5f)
-                )
-            }
-        }
-    }
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        currPost?.pictures?.forEachIndexed { index, _ ->
-            Box(
-                modifier = modifier
-                    .padding(4.dp)
-                    .size(dotsSize)
-                    .clip(CircleShape)
-                    .background(
-                        color = if (index == pagerState.currentPage) dotsActiveColor else dotsInActiveColor
-                    )
-                    .clickable {
-                        scope.launch {
-                            pagerState.animateScrollToPage(index)
-                        }
-                    }
-            )
-        }
-    }
-}
-
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DisplayPost(
+fun PostScreen(
     navController: NavController,
     postsVM: PostsVM,
-    authViewModel: AuthViewModel,
+    authViewModel: AuthViewModel
+
 ) {
-
-
-    val default = Post(
+    val defaultPost = Post(
         "0",
         0L,
         "0",
@@ -199,41 +109,8 @@ fun DisplayPost(
         listOf(),
         ""
     )
-    val post by postsVM.currPost.observeAsState(default)
-    val currUser by authViewModel.currentUser.observeAsState(default)
-
-
-    LaunchedEffect(post.id) {
-        postsVM.getInterestedInPost(post.id)
-    }
-
-    when {
-        post == default -> Text("Loading")
-        currUser == default -> Text("Loading")
-
-
-        else -> PostScreen(
-            navController = navController,
-            postsVM = postsVM,
-            post,
-            currUser as User,
-            authViewModel = authViewModel
-        )
-    }
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PostScreen(
-    navController: NavController,
-    postsVM: PostsVM,
-    post: Post,
-    currUser: User,
-    authViewModel: AuthViewModel
-
-) {
+    val currUser by authViewModel.currentUser.observeAsState()
+    val post by postsVM.currPost.observeAsState(defaultPost)
 
 
     var state by remember {
@@ -264,7 +141,7 @@ fun PostScreen(
                 title = { Text("Post") },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (currUser.type == UserType.Publisher.type)
+                        if (currUser?.type == UserType.Publisher.type)
                             navController.navigate(Screen.MyPostsScreen.route)
                         else
                             navController.navigate(Screen.PostsSearchScreen.route)
@@ -274,7 +151,7 @@ fun PostScreen(
                 },
 
                 actions = {
-                    if (currUser.type == UserType.Publisher.type) {
+                    if (currUser?.type == UserType.Publisher.type) {
                         IconButton(onClick = {
                             postsVM.loadPost(post.id)
                             navController.navigate(Screen.EditPostScreen.route)
@@ -292,7 +169,7 @@ fun PostScreen(
             )
         },
         floatingActionButton = {
-            if (currUser.type == UserType.Publisher.type) { // publisher
+            if (currUser?.type == UserType.Publisher.type) { // publisher
                 FloatingActionButton(
                     onClick = {
                         interestedClick = !interestedClick
@@ -331,7 +208,7 @@ fun PostScreen(
 
             } else { // consumer
                 alreadyInterestedClic = false
-                if (listOfInterestedRequests.any { it.userId == currUser.email }) {
+                if (listOfInterestedRequests.any { it.userId == currUser?.email }) {
 
                     FloatingActionButton(
                         onClick = {
@@ -350,8 +227,7 @@ fun PostScreen(
                                 state = ""
                             },
                                 content = {
-                                    RequestView(currUser, post, postsVM, state)
-
+                                    RequestView(currUser!!, post, postsVM, state)
                                 }
                             )
 
@@ -362,7 +238,7 @@ fun PostScreen(
                     interestedClick = false
                     FloatingActionButton(
                         onClick = {
-                            if (!listOfInterestedRequests.any { it.userId == currUser.email }) {
+                            if (!listOfInterestedRequests.any { it.userId == currUser?.email }) {
                                 interestedClick = !interestedClick
                                 state = "Click i'm interested"
                             }
@@ -379,7 +255,7 @@ fun PostScreen(
                                 state = ""
                             },
                                 content = {
-                                    RequestView(currUser, post, postsVM, state)
+                                    RequestView(currUser!!, post, postsVM, state)
 
                                 }
                             )
@@ -578,6 +454,94 @@ fun PostScreen(
                     modifier = Modifier.padding(8.dp)
                 )
             }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CustomSlider(
+    modifier: Modifier = Modifier,
+    postsVM: PostsVM,
+    dotsActiveColor: Color = Color.DarkGray,
+    dotsInActiveColor: Color = Color.LightGray,
+    dotsSize: Dp = 10.dp,
+    pagerPaddingValues: PaddingValues = PaddingValues(horizontal = 0.dp),
+    imageCornerRadius: Dp = 4.dp,
+    imageHeight: Dp = 200.dp,
+) {
+    val currPost by postsVM.currPost.observeAsState()
+    val pagerState = rememberPagerState(pageCount = { currPost?.pictures?.size ?: 0 })
+    val scope = rememberCoroutineScope()
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            contentPadding = pagerPaddingValues,
+            modifier = modifier.weight(1f)
+        ) { page ->
+            val pageOffset =
+                (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+
+            val scaleFactor =
+                0.75f + (1f - 0.75f) * (1f - pageOffset.absoluteValue)
+
+            Box(modifier = modifier
+                .graphicsLayer {
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
+                }
+                .alpha(
+                    scaleFactor.coerceIn(0f, 1f)
+                )
+                .padding(0.dp)
+                .clip(RoundedCornerShape(imageCornerRadius))) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .scale(
+                            Scale.FILL
+                        )
+                        .crossfade(true)
+                        .data(currPost?.pictures?.get(page)?.pictureUrl)
+                        .build(),
+                    contentDescription = "Image",
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.pngwing_com),
+                    error = painterResource(id = R.drawable.pngwing_com),
+                    modifier = modifier
+                        .height(imageHeight)
+                        .alpha(if (pagerState.currentPage == page) 1f else 0.5f)
+                )
+            }
+        }
+    }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        currPost?.pictures?.forEachIndexed { index, _ ->
+            Box(
+                modifier = modifier
+                    .padding(4.dp)
+                    .size(dotsSize)
+                    .clip(CircleShape)
+                    .background(
+                        color = if (index == pagerState.currentPage) dotsActiveColor else dotsInActiveColor
+                    )
+                    .clickable {
+                        scope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    }
+            )
         }
     }
 }

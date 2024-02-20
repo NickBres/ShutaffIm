@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.shutaffim.Model.Screen.DisplayPost
+import com.example.shutaffim.Model.Screen.PostScreen
 import com.example.shutaffim.Model.Screen.Register
 import com.example.shutaffim.View.Forum
 import com.example.shutaffim.View.LoginScreen
@@ -49,7 +49,7 @@ fun AppNavigator(postsVM: PostsVM, authViewModel: AuthViewModel, forumVM: ForumV
             PostsSearch(navController, postsVM, authViewModel)
         }
         composable(Screen.PostScreen.route) {
-            DisplayPost(navController, postsVM, authViewModel)
+            PostScreen(navController, postsVM, authViewModel)
         }
         composable(Screen.MyPostsScreen.route) {
             MyPosts(navController, postsVM, authViewModel)

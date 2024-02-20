@@ -387,10 +387,9 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
     }
 
 
-
     fun resetInterestedInPost() {
         _interestedInPost.value = listOf()
-       // _interestedInPostId.clear()
+        // _interestedInPostId.clear()
     }
 
 
@@ -398,12 +397,31 @@ fun updateIsApproved(postId: String, userId: String, isApproved: Boolean) {
         return tags.joinToString(", ")
     }
 
+    suspend fun getInterestedInPostFilter(postId: String): Result<List<Request>> {
+        val resultDeferred = CompletableDeferred<Result<List<Request>>>()
+        viewModelScope.launch {
+            val result = postsRepo.getInterestedInPost(postId)
+            when (result) {
+                is Result.Success -> {
+                    println("Interested users in post: ${result.data}")
+
+                }
+
+                else -> {
+                    println("Error occurred while loading interested users")
+                }
+            }
+            resultDeferred.complete(result)
+        }
+        return resultDeferred.await()
+    }
+
     fun filterInterestedInPost(email: String) {
         viewModelScope.launch {
             when (val result = loadPosts()) {
                 is Result.Success -> {
                     val updatedInterested = result.data.filter { post ->
-                        val interestedResult = async { getInterestedInPost(post.id) }.await()
+                        val interestedResult = async { getInterestedInPostFilter(post.id) }.await()
                         if (interestedResult is Result.Success) {
                             for (request in interestedResult.data) {
                                 if (request.userId == email) {
