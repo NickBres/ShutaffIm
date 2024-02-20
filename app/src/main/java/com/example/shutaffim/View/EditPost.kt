@@ -581,16 +581,26 @@ fun EditPost(
                             userId = userId,
                             pictures = updatedPictures
                         )
-                        postsVM.updatePost(newPost, newImages.value, imagesToDelete.value,navController)
+                        postsVM.updatePost(
+                            newPost,
+                            newImages.value,
+                            imagesToDelete.value,
+                            navController
+                        )
                         postsVM.resetPost()
 
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 64.dp, end = 64.dp, bottom = 8.dp),
-                    enabled = city.isNotBlank() && street.isNotBlank()
-                            && current_partner.isNotBlank() && max_partner.isNotBlank()
-                            && price.isNotBlank() && about_apartment.isNotBlank()
+                    enabled = city.isNotBlank() &&
+                            street.isNotBlank() &&
+                            current_partner.isNotBlank() &&
+                            max_partner.isNotBlank() &&
+                            price.isNotBlank() &&
+                            about_apartment.isNotBlank() &&
+                            price.toInt() >= 0 &&
+                            price.toInt() <= 100000
                 ) {
                     Text(text = "Save")
                 }
