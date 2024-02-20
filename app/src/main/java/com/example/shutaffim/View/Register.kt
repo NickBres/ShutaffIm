@@ -310,7 +310,7 @@ fun Register(
                     .fillMaxWidth()
                     .padding(8.dp),
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { email = it.toLowerCase() },
                 label = { Text(text = "Email") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
