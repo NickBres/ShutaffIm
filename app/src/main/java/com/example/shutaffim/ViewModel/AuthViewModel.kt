@@ -179,6 +179,7 @@ class AuthViewModel : ViewModel() {
     fun updateInfo(user: User) {
         viewModelScope.launch {
             _authResult.value = userRepo.update(user)
+            updateUser()
         }
     }
 

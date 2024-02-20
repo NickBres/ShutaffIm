@@ -61,7 +61,6 @@ fun Profile(navController: NavController, authVM: AuthViewModel) {
 
 
     val user by authVM.currentUser.observeAsState()
-    val userintersted by authVM.currentintersted.observeAsState()
 
     var firstName by remember {
         mutableStateOf("")

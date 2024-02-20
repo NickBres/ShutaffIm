@@ -81,10 +81,10 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
     var lName by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf(Picture()) }
-    var age by remember { mutableStateOf("") }
     var sex by remember { mutableStateOf("") }
 
     val user = authVM.currentUser.observeAsState()
+
     fName = user.value?.fName ?: ""
     lName = user.value?.lName ?: ""
     about = user.value?.about ?: ""
@@ -334,7 +334,7 @@ private fun EditProfile(navController: NavController, authVM: AuthViewModel) {
                                     about = about,
                                     picture = authVM.currentUser.value!!.picture,
                                     type = user.value?.type!!,
-                                    birthYear = 1999, // TODO: get from user
+                                    birthYear = user.value?.birthYear!!,
                                     sex = sex
                                 )
                             authVM.updateInfo(newUser)
