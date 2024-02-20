@@ -205,6 +205,7 @@ private fun Menu(
                 if (currUser?.type == UserType.Publisher.type) {
                     ExtendedFloatingActionButton(
                         onClick = { /* TODO: Navigate to login screen */
+
                             navController.navigate(Screen.MyPostsScreen.route)
                         },
                         icon = {
@@ -216,7 +217,7 @@ private fun Menu(
                         },
                         text = {
                             Text(
-                                text = "Post",
+                                text = "My Posts",
                                 style = TextStyle(
                                     fontSize = 30.sp,
                                     color = MaterialTheme.colorScheme.primary,

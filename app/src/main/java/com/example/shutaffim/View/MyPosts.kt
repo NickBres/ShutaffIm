@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -36,6 +37,9 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
     postsVM.filterPosts(Filter(email = user?.email ?: ""))
 
     val posts by postsVM.posts.observeAsState(emptyList())
+    LaunchedEffect(postsVM.posts) {
+        postsVM.loadPosts()
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
