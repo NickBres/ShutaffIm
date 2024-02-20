@@ -38,6 +38,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +69,9 @@ import java.util.Locale
 fun Forum(navController: NavController,forumVM: ForumVM) {
 
     val topics by forumVM.topics.observeAsState(listOf())
+    LaunchedEffect(forumVM.topics) {
+        forumVM.loadTopics()
+    }
     var sortMenu by remember { mutableStateOf(false) }
     val sortOptions = listOf("Newest", "Oldest", "Mine")
     var selectedOption by remember { mutableStateOf("Newest") }
