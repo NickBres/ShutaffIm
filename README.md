@@ -1,6 +1,8 @@
 # ShutaffiI'm: Roommate Finder App for Students
 
-<img width="466" alt="Pasted Graphic" src="https://github.com/NickBres/ShutaffIm/assets/70432147/c4ea7aae-bf71-40ab-ba3b-e7c33719af35">
+<p align="center">
+  <img width="466" alt="Pasted Graphic" src="https://github.com/NickBres/ShutaffIm/assets/70432147/c4ea7aae-bf71-40ab-ba3b-e7c33719af35">
+</p>
 
 
 ## Description
