@@ -1,4 +1,7 @@
-# Roommate Finder App for Students
+# ShutaffiI'm: Roommate Finder App for Students
+
+<img width="466" alt="Pasted Graphic" src="https://github.com/NickBres/ShutaffIm/assets/70432147/c4ea7aae-bf71-40ab-ba3b-e7c33719af35">
+
 
 ## Description
 The Roommate Finder App is designed to streamline the process for university students seeking compatible roommates. Operating primarily as an advertisement board, the Android application allows users to post and search for roommate advertisements. This platform is tailored to support the ease of finding and offering shared accommodations among students.
