@@ -25,8 +25,8 @@ class PostsVM : ViewModel() {
     private val _posts = MutableLiveData<List<Post>>()
     val posts: MutableLiveData<List<Post>> get() = _posts
 /////////////////////////////////////////////
-    private val _postsUser = MutableLiveData<List<Post>>()
-    val postsUser: MutableLiveData<List<Post>> get() = _postsUser
+    private val _myPosts = MutableLiveData<List<Post>>()
+    val myPosts : MutableLiveData<List<Post>> get() = _myPosts
 ////////////////////////////////////////
 
     private var _filter = MutableLiveData<Filter>()
@@ -149,8 +149,22 @@ class PostsVM : ViewModel() {
             _posts.value = updatedPosts ?: listOf()
         }
     }
-
-
+    fun filterMyPosts(userId : String){
+        viewModelScope.launch {
+            when (val result = postsRepo.getPosts()) {
+                is Result.Success -> {
+                    val updatedMyPosts = result.data.filter { post ->
+                        val matchesEmail = userId.isBlank() || post.userId == userId
+                        matchesEmail
+                    }
+                    _myPosts.value = updatedMyPosts
+                }
+                is Result.Error -> {
+                    println("Error occurred while loading posts")
+                }
+            }
+        }
+    }
 
 
     fun tagsToList(tags: String): List<String> {
