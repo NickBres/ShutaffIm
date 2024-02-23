@@ -34,10 +34,10 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
 //    val posts by postsVM.posts.observeAsState(emptyList())
     val user by authVM.currentUser.observeAsState()
 
-    postsVM.filterPosts(Filter(email = user?.email ?: ""))
+    postsVM.filterMyPosts(user?.email?: "")
 
-    val posts by postsVM.posts.observeAsState(emptyList())
-    LaunchedEffect(postsVM.posts) {
+    val myPosts by postsVM.myPosts.observeAsState(emptyList())
+    LaunchedEffect(postsVM.myPosts) {
         postsVM.loadPosts()
     }
 
@@ -76,7 +76,7 @@ fun MyPosts(navController: NavController, postsVM: PostsVM , authVM: AuthViewMod
                     .padding(it)
                     .padding(start = 4.dp, end = 4.dp),
             ) {
-                items(posts) { post ->
+                items(myPosts) { post ->
                     PostItem(post, navController, Screen.EditPostScreen, postsVM)
                 }
             }
